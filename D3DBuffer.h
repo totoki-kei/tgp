@@ -8,7 +8,7 @@
 #include "D3DCore.h"
 #include "Resource.h"
 
-class BufferData;
+//class BufferData;
 
 class D3DBuffer :	public Resource {
 
@@ -65,6 +65,29 @@ public:
 	}
 
 	void Apply(const T* b){
+		T* data = nullptr;
+		buffer->Map(D3D10_MAP_READ_WRITE, 0, &data);
+		CopyMemory(data, b, TotalBytes);
+		buffer->Unmap();
+	}
+};
+
+template <int Length>
+class D3DIndexBuffer : D3DBuffer {
+
+public:
+	enum {
+		TotalBytes = sizeof(short)*Length
+	};
+
+	D3DIndexBuffer(){
+		InitializeBuffer(nullptr, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
+	}
+	D3DIndexBuffer(const short* data){
+		InitializeBuffer(this->data, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
+	}
+
+	void Apply(const short* b){
 		T* data = nullptr;
 		buffer->Map(D3D10_MAP_READ_WRITE, 0, &data);
 		CopyMemory(data, b, TotalBytes);
