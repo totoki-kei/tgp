@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Game.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Program.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWindow.cpp">
+      <Filter>Framework\D10</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTest.cpp" />
+    <ClCompile Include="D3DCore.cpp">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DEffect.cpp">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DBuffer.cpp">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Program.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Delegate.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWindow.h">
+      <Filter>Framework\D10</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTest.h" />
+    <ClInclude Include="DirectXUtil.h">
+      <Filter>Framework\D10</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DCore.h">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DEffect.h">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="WinAPI.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DBuffer.h">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{fc5384fd-6802-46c2-bf10-f7d5b6a585ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{69eec3c7-d7f1-4921-a1d2-c6b2ffd88360}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D10">
+      <UniqueIdentifier>{70d10365-f797-40cf-a6a5-f8496d7eefc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D10\Direct3D">
+      <UniqueIdentifier>{5cdee213-2112-49eb-ba71-861e082454c3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Effect1.fx" />
+    <FxCompile Include="Effect2.fx" />
+    <FxCompile Include="Common.fx" />
+  </ItemGroup>
+</Project>
