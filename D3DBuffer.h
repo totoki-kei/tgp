@@ -5,10 +5,11 @@
 #include <D3D10.h>
 #pragma warning(pop)
 
+class D3DBuffer;
+
 #include "D3DCore.h"
 #include "Resource.h"
 
-//class BufferData;
 
 class D3DBuffer :	public Resource {
 
@@ -54,21 +55,26 @@ class D3DVertexBuffer : D3DBuffer {
 
 public:
 	enum {
-		TotalBytes = sizeof(T)*Length
+		Stride = sizeof(T),
+		TotalBytes = sizeof(T)*Length,
 	};
 
-	D3DVertexBuffer(){
+	D3DVertexBuffer(D3DCore *core) : D3DBuffer(core) {
 		InitializeBuffer(nullptr, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
 	}
-	D3DVertexBuffer(const T* data){
+	D3DVertexBuffer(D3DCore *core, const T* data) : D3DBuffer(core) {
 		InitializeBuffer(this->data, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
 	}
 
-	void Apply(const T* b){
+	void Update(const T* b){
 		T* data = nullptr;
 		buffer->Map(D3D10_MAP_READ_WRITE, 0, &data);
 		CopyMemory(data, b, TotalBytes);
 		buffer->Unmap();
+	}
+
+	void Apply(){
+		core->GetDevice()->IASetVertexBuffers(0, 1, &buffer, { Stride }, { 0 });
 	}
 };
 
@@ -77,20 +83,25 @@ class D3DIndexBuffer : D3DBuffer {
 
 public:
 	enum {
-		TotalBytes = sizeof(short)*Length
+		TotalBytes = sizeof(unsigned short)*Length
 	};
 
 	D3DIndexBuffer(){
 		InitializeBuffer(nullptr, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
 	}
-	D3DIndexBuffer(const short* data){
-		InitializeBuffer(this->data, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
+	D3DIndexBuffer(const unsigned short* data){
+		InitializeBuffer(data, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
 	}
 
-	void Apply(const short* b){
-		T* data = nullptr;
+	void Update(const unsigned short* b){
+		unsigned short* data = nullptr;
 		buffer->Map(D3D10_MAP_READ_WRITE, 0, &data);
 		CopyMemory(data, b, TotalBytes);
 		buffer->Unmap();
+	}
+
+	void Apply(){
+		auto device = core->GetDevice();
+		device->IASetIndexBuffer(buffer, DXGI_FORMAT::DXGI_FORMAT_R16_UINT, 0);
 	}
 };
