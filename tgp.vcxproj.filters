@@ -29,6 +29,9 @@
     <ClCompile Include="D3DBuffer.cpp">
       <Filter>Framework\D10\Direct3D</Filter>
     </ClCompile>
+    <ClCompile Include="D3DInputLayout.cpp">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -71,6 +74,13 @@
     <ClInclude Include="D3DBuffer.h">
       <Filter>Framework\D10\Direct3D</Filter>
     </ClInclude>
+    <ClInclude Include="resource1.h" />
+    <ClInclude Include="D3DEnum.h">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DInputLayout.h">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Framework">
@@ -90,5 +100,11 @@
     <FxCompile Include="Effect1.fx" />
     <FxCompile Include="Effect2.fx" />
     <FxCompile Include="Common.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tgp.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
 </Project>

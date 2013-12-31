@@ -84,6 +84,8 @@
     <ClInclude Include="D3DCore.h" />
     <ClInclude Include="D3DEffect.h" />
     <ClInclude Include="D3DBuffer.h" />
+    <ClInclude Include="D3DEnum.h" />
+    <ClInclude Include="D3DInputLayout.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="DirectXUtil.h" />
@@ -92,6 +94,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Program.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="WinAPI.h" />
     <ClInclude Include="WindowTest.h" />
@@ -100,6 +103,7 @@
     <ClCompile Include="D3DCore.cpp" />
     <ClCompile Include="D3DEffect.cpp" />
     <ClCompile Include="D3DBuffer.cpp" />
+    <ClCompile Include="D3DInputLayout.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameWindow.cpp" />
@@ -142,6 +146,12 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tgp.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
