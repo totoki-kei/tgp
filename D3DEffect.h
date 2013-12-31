@@ -83,6 +83,7 @@ protected:
 	D3DCore * core;
 
 	ID3D10Effect* effect;
+	ID3D10Blob* blob;
 
 	enum class LoadType {
 		File,
@@ -112,6 +113,8 @@ public: // methods
 
 	Technique GetTechnique(int);
 	Technique GetTechnique(const TCHAR*);
+
+	void* GetBytecode();
 
 	// ConstantBuffer<T>経由で操作してもらうため、この辺りは不要になる
 	//void SetConstantBuffer(const TCHAR* name, void* data, int dataSize);

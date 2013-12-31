@@ -54,7 +54,7 @@ D3DEffect::D3DEffect(D3DCore * core, const TCHAR* effectName, const BYTE data[],
 		NULL,
 		NULL,
 		&this->effect,
-		NULL,
+		&this->blob,
 		NULL);
 
 	IF_NG(ret) {
@@ -189,6 +189,10 @@ D3DEffect::Technique D3DEffect::GetTechnique(int techIndex){
 
 D3DEffect::Technique D3DEffect::GetTechnique(const TCHAR* techName){
 	return D3DEffect::Technique(*this, techName);
+}
+
+void* D3DEffect::GetBytecode(){
+	return blob->GetBufferPointer();
 }
 
 
