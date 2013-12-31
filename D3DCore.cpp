@@ -125,3 +125,6 @@ ID3D10Device* D3DCore::GetDevice() const {
 	return this->device;
 }
 
+void D3DCore::SetPrimitiveTopology(D3DPrimitiveTopology topology){
+	device->IASetPrimitiveTopology((D3D10_PRIMITIVE_TOPOLOGY)D3DPrimitiveTopology::LineList);
+}

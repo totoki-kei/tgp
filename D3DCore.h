@@ -21,6 +21,8 @@
 #include "Resource.h"
 #include "GameWindow.h"
 
+#include "D3DEnum.h"
+
 class D3DCore : public Resource
 {
 	IDXGISwapChain* swapChain;
@@ -45,6 +47,9 @@ public:
 	void Update();
 
 	ID3D10Device* GetDevice() const;
+
+public:
+	void SetPrimitiveTopology(D3DPrimitiveTopology topology);
 
 };
 
