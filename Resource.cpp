@@ -7,10 +7,6 @@
 
 #include "Debug.h"
 
-// 名前のバッティングの解消
-#ifdef FindResource
-#undef FindResource
-#endif // FindResource
 
 typedef std::vector< std::shared_ptr<Resource> > children_t;
 
