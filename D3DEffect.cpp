@@ -134,8 +134,10 @@ bool D3DEffect::Technique::EndOfPass() {
 
 void D3DEffect::Technique::ApplyPass() {
 	if(pass == nullptr) return;
-	IF_NG(pass->Apply(0)){
+	HRESULT result;
+	IF_NG2(pass->Apply(0), result){
 		// ƒGƒ‰[ˆ—H
+		DBG_OUT("applying pass failed ret=%d, tech=%p, pass=%p",result, tech, pass);
 	}
 }
 

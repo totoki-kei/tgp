@@ -1,9 +1,5 @@
 #pragma once
 
-#pragma warning(push)
-#pragma warning(disable:4005)
-#include <D3D10.h>
-#pragma warning(pop)
 
 class D3DBuffer;
 

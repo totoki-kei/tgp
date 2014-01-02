@@ -81,6 +81,12 @@
     <ClInclude Include="D3DInputLayout.h">
       <Filter>Framework\D10\Direct3D</Filter>
     </ClInclude>
+    <ClInclude Include="D3DLibs.h">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DHeaders.h">
+      <Filter>Framework\D10\Direct3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Framework">

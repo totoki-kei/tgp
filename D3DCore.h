@@ -1,22 +1,8 @@
 #pragma once
 
 // DXGIŠÖŒW‚Ì‚à‚Ì‚ªÄ’è‹`‚³‚ê‚é‚½‚ßAˆê•”Œx‚ğ–³Œø‚É
-#pragma warning(push)
-#pragma warning(disable:4005)
-#include <d3d10.h>
-#include <DXGI.h>
-#include <D3DX10.h>
-#include <DxErr.h>
-#pragma warning(pop)
-
-#pragma comment(lib, "dxguid.lib")
-#pragma comment(lib, "d3d10.lib")
-#if _DEBUG
-#pragma comment(lib, "d3dx10d.lib")
-#else
-#pragma comment(lib, "d3dx10.lib")
-#endif
-#pragma comment(lib, "dxerr.lib")
+#include "D3DHeaders.h"
+#include "D3DLibs.h"
 
 #include "Resource.h"
 #include "GameWindow.h"

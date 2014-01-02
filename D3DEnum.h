@@ -1,13 +1,6 @@
 #pragma once
 
-// DXGIŠÖŒW‚Ì‚à‚Ì‚ªÄ’è‹`‚³‚ê‚é‚½‚ßAˆê•”Œx‚ğ–³Œø‚É
-#pragma warning(push)
-#pragma warning(disable:4005)
-#include <d3d10.h>
-#include <DXGI.h>
-#include <D3DX10.h>
-#include <DxErr.h>
-#pragma warning(pop)
+#include "D3DHeaders.h"
 
 //D3D10_PRIMITIVE_TOPOLOGY
 enum class D3DPrimitiveTopology : int {

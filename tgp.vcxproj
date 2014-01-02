@@ -85,7 +85,9 @@
     <ClInclude Include="D3DEffect.h" />
     <ClInclude Include="D3DBuffer.h" />
     <ClInclude Include="D3DEnum.h" />
+    <ClInclude Include="D3DHeaders.h" />
     <ClInclude Include="D3DInputLayout.h" />
+    <ClInclude Include="D3DLibs.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="DirectXUtil.h" />
