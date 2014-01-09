@@ -9,13 +9,12 @@ class D3DBuffer;
 
 class D3DBuffer :	public Resource {
 
-private:
+protected:
 
 	D3DCore* core;
 	ID3D10Buffer *buffer;
 	//std::weak_ptr<BufferData> mapped;
 
-protected:
 	D3DBuffer(D3DCore*);
 public:
 	virtual ~D3DBuffer();
@@ -46,31 +45,42 @@ public:
 */
 //// ここから用途別に特殊化されたバッファ
 
-template <typename T, int Length>
+template <typename T>
 class D3DVertexBuffer : D3DBuffer {
-
+	int length;
 public:
 	enum {
 		Stride = sizeof(T),
-		TotalBytes = sizeof(T)*Length,
 	};
 
-	D3DVertexBuffer(D3DCore *core) : D3DBuffer(core) {
-		InitializeBuffer(nullptr, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
-	}
-	D3DVertexBuffer(D3DCore *core, const T* data) : D3DBuffer(core) {
-		InitializeBuffer(this->data, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
+	D3DVertexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
+		this->length = length;
+		InitializeBuffer(nullptr, Stride * length, D3D10_BIND_VERTEX_BUFFER, false);
 	}
 
+	D3DVertexBuffer(D3DCore *core, const T* data, int length, bool readonly = true) : D3DBuffer(core) {
+		this->length = length;
+		InitializeBuffer(data, Stride * length, D3D10_BIND_VERTEX_BUFFER, readonly);
+	}
+
+	template<int Length>
+	D3DVertexBuffer(D3DCore* core, T(&data)[Length], bool readonly = true) : D3DBuffer(core) {
+		this->length = Length;
+		InitializeBuffer(data, Stride * length, D3D10_BIND_VERTEX_BUFFER, readonly);
+	}
+
+
 	void Update(const T* b){
-		T* data = nullptr;
+		void* data = nullptr;
 		buffer->Map(D3D10_MAP_READ_WRITE, 0, &data);
-		CopyMemory(data, b, TotalBytes);
+		CopyMemory(data, b, Stride * length);
 		buffer->Unmap();
 	}
 
 	void Apply(){
-		core->GetDevice()->IASetVertexBuffers(0, 1, &buffer, { Stride }, { 0 });
+		UINT stride[] = { Stride };
+		UINT offset[] = { 0 };
+		core->GetDevice()->IASetVertexBuffers(0, 1, &buffer, stride, offset);
 	}
 };
 

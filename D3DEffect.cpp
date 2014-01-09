@@ -4,6 +4,7 @@
 
 #include "Debug.h"
 
+#include <d3dcompiler.h>
 
 D3DEffect::D3DEffect(D3DCore * core, const TCHAR* effectFile) : 
 	core(core),
@@ -54,7 +55,7 @@ D3DEffect::D3DEffect(D3DCore * core, const TCHAR* effectName, const BYTE data[],
 		NULL,
 		NULL,
 		&this->effect,
-		&this->blob,
+		NULL,
 		NULL);
 
 	IF_NG(ret) {
@@ -85,17 +86,20 @@ void D3DEffect::Dispose() {
 
 #pragma region Technique
 
+D3DEffect::Technique::Technique(){
+	tech = nullptr;
+}
 
-D3DEffect::Technique::Technique(D3DEffect &e, int i) : parent(e) {
-	tech = e.effect->GetTechniqueByIndex(i);
+D3DEffect::Technique::Technique(D3DEffect* e, int i) : effect(e) {
+	tech = e->effect->GetTechniqueByIndex(i);
 	D3D10_TECHNIQUE_DESC td;
 	tech->GetDesc(&td);
 	passCount = td.Passes;
 	SetPass(0);
 }
 
-D3DEffect::Technique::Technique(D3DEffect &e, const TCHAR* n) : parent(e) {
-	tech = e.effect->GetTechniqueByName(n);
+D3DEffect::Technique::Technique(D3DEffect* e, const TCHAR* n) : effect(e) {
+	tech = e->effect->GetTechniqueByName(n);
 	D3D10_TECHNIQUE_DESC td;
 	tech->GetDesc(&td);
 	passCount = td.Passes;
@@ -142,7 +146,7 @@ void D3DEffect::Technique::ApplyPass() {
 }
 
 D3DEffect* D3DEffect::Technique::GetEffect() const {
-	return &this->parent;
+	return this->effect;
 }
 
 #pragma endregion
@@ -158,7 +162,7 @@ D3DEffect::ConstantBufferBase::~ConstantBufferBase(){
 
 }
 
-void D3DEffect::ConstantBufferBase::CreateBuffer(int dataSize, ID3D10EffectConstantBuffer* cb, int idx) {
+void D3DEffect::ConstantBufferBase::CreateBuffer(int dataSize, ID3D10EffectConstantBuffer* cb) {
 	D3D10_BUFFER_DESC bd = {0};
 	cbuffer = cb;
 	cbuffer->GetDesc(&valdesc);
@@ -186,15 +190,25 @@ D3DCore* D3DEffect::GetCore(){
 }
 
 D3DEffect::Technique D3DEffect::GetTechnique(int techIndex){
-	return D3DEffect::Technique(*this, techIndex);
+	return D3DEffect::Technique(this, techIndex);
 }
 
 D3DEffect::Technique D3DEffect::GetTechnique(const TCHAR* techName){
-	return D3DEffect::Technique(*this, techName);
+	return D3DEffect::Technique(this, techName);
 }
 
-void* D3DEffect::GetBytecode(){
-	return blob->GetBufferPointer();
+BYTE* D3DEffect::Technique::GetPassInputSignature(int index, int* outLength) {
+	D3D10_PASS_DESC desc;
+
+	auto path = tech->GetPassByIndex(index);
+	if (pass == nullptr) {
+		*outLength = 0;
+		return nullptr;
+	}
+	path->GetDesc(&desc);
+	*outLength = desc.IAInputSignatureSize;
+	return desc.pIAInputSignature;
+
 }
 
 

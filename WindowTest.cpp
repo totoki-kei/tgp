@@ -67,7 +67,9 @@ void WindowTest::Draw(void) {
 
 #elif TEST_ID == 1
 
+#include "D3DBuffer.h"
 #include "D3DEffect.h"
+#include "D3DInputLayout.h"
 #include "Effect_Effect1.h"
 
 WindowTest::WindowTest(void) : wnd(640, 480)
@@ -98,13 +100,43 @@ WindowTest::WindowTest(void) : wnd(640, 480)
 
 }
 
+struct Vertex {
+	D3DXVECTOR4 position;
+	D3DXCOLOR color;
+	D3DXCOLOR emit;
+
+	static D3D10_INPUT_ELEMENT_DESC* GetInputElementDesc(){
+		static D3D10_INPUT_ELEMENT_DESC desc[] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+			{ "EMIT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		return desc;
+	}
+	static int GetInputElementDescCount(){ return 3; }
+};
+
+struct CB_Scene {
+	D3DXMATRIX View;
+	D3DXMATRIX Projection;
+};
+
+struct CB_Object {
+	D3DXMATRIX World;
+};
+
 
 D3DEffect* effect;
+D3DEffect::Technique tech;
+D3DVertexBuffer<Vertex> * vb;
+D3DInputLayout* ia;
 
 WindowTest::~WindowTest(void)
 {
+	delete ia;
+	delete vb;
 	delete effect;
-	effect = nullptr;
+
 	wnd.Dispose();
 }
 
@@ -114,7 +146,20 @@ int WindowTest::Initialize(void){
 	d3d10->Initialize();
 
 	// ためしにエフェクトを読んでみよう
-	effect = new D3DEffect(d3d10, _T("test"), g_Effect_Effect1, sizeof(g_Effect_Effect1));
+	effect = new D3DEffect(d3d10, "Debug\\Effect1.fxo");
+	tech = effect->GetTechnique(0);
+
+
+	Vertex vs[4] = {
+		{ { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } },
+		{ { 1, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
+		{ { 0, 1, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
+		{ { 1, 1, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
+	};
+
+	vb = new D3DVertexBuffer<Vertex>(d3d10, vs);
+
+	ia = new D3DInputLayout(d3d10, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), tech, 0);
 
 	return 0;
 }
@@ -126,6 +171,34 @@ void WindowTest::Update(void) {
 
 	// ここでフレームごとの処理を行う
 	d3d10->Clear();
+
+	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
+	vb->Apply();
+	ia->Apply();
+
+	// エフェクトのパラメータ
+	{
+		auto scene = effect->GetConstantBuffer<CB_Scene>("Scene");
+		auto sp = scene.lock();
+		auto sr = sp->GetValue();
+		D3DXMatrixIdentity(&sr.View);
+		D3DXMatrixIdentity(&sr.Projection);
+		sp->Update();
+
+		auto obj = effect->GetConstantBuffer<CB_Object>("Object");
+		auto op = obj.lock();
+		auto or = op->GetValue();
+		D3DXMatrixIdentity(&or.World);
+		op->Update();
+	}
+
+	tech.SetPass(0);
+	tech.ApplyPass();
+
+	// テストコード（のちのちD3DCoreにラップする)
+	auto device = d3d10->GetDevice();
+	device->Draw(4, 0);
+
 	d3d10->Update();
 
 }

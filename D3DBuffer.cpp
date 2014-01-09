@@ -42,7 +42,7 @@ void D3DBuffer::InitializeBuffer(void* bufferData, int bufferSize, UINT usage, b
 
 	desc.BindFlags = usage;
 	desc.ByteWidth = bufferSize;
-	desc.CPUAccessFlags = (readonly ? 0 : (D3D10_CPU_ACCESS_READ | D3D10_CPU_ACCESS_WRITE));
+	desc.CPUAccessFlags = (readonly ? 0 : (D3D10_CPU_ACCESS_WRITE));
 	desc.MiscFlags = 0;
 	desc.Usage = (readonly ? D3D10_USAGE_DEFAULT : D3D10_USAGE_DYNAMIC);
 
@@ -58,7 +58,7 @@ void D3DBuffer::InitializeBuffer(void* bufferData, int bufferSize, UINT usage, b
 		result = core->GetDevice()->CreateBuffer(&desc, nullptr, &buffer);
 	}
 	IF_NG(result){
-		DBG_OUT("failed to create buffer args(%p, %d, %u, %d)", bufferData, bufferSize, usage, readonly);
+		DBG_OUT("failed to create buffer hresult = %X, args(%p, %d, %u, %d)", result, bufferData, bufferSize, usage, readonly);
 	}
 }
 

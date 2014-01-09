@@ -1,9 +1,12 @@
 #include "D3DInputLayout.h"
 
 
-D3DInputLayout::D3DInputLayout(D3DCore *core, D3D10_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int pathIndex) : core(core)
+D3DInputLayout::D3DInputLayout(D3DCore *core, D3D10_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int passIndex) : core(core)
 {
-	auto shaderBytecode = 
+	int shaderBytecodeLength;
+	BYTE* shaderBytecode;
+
+	shaderBytecode = tech.GetPassInputSignature(passIndex, &shaderBytecodeLength);
 
 	core->GetDevice()->CreateInputLayout(
 		elements,
@@ -16,4 +19,17 @@ D3DInputLayout::D3DInputLayout(D3DCore *core, D3D10_INPUT_ELEMENT_DESC *elements
 
 D3DInputLayout::~D3DInputLayout()
 {
+}
+
+bool D3DInputLayout::isDisposed(){
+	return !layout;
+}
+
+void D3DInputLayout::Dispose(){
+	layout->Release();
+	layout = nullptr;
+}
+
+void D3DInputLayout::Apply(){
+	core->GetDevice()->IASetInputLayout(layout);
 }

@@ -11,17 +11,20 @@ public:
 	class Technique {
 		friend class D3DEffect;
 		
-		D3DEffect &parent;
+		D3DEffect* effect;
 		ID3D10EffectTechnique* tech;
 		ID3D10EffectPass* pass;
 
 		int passCount;
 		int passIndex;
 
-		Technique(D3DEffect& e, int i);
-		Technique(D3DEffect& e, const TCHAR* n);
+		Technique(D3DEffect* e, int i);
+		Technique(D3DEffect* e, const TCHAR* n);
 
 	public:
+		// 空のコンストラクタ
+		Technique();
+
 		D3DEffect* GetEffect() const;
 		D3DCore* GetCore() const;
 
@@ -33,6 +36,8 @@ public:
 		bool EndOfPass();
 
 		void ApplyPass();
+
+		BYTE* GetPassInputSignature(int, int*);
 	};
 
 	// 定数バッファ
@@ -50,24 +55,21 @@ public:
 		ConstantBufferBase(D3DEffect&) ;
 		virtual ~ConstantBufferBase() ;
 
-		void CreateBuffer(int dataSize, ID3D10EffectConstantBuffer* cb, int idx);
+		void CreateBuffer(int dataSize, ID3D10EffectConstantBuffer* cb);
 	};
 
 	template <typename T>
 	class ConstantBuffer : ConstantBufferBase {
+		friend class D3DEffect;
 		T data;
 
-		ConstantBuffer(D3DEffect& e, int i){
-			CreateBuffer(sizeof(T), cb, i);
-		}
-		ConstantBuffer(D3DEffect& e, const TCHAR* n){
-			CreateBuffer(sizeof(T), effect->GetConstantBufferByIndex(i), n);
-
+		ConstantBuffer(D3DEffect& e, ID3D10EffectConstantBuffer* cb) : ConstantBufferBase(e) {
+			CreateBuffer(sizeof(T), cb);
 		}
 
 	public:
 
-		T& GetValue() const { // もしかしたらconstやめるかもしれない
+		T& GetValue() {
 			return data;
 		}
 		void Update() {
@@ -93,7 +95,10 @@ protected:
 
 	tstring name;
 
-	std::shared_ptr<ConstantBufferBase> cbufferList;
+	typedef std::map<tstring, std::shared_ptr<ConstantBufferBase> > CBMap;
+	typedef std::pair<tstring, std::shared_ptr<ConstantBufferBase> > CBMapEntry;
+
+	CBMap cbufferMap;
 
 
 public: // methods
@@ -114,7 +119,7 @@ public: // methods
 	Technique GetTechnique(int);
 	Technique GetTechnique(const TCHAR*);
 
-	void* GetBytecode();
+	void* GetBytecode(int* length);
 
 	// ConstantBuffer<T>経由で操作してもらうため、この辺りは不要になる
 	//void SetConstantBuffer(const TCHAR* name, void* data, int dataSize);
@@ -132,19 +137,26 @@ public: // methods
 
 
 	template <typename T>
-	std::weak_ptr<D3DEffect::ConstantBuffer<T> > GetConstantBuffer(const TCHAR* name){
+	std::weak_ptr< D3DEffect::ConstantBuffer<T> > GetConstantBuffer(const TCHAR* name){
 		typedef D3DEffect::ConstantBuffer<T> BufferT;
 
-		for (auto pp = cbufferList;
-			pp != nullptr;
-			pp = pp->next){
-
-			if (_stricmp(pp->valdesc.Name, name) == 0){
-				return dynamic_pointer_cast<BufferT>(pp);
-			}
+		auto e = cbufferMap.at(name);
+		if (e != nullptr) {
+			return std::dynamic_pointer_cast<BufferT>(e);
 		}
-		// 見つからなかったので空の要素を返す
-		return std::weak_ptr<BufferT>();
+
+		auto cb = effect->GetConstantBufferByName(name);
+		if (cb == nullptr) {
+			return std::weak_ptr<BufferT>();
+		}
+		else {
+			auto cbp = std::shared_ptr<BufferT>(new D3DEffect::ConstantBuffer<T>(*this, cb));
+			std::shared_ptr<D3DEffect::ConstantBufferBase> cbpb(cbp);
+			cbufferMap.insert(CBMapEntry(name, cbpb));
+			return cbp;
+		}
+
+
 	}
 
 	template<typename T>
