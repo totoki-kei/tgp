@@ -151,10 +151,10 @@ int WindowTest::Initialize(void){
 
 
 	Vertex vs[4] = {
-		{ { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } },
-		{ { 1, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
-		{ { 0, 1, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
-		{ { 1, 1, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
+		{ {  0 ,  0 , 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } },
+		{ {  0 , .5f, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
+		{ { .5f, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
+		{ { .5f, .5f, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
 	};
 
 	vb = new D3DVertexBuffer<Vertex>(d3d10, vs);
@@ -178,18 +178,18 @@ void WindowTest::Update(void) {
 
 	// エフェクトのパラメータ
 	{
-		auto scene = effect->GetConstantBuffer<CB_Scene>("Scene");
-		auto sp = scene.lock();
-		auto sr = sp->GetValue();
-		D3DXMatrixIdentity(&sr.View);
-		D3DXMatrixIdentity(&sr.Projection);
-		sp->Update();
-
 		auto obj = effect->GetConstantBuffer<CB_Object>("Object");
 		auto op = obj.lock();
-		auto or = op->GetValue();
-		D3DXMatrixIdentity(&or.World);
+		auto or = op->GetPointer();
+		D3DXMatrixRotationZ(&or->World, this->ticks / 32.0f);
 		op->Update();
+
+		auto scene = effect->GetConstantBuffer<CB_Scene>("Scene");
+		auto sp = scene.lock();
+		auto sr = sp->GetPointer();
+		D3DXMatrixIdentity(&sr->View);
+		D3DXMatrixIdentity(&sr->Projection);
+		sp->Update();
 	}
 
 	tech.SetPass(0);

@@ -12,6 +12,7 @@ D3DCore::D3DCore(GameWindow* wnd)
 
 D3DCore::~D3DCore(void)
 {
+	if (!isDisposed()) Dispose();
 }
 
 bool D3DCore::Initialize() {
@@ -93,7 +94,7 @@ bool D3DCore::Initialize() {
 	device->RSSetViewports(1, &viewport);
 
 	// ‰æ–ÊÁ‹Ž‚ð‚·‚é‚Æ‚«‚ÌF
-	this->clearColor.r = 0.0f;
+	this->clearColor.r = 0.5f;
 	this->clearColor.g = 0.5f;
 	this->clearColor.b = 0.5f;
 	this->clearColor.a = 1.0f;
@@ -126,5 +127,5 @@ ID3D10Device* D3DCore::GetDevice() const {
 }
 
 void D3DCore::SetPrimitiveTopology(D3DPrimitiveTopology topology){
-	device->IASetPrimitiveTopology((D3D10_PRIMITIVE_TOPOLOGY)D3DPrimitiveTopology::LineList);
+	device->IASetPrimitiveTopology((D3D10_PRIMITIVE_TOPOLOGY)topology);
 }

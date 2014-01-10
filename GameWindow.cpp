@@ -88,6 +88,7 @@ GameWindow::~GameWindow(void)
 {
 	UnregisterClass(WndClassName, g_MainArgs.hInstance);
 	DestroyWindow(this->hWnd);
+	if (!isDisposed()) Dispose();
 }
 
 int GameWindow::ProcessMessage() {

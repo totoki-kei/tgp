@@ -31,7 +31,7 @@ Resource::Resource(unsigned int id) {
 
 
 Resource::~Resource () {
-	if( !isDisposed() ) Dispose(); 
+	if( !isDisposed() ) DisposeChildren(); 
 	RSC_DBG_OUT("Resource #%d deleted\n", this->ResourceId);
 }
 
@@ -92,21 +92,25 @@ unsigned int Resource::GetResourceID() const {
 }
 
 bool Resource::isDisposed(void) {
-	return false;
+	return children.size() == 0;
 }
 
 void Resource::Dispose(void) {
 
 	RSC_DBG_OUT("Resource #%d disposing...\n", this->ResourceId);
 
-	// ’Ç‰Á‚³‚ê‚½‡˜‚Æ‚Í‹t‡‚É‰ð•ú
-	for(auto i = children.rbegin(); i != children.rend(); i++){
-		auto r = *i;
-		if(!r->isDisposed()) r->Dispose();
-	}
+	DisposeChildren();
 
 	RSC_DBG_OUT("Resource #%d disposed\n", this->ResourceId);
 
+}
+
+void Resource::DisposeChildren(){
+	// ’Ç‰Á‚³‚ê‚½‡˜‚Æ‚Í‹t‡‚É‰ð•ú
+	for (auto i = children.rbegin(); i != children.rend(); i++){
+		auto r = *i;
+		if (!r->isDisposed()) r->Dispose();
+	}
 	children.clear();
 }
 

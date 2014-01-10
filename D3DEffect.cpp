@@ -70,7 +70,7 @@ D3DEffect::D3DEffect(D3DCore * core, const TCHAR* effectName, const BYTE data[],
 
 D3DEffect::~D3DEffect(void)
 {
-	Dispose();
+	if (!isDisposed()) Dispose();
 }
 
 bool D3DEffect::isDisposed() { 
@@ -163,19 +163,22 @@ D3DEffect::ConstantBufferBase::~ConstantBufferBase(){
 }
 
 void D3DEffect::ConstantBufferBase::CreateBuffer(int dataSize, ID3D10EffectConstantBuffer* cb) {
+	HRESULT hr;
+
 	D3D10_BUFFER_DESC bd = {0};
 	cbuffer = cb;
 	cbuffer->GetDesc(&valdesc);
 
-	bd.MiscFlags = D3D10_BIND_CONSTANT_BUFFER;
+	bd.BindFlags = D3D10_BIND_CONSTANT_BUFFER;
 	bd.ByteWidth = dataSize;
-	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;  
+	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
 	bd.MiscFlags = 0;  
-	bd.Usage = D3D10_USAGE_DYNAMIC;  
-	parent.GetCore()->GetDevice()->CreateBuffer(
-		&bd,
-		NULL,
-		&buf);
+	bd.Usage = D3D10_USAGE_DYNAMIC;
+	
+	IF_NG2(parent.GetCore()->GetDevice()->CreateBuffer(&bd, NULL, &buf), hr) {
+		// ì¬‚ÉŽ¸”s‚µ‚Ä‚¢‚é
+		DBG_OUT("creating constant buffer failed ret=%d(%08X)", hr, hr);
+	}
 
 	cbuffer->SetConstantBuffer(buf);
 	

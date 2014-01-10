@@ -26,11 +26,15 @@ D3DBuffer::D3DBuffer(D3DCore* core) : core(core) {
 }
 
 D3DBuffer::~D3DBuffer(){
-	if (buffer) buffer->Release();
+	if (!isDisposed()) Dispose();
+}
+
+bool D3DBuffer::isDisposed(){
+	return buffer != nullptr;
 }
 
 void D3DBuffer::Dispose(){
-	if (buffer) buffer->Release();
+	buffer->Release();
 	Resource::Dispose();
 }
 

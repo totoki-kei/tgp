@@ -19,6 +19,7 @@ protected:
 public:
 	virtual ~D3DBuffer();
 
+	bool isDisposed();
 	void Dispose();
 
 	//std::shared_ptr<BufferData> GetData();

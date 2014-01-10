@@ -59,24 +59,35 @@ public:
 	};
 
 	template <typename T>
-	class ConstantBuffer : ConstantBufferBase {
+	class ConstantBuffer : public ConstantBufferBase {
 		friend class D3DEffect;
 		T data;
 
 		ConstantBuffer(D3DEffect& e, ID3D10EffectConstantBuffer* cb) : ConstantBufferBase(e) {
 			CreateBuffer(sizeof(T), cb);
+			Reload();
 		}
 
 	public:
 
-		T& GetValue() {
-			return data;
+		T* GetPointer() {
+			return &data;
 		}
 		void Update() {
-			cbuffer->SetRawValue(&data, 0, sizeof(T));
+//			cbuffer->SetRawValue(&data, 0, sizeof(T));
+
+			void* pd;
+			buf->Map(D3D10_MAP_WRITE_DISCARD, 0, &pd);
+			CopyMemory(pd, &data, sizeof(T));
+			buf->Unmap();
 		}
 		void Reload() {
-			cbuffer->GetRawValue(&data, 0, sizeof(T));
+//			cbuffer->GetRawValue(&data, 0, sizeof(T));
+
+			//void* pd;
+			//buf->Map(D3D10_MAP_READ, 0, &pd);
+			//CopyMemory(&data, pd, sizeof(T));
+			//buf->Unmap();
 		}
 
 	};
@@ -140,17 +151,19 @@ public: // methods
 	std::weak_ptr< D3DEffect::ConstantBuffer<T> > GetConstantBuffer(const TCHAR* name){
 		typedef D3DEffect::ConstantBuffer<T> BufferT;
 
-		auto e = cbufferMap.at(name);
-		if (e != nullptr) {
-			return std::dynamic_pointer_cast<BufferT>(e);
+		auto it = cbufferMap.find(name);
+		if (it != cbufferMap.end()) {
+			// 見つかったらそれを返す。
+			return std::dynamic_pointer_cast<BufferT>(it->second);
 		}
 
+		// エフェクトから定数バッファを探してMapに追加する
 		auto cb = effect->GetConstantBufferByName(name);
 		if (cb == nullptr) {
 			return std::weak_ptr<BufferT>();
 		}
 		else {
-			auto cbp = std::shared_ptr<BufferT>(new D3DEffect::ConstantBuffer<T>(*this, cb));
+			std::shared_ptr<BufferT> cbp = std::shared_ptr<BufferT>(new D3DEffect::ConstantBuffer<T>(*this, cb));
 			std::shared_ptr<D3DEffect::ConstantBufferBase> cbpb(cbp);
 			cbufferMap.insert(CBMapEntry(name, cbpb));
 			return cbp;

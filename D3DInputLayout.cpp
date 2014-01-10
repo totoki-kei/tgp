@@ -19,6 +19,7 @@ D3DInputLayout::D3DInputLayout(D3DCore *core, D3D10_INPUT_ELEMENT_DESC *elements
 
 D3DInputLayout::~D3DInputLayout()
 {
+	if (!isDisposed()) Dispose();
 }
 
 bool D3DInputLayout::isDisposed(){
@@ -28,6 +29,7 @@ bool D3DInputLayout::isDisposed(){
 void D3DInputLayout::Dispose(){
 	layout->Release();
 	layout = nullptr;
+	Resource::Dispose();
 }
 
 void D3DInputLayout::Apply(){

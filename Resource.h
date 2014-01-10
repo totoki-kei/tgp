@@ -26,8 +26,8 @@ public:
 	bool RemoveResource(std::shared_ptr<Resource>, bool all = false, bool recursive = false);
 	unsigned int GetResourceID() const;
 	std::weak_ptr<Resource> FindResource(unsigned int id, bool recursive = false);
-	
-	
+
+
 	Resource(void);
 	Resource(unsigned int);
 	virtual bool isDisposed();
@@ -35,6 +35,8 @@ public:
 	virtual ~Resource();
 
 private:
+	void DisposeChildren();
+
 	static unsigned int nextid;
 
 };
@@ -60,21 +62,25 @@ public:
 	ResourceItem(T p) :
 		item(p),
 		disposer([](T& i){
-			delete i;
-			i = nullptr;
-		}),
+		delete i;
+		i = nullptr;
+	}),
 		disposed(false) {
 
 		RSC_DBG_OUT("ResourceItem #%d as %s(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
 	}
 
+	~ResourceItem(){
+		if (!isDisposed()) Dispose();
+	}
+
 	virtual bool isDisposed() { return disposed; }
-	virtual void Dispose() { 
+	virtual void Dispose() {
 		if (!isDisposed()) {
 			RSC_DBG_OUT("ResourceItem #%d disposing...\n", this->ResourceId);
-			Resource::Dispose();
-			disposer (item);
+			disposer(item);
 			disposed = true;
+			Resource::Dispose();
 			RSC_DBG_OUT("ResourceItem #%d disposed.\n", this->ResourceId);
 		}
 		else {
@@ -84,7 +90,7 @@ public:
 };
 
 template <typename T>
-inline std::shared_ptr< ResourceItem<T*> > PtrToRes(T* p){ 
+inline std::shared_ptr< ResourceItem<T*> > PtrToRes(T* p){
 	auto res = new ResourceItem<T*>(p);
 	RSC_DBG_OUT("Pointer %p of type %s -> Resource #%d.\n", p, typeid(T).name(), res->GetResourceID());
 	return std::shared_ptr< ResourceItem<T*> >(res);
