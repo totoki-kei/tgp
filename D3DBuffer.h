@@ -83,32 +83,47 @@ public:
 		UINT offset[] = { 0 };
 		core->GetDevice()->IASetVertexBuffers(0, 1, &buffer, stride, offset);
 	}
+
+	int GetLength() { return length; }
 };
 
-template <int Length>
+template <typename IndexT = unsigned short, int Format = DXGI_FORMAT::DXGI_FORMAT_R16_UINT>
 class D3DIndexBuffer : D3DBuffer {
-
+	int length;
 public:
-	enum {
-		TotalBytes = sizeof(unsigned short)*Length
-	};
 
-	D3DIndexBuffer(){
-		InitializeBuffer(nullptr, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
-	}
-	D3DIndexBuffer(const unsigned short* data){
-		InitializeBuffer(data, TotalBytes, D3D10_BIND_VERTEX_BUFFER, false);
+	D3DIndexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
+		this->length = length;
+		InitializeBuffer(nullptr, sizeof(IndexT) * length, D3D10_BIND_INDEX_BUFFER, false);
 	}
 
-	void Update(const unsigned short* b){
-		unsigned short* data = nullptr;
-		buffer->Map(D3D10_MAP_READ_WRITE, 0, &data);
-		CopyMemory(data, b, TotalBytes);
+	D3DIndexBuffer(D3DCore *core, const IndexT* data, int length, bool readonly = true) : D3DBuffer(core) {
+		this->length = length;
+		InitializeBuffer(data, sizeof(IndexT)* length, D3D10_BIND_INDEX_BUFFER, readonly);
+	}
+
+	template<int Length>
+	D3DIndexBuffer(D3DCore* core, IndexT(&data)[Length], bool readonly = true) : D3DBuffer(core) {
+		this->length = Length;
+		InitializeBuffer(data, sizeof(IndexT)* length, D3D10_BIND_INDEX_BUFFER, readonly);
+	}
+
+
+	void Update(IndexT* b){
+		void* data = nullptr;
+		buffer->Map(D3D10_MAP_WRITE_DISCARD, 0, &data);
+		if (data == nullptr){
+			// ƒ}ƒbƒvŽ¸”s
+			return;
+		}
+		CopyMemory(data, b, sizeof(IndexT) * length);
 		buffer->Unmap();
 	}
 
 	void Apply(){
 		auto device = core->GetDevice();
-		device->IASetIndexBuffer(buffer, DXGI_FORMAT::DXGI_FORMAT_R16_UINT, 0);
+		device->IASetIndexBuffer(buffer, (DXGI_FORMAT)Format, 0);
 	}
+
+	int GetLength() { return length; }
 };
