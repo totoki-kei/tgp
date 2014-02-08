@@ -3,7 +3,7 @@
 
 #include "Debug.h"
 
-TCHAR GameWindow::WndClassName[] = TEXT("TGP_D10_GAMEWND");
+TCHAR GameWindow::WndClassName[] = TEXT("TGP_D11_GAMEWND");
 std::map<UINT, msgfn_t > GameWindow::msgmap;
 
 int WINAPI GameWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {

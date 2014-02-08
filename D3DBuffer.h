@@ -12,7 +12,7 @@ class D3DBuffer :	public Resource {
 protected:
 
 	D3DCore* core;
-	ID3D10Buffer *buffer;
+	ID3D11Buffer *buffer;
 	//std::weak_ptr<BufferData> mapped;
 
 	D3DBuffer(D3DCore*);
@@ -56,24 +56,24 @@ public:
 
 	D3DVertexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
 		this->length = length;
-		InitializeBuffer(nullptr, Stride * length, D3D10_BIND_VERTEX_BUFFER, false);
+		InitializeBuffer(nullptr, Stride * length, D3D11_BIND_VERTEX_BUFFER, false);
 	}
 
 	D3DVertexBuffer(D3DCore *core, const T* data, int length, bool readonly = true) : D3DBuffer(core) {
 		this->length = length;
-		InitializeBuffer(data, Stride * length, D3D10_BIND_VERTEX_BUFFER, readonly);
+		InitializeBuffer(data, Stride * length, D3D11_BIND_VERTEX_BUFFER, readonly);
 	}
 
 	template<int Length>
 	D3DVertexBuffer(D3DCore* core, T(&data)[Length], bool readonly = true) : D3DBuffer(core) {
 		this->length = Length;
-		InitializeBuffer(data, Stride * length, D3D10_BIND_VERTEX_BUFFER, readonly);
+		InitializeBuffer(data, Stride * length, D3D11_BIND_VERTEX_BUFFER, readonly);
 	}
 
 
 	void Update(const T* b){
 		void* data = nullptr;
-		buffer->Map(D3D10_MAP_READ_WRITE, 0, &data);
+		buffer->Map(D3D11_MAP_READ_WRITE, 0, &data);
 		CopyMemory(data, b, Stride * length);
 		buffer->Unmap();
 	}
@@ -94,24 +94,24 @@ public:
 
 	D3DIndexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
 		this->length = length;
-		InitializeBuffer(nullptr, sizeof(IndexT) * length, D3D10_BIND_INDEX_BUFFER, false);
+		InitializeBuffer(nullptr, sizeof(IndexT) * length, D3D11_BIND_INDEX_BUFFER, false);
 	}
 
 	D3DIndexBuffer(D3DCore *core, const IndexT* data, int length, bool readonly = true) : D3DBuffer(core) {
 		this->length = length;
-		InitializeBuffer(data, sizeof(IndexT)* length, D3D10_BIND_INDEX_BUFFER, readonly);
+		InitializeBuffer(data, sizeof(IndexT)* length, D3D11_BIND_INDEX_BUFFER, readonly);
 	}
 
 	template<int Length>
 	D3DIndexBuffer(D3DCore* core, IndexT(&data)[Length], bool readonly = true) : D3DBuffer(core) {
 		this->length = Length;
-		InitializeBuffer(data, sizeof(IndexT)* length, D3D10_BIND_INDEX_BUFFER, readonly);
+		InitializeBuffer(data, sizeof(IndexT)* length, D3D11_BIND_INDEX_BUFFER, readonly);
 	}
 
 
 	void Update(IndexT* b){
 		void* data = nullptr;
-		buffer->Map(D3D10_MAP_WRITE_DISCARD, 0, &data);
+		buffer->Map(D3D11_MAP_WRITE_DISCARD, 0, &data);
 		if (data == nullptr){
 			// ƒ}ƒbƒvŽ¸”s
 			return;

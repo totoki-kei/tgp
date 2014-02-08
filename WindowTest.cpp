@@ -196,7 +196,7 @@ void WindowTest::Update(void) {
 	tech.ApplyPass();
 
 	// テストコード（のちのちD3DCoreにラップする)
-	auto device = d3d10->GetDevice();
+	auto device = d3d10->GetDeviceContext();
 	device->Draw(4, 0);
 
 	d3d10->Update();

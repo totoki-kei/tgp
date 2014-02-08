@@ -1,7 +1,7 @@
 #include "D3DInputLayout.h"
 
 
-D3DInputLayout::D3DInputLayout(D3DCore *core, D3D10_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int passIndex) : core(core)
+D3DInputLayout::D3DInputLayout(D3DCore *core, D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int passIndex) : core(core)
 {
 	int shaderBytecodeLength;
 	BYTE* shaderBytecode;
@@ -33,5 +33,5 @@ void D3DInputLayout::Dispose(){
 }
 
 void D3DInputLayout::Apply(){
-	core->GetDevice()->IASetInputLayout(layout);
+	core->GetDeviceContext()->IASetInputLayout(layout);
 }

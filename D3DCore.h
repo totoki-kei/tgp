@@ -3,6 +3,7 @@
 // DXGIä÷åWÇÃÇ‡ÇÃÇ™çƒíËã`Ç≥ÇÍÇÈÇΩÇﬂÅAàÍïîåxçêÇñ≥å¯Ç…
 #include "D3DHeaders.h"
 #include "D3DLibs.h"
+#include "D3DStruct.h"
 
 #include "Resource.h"
 #include "GameWindow.h"
@@ -12,14 +13,14 @@
 class D3DCore : public Resource
 {
 	IDXGISwapChain* swapChain;
-
-	ID3D10Device* device;
-	ID3D10RenderTargetView* rtv;
-	D3D10_VIEWPORT viewport;
+	ID3D11Device* device;
+	ID3D11DeviceContext* cxt;
+	ID3D11RenderTargetView* rtv;
+	D3D11_VIEWPORT viewport;
 
 	GameWindow* wnd;
 
-	D3DXCOLOR clearColor;
+	D3DFloats<4> clearColor;
 public:
 	D3DCore(GameWindow* wnd);
 	~D3DCore(void);
@@ -32,7 +33,9 @@ public:
 	void Clear();
 	void Update();
 
-	ID3D10Device* GetDevice() const;
+	ID3D11Device* GetDevice() const;
+	ID3D11DeviceContext* GetDeviceContext() const;
+
 
 public:
 	void SetPrimitiveTopology(D3DPrimitiveTopology topology);

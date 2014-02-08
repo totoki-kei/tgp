@@ -7,9 +7,9 @@
 
 class D3DInputLayout : public Resource{
 	D3DCore* core;
-	ID3D10InputLayout* layout;
+	ID3D11InputLayout* layout;
 public:
-	D3DInputLayout(D3DCore *core, D3D10_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int passIndex);
+	D3DInputLayout(D3DCore *core, D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int passIndex);
 	~D3DInputLayout();
 
 	bool isDisposed();

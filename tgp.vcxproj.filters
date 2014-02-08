@@ -14,23 +14,25 @@
       <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="GameWindow.cpp">
-      <Filter>Framework\D10</Filter>
+      <Filter>Framework\D11</Filter>
     </ClCompile>
-    <ClCompile Include="WindowTest.cpp" />
     <ClCompile Include="D3DCore.cpp">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="D3DEffect.cpp">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="D3DBuffer.cpp">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="D3DInputLayout.cpp">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowTest.cpp">
+      <Filter>App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,36 +58,41 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="GameWindow.h">
-      <Filter>Framework\D10</Filter>
+      <Filter>Framework\D11</Filter>
     </ClInclude>
-    <ClInclude Include="WindowTest.h" />
     <ClInclude Include="DirectXUtil.h">
-      <Filter>Framework\D10</Filter>
+      <Filter>Framework\D11</Filter>
     </ClInclude>
     <ClInclude Include="D3DCore.h">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="D3DEffect.h">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="WinAPI.h">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="D3DBuffer.h">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="resource1.h" />
     <ClInclude Include="D3DEnum.h">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="D3DInputLayout.h">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="D3DLibs.h">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="D3DHeaders.h">
-      <Filter>Framework\D10\Direct3D</Filter>
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowTest.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DStruct.h">
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,10 +102,13 @@
     <Filter Include="Utility">
       <UniqueIdentifier>{69eec3c7-d7f1-4921-a1d2-c6b2ffd88360}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\D10">
+    <Filter Include="App">
+      <UniqueIdentifier>{ebce71eb-d8c5-44a8-b77e-4aad8f886e69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D11">
       <UniqueIdentifier>{70d10365-f797-40cf-a6a5-f8496d7eefc4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\D10\Direct3D">
+    <Filter Include="Framework\D11\Direct3D">
       <UniqueIdentifier>{5cdee213-2112-49eb-ba71-861e082454c3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>

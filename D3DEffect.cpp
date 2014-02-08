@@ -10,62 +10,49 @@ D3DEffect::D3DEffect(D3DCore * core, const TCHAR* effectFile) :
 	core(core),
 	name(effectFile)
 {
-	auto device = core->GetDevice();
 
-	auto ret = D3DX10CreateEffectFromFile(
-		name.c_str(), 
-		NULL,
-		NULL,
-		"fx_4_0",
-		D3D10_SHADER_ENABLE_STRICTNESS,
-		0,
-		device,
-		NULL,
-		NULL,
-		&this->effect,
-		NULL,
-		NULL);
-
-	IF_NG(ret) {
-		effect = nullptr;
-		return ;
-	}
-
+	LoadFileToMemory(effectFile);
 	this->loadtype = LoadType::File;
 
-	this->AddResource(HndToRes(effect));
+}
+
+void D3DEffect::LoadFileToMemory(const TCHAR* filename){
+	auto hnd = CreateFile(filename, GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, 0);
+	if (hnd == INVALID_HANDLE_VALUE) {
+		srcData = nullptr;
+		srcSize = -1;
+		return;
+	}
+
+	int sizeL, sizeH = 0;
+	sizeL = GetFileSize(hnd, &sizeH);
+	if (sizeH > 0){
+		// ファイル大きすぎてダメ
+		srcData = nullptr;
+		srcSize = -1;
+		return;
+	}
+
+	this->srcSize = sizeL;
+
+	srcData = new BYTE[srcSize];
+
+	int readBytes = 0;
+	ReadFile(hnd, srcData, srcSize, &readBytes, nullptr);
+
+	CloseHandle(hnd);
 }
 
 D3DEffect::D3DEffect(D3DCore * core, const TCHAR* effectName, const BYTE data[], int dataLength) : 
 	core(core),
 	name(effectName)
 {
-	auto device = core->GetDevice();
-
-	auto ret = D3DX10CreateEffectFromMemory(
-		data,
-		dataLength,
-		name.c_str(),
-		NULL,
-		NULL,
-		"fx_4_0",
-		D3D10_SHADER_ENABLE_STRICTNESS,
-		0,
-		device,
-		NULL,
-		NULL,
-		&this->effect,
-		NULL,
-		NULL);
-
-	IF_NG(ret) {
-		effect = nullptr;
-		return ;
-	}
+	this->srcData = new BYTE[dataLength];
+	CopyMemory(this->srcData, data, dataLength);
+	this->srcSize = dataLength;
 
 	this->loadtype = LoadType::Memory;
 
-	this->AddResource(HndToRes(effect));
 }
 
 D3DEffect::~D3DEffect(void)
@@ -74,14 +61,14 @@ D3DEffect::~D3DEffect(void)
 }
 
 bool D3DEffect::isDisposed() { 
-	return effect == nullptr;
+	return srcData == nullptr;
 }
 
 void D3DEffect::Dispose() {
 	if(isDisposed()) return;
 	Resource::Dispose();
 //	effect->Release(); // effectはDisposeでリソースとして開放されるためReleaseは不要
-	effect = nullptr;
+	delete[] srcData;
 }
 
 #pragma region Technique
@@ -92,7 +79,7 @@ D3DEffect::Technique::Technique(){
 
 D3DEffect::Technique::Technique(D3DEffect* e, int i) : effect(e) {
 	tech = e->effect->GetTechniqueByIndex(i);
-	D3D10_TECHNIQUE_DESC td;
+	D3D11_TECHNIQUE_DESC td;
 	tech->GetDesc(&td);
 	passCount = td.Passes;
 	SetPass(0);
@@ -100,7 +87,7 @@ D3DEffect::Technique::Technique(D3DEffect* e, int i) : effect(e) {
 
 D3DEffect::Technique::Technique(D3DEffect* e, const TCHAR* n) : effect(e) {
 	tech = e->effect->GetTechniqueByName(n);
-	D3D10_TECHNIQUE_DESC td;
+	D3D11_TECHNIQUE_DESC td;
 	tech->GetDesc(&td);
 	passCount = td.Passes;
 	SetPass(0);
@@ -162,25 +149,23 @@ D3DEffect::ConstantBufferBase::~ConstantBufferBase(){
 
 }
 
-void D3DEffect::ConstantBufferBase::CreateBuffer(int dataSize, ID3D10EffectConstantBuffer* cb) {
+void D3DEffect::ConstantBufferBase::CreateBuffer(int dataSize) {
 	HRESULT hr;
 
-	D3D10_BUFFER_DESC bd = {0};
-	cbuffer = cb;
-	cbuffer->GetDesc(&valdesc);
+	D3D11_BUFFER_DESC bd = {0};
+	//cbuffer = cb;
+	//cbuffer->GetDesc(&valdesc);
 
-	bd.BindFlags = D3D10_BIND_CONSTANT_BUFFER;
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.ByteWidth = dataSize;
-	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bd.MiscFlags = 0;  
-	bd.Usage = D3D10_USAGE_DYNAMIC;
+	bd.Usage = D3D11_USAGE_DYNAMIC;
 	
 	IF_NG2(parent.GetCore()->GetDevice()->CreateBuffer(&bd, NULL, &buf), hr) {
 		// 作成に失敗している
 		DBG_OUT("creating constant buffer failed ret=%d(%08X)", hr, hr);
 	}
-
-	cbuffer->SetConstantBuffer(buf);
 	
 	parent.AddResource(HndToRes(buf));
 }

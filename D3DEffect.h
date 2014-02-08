@@ -3,8 +3,6 @@
 #include "Resource.h"
 #include "D3DCore.h"
 
-#include <D3D10effect.h>
-
 class D3DEffect : public Resource
 {
 public:
@@ -12,8 +10,9 @@ public:
 		friend class D3DEffect;
 		
 		D3DEffect* effect;
-		ID3D10EffectTechnique* tech;
-		ID3D10EffectPass* pass;
+
+//		ID3D11EffectTechnique* tech;
+//		ID3D11EffectPass* pass;
 
 		int passCount;
 		int passIndex;
@@ -45,17 +44,16 @@ public:
 	class ConstantBufferBase {
 		friend class D3DEffect;
 		D3DEffect &parent;
-		ID3D10EffectConstantBuffer *cbuffer;
-		ID3D10Buffer *buf;
-		D3D10_EFFECT_VARIABLE_DESC valdesc;
+		ID3D11Buffer *buf;
 
-		std::shared_ptr<ConstantBufferBase> next;
+		// // std::shared_ptr<ConstantBufferBase> next;
 
 	protected:
 		ConstantBufferBase(D3DEffect&) ;
 		virtual ~ConstantBufferBase() ;
 
-		void CreateBuffer(int dataSize, ID3D10EffectConstantBuffer* cb);
+		//void CreateBuffer(int dataSize, ID3D11EffectConstantBuffer* cb);
+		void CreateBuffer(int dataSize);
 	};
 
 	template <typename T>
@@ -63,9 +61,8 @@ public:
 		friend class D3DEffect;
 		T data;
 
-		ConstantBuffer(D3DEffect& e, ID3D10EffectConstantBuffer* cb) : ConstantBufferBase(e) {
+		ConstantBuffer(D3DEffect& e, ID3D11EffectConstantBuffer* cb) : ConstantBufferBase(e) {
 			CreateBuffer(sizeof(T), cb);
-			Reload();
 		}
 
 	public:
@@ -77,26 +74,28 @@ public:
 //			cbuffer->SetRawValue(&data, 0, sizeof(T));
 
 			void* pd;
-			buf->Map(D3D10_MAP_WRITE_DISCARD, 0, &pd);
+			buf->Map(D3D11_MAP_WRITE_DISCARD, 0, &pd);
 			CopyMemory(pd, &data, sizeof(T));
 			buf->Unmap();
 		}
-		void Reload() {
-//			cbuffer->GetRawValue(&data, 0, sizeof(T));
-
-			//void* pd;
-			//buf->Map(D3D10_MAP_READ, 0, &pd);
-			//CopyMemory(&data, pd, sizeof(T));
-			//buf->Unmap();
-		}
+//		void Reload() {
+////			cbuffer->GetRawValue(&data, 0, sizeof(T));
+//
+//			//void* pd;
+//			//buf->Map(D3D11_MAP_READ, 0, &pd);
+//			//CopyMemory(&data, pd, sizeof(T));
+//			//buf->Unmap();
+//		}
 
 	};
 
 protected:
 	D3DCore * core;
 
-	ID3D10Effect* effect;
-	ID3D10Blob* blob;
+	BYTE *srcData;
+	int srcSize;
+	
+	ID3DBlob* blob;
 
 	enum class LoadType {
 		File,
@@ -185,6 +184,6 @@ public: // methods
 
 
 protected: // inner methods
-
+	void LoadFileToMemory(const TCHAR*);
 
 };
