@@ -2,14 +2,14 @@
 
 #include <array>
 #include "D3DCore.h"
-#include "D3DEffect.h"
+#include "D3DShader.h"
 #include "Resource.h"
 
 class D3DInputLayout : public Resource{
 	D3DCore* core;
 	ID3D11InputLayout* layout;
 public:
-	D3DInputLayout(D3DCore *core, D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int passIndex);
+	D3DInputLayout(D3DCore *core, D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, Shaders::VertexShader *vs, int passIndex);
 	~D3DInputLayout();
 
 	bool isDisposed();

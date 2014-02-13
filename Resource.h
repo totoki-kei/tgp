@@ -17,6 +17,12 @@
 
 
 class Resource{
+	/*
+	Resourceのサブクラスは以下の処理を必ず実装すること。
+	(1) デストラクタによるDispose漏れ対処
+	(2) isDisposed()の適切なオーバーライド
+	(3) Dispose()の適切なオーバーライド
+	*/
 protected:
 	std::vector< std::shared_ptr<Resource> > children;
 	unsigned int ResourceId;

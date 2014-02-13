@@ -99,10 +99,10 @@ bool D3DCore::Initialize() {
 	cxt->RSSetViewports(1, &viewport);
 
 	// ‰æ–ÊÁ‹Ž‚ð‚·‚é‚Æ‚«‚ÌF
-	this->clearColor.r = 0.5f;
-	this->clearColor.g = 0.5f;
-	this->clearColor.b = 0.5f;
-	this->clearColor.a = 1.0f;
+	this->clearColor[0] = 0.5f;
+	this->clearColor[1] = 0.5f;
+	this->clearColor[2] = 0.5f;
+	this->clearColor[3] = 1.0f;
 
 	return true;
 	

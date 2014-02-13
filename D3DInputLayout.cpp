@@ -1,12 +1,10 @@
 #include "D3DInputLayout.h"
 
 
-D3DInputLayout::D3DInputLayout(D3DCore *core, D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, D3DEffect::Technique &tech, int passIndex) : core(core)
+D3DInputLayout::D3DInputLayout(D3DCore *core, D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, Shaders::VertexShader *vs, int passIndex) : core(core)
 {
 	int shaderBytecodeLength;
-	BYTE* shaderBytecode;
-
-	shaderBytecode = tech.GetPassInputSignature(passIndex, &shaderBytecodeLength);
+	const BYTE* shaderBytecode = vs->GetBytecode(&shaderBytecodeLength);
 
 	core->GetDevice()->CreateInputLayout(
 		elements,

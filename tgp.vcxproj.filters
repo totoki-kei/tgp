@@ -19,9 +19,6 @@
     <ClCompile Include="D3DCore.cpp">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
-    <ClCompile Include="D3DEffect.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
     <ClCompile Include="Debug.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -33,6 +30,12 @@
     </ClCompile>
     <ClCompile Include="WindowTest.cpp">
       <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DShader.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,9 +69,6 @@
     <ClInclude Include="D3DCore.h">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
-    <ClInclude Include="D3DEffect.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
     <ClInclude Include="WinAPI.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -91,7 +91,10 @@
     <ClInclude Include="WindowTest.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="D3DStruct.h">
+    <ClInclude Include="Utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DShader.h">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
   </ItemGroup>
@@ -111,16 +114,30 @@
     <Filter Include="Framework\D11\Direct3D">
       <UniqueIdentifier>{5cdee213-2112-49eb-ba71-861e082454c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{249cddfe-2e58-4dd4-88ab-d4b0eafe49f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Effect1.fx" />
-    <FxCompile Include="Effect2.fx" />
-    <FxCompile Include="Common.fx" />
+    <FxCompile Include="VS_Transform.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_NormalColor.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_EmitColor.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tgp.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PL_Model.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

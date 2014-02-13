@@ -68,9 +68,9 @@ void WindowTest::Draw(void) {
 #elif TEST_ID == 1
 
 #include "D3DBuffer.h"
-#include "D3DEffect.h"
+#include "D3DShader.h"
 #include "D3DInputLayout.h"
-#include "Effect_Effect1.h"
+
 
 WindowTest::WindowTest(void) : wnd(640, 480)
 {
@@ -101,15 +101,15 @@ WindowTest::WindowTest(void) : wnd(640, 480)
 }
 
 struct Vertex {
-	D3DXVECTOR4 position;
-	D3DXCOLOR color;
-	D3DXCOLOR emit;
+	XMFLOAT4 position;
+	XMFLOAT4 color;
+	XMFLOAT4 emit;
 
-	static D3D10_INPUT_ELEMENT_DESC* GetInputElementDesc(){
-		static D3D10_INPUT_ELEMENT_DESC desc[] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
-			{ "EMIT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+	static D3D11_INPUT_ELEMENT_DESC* GetInputElementDesc(){
+		static D3D11_INPUT_ELEMENT_DESC desc[] = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "EMIT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 		return desc;
 	}
@@ -117,25 +117,36 @@ struct Vertex {
 };
 
 struct CB_Scene {
-	D3DXMATRIX View;
-	D3DXMATRIX Projection;
+	XMMATRIX View;
+	XMMATRIX Projection;
 };
 
 struct CB_Object {
-	D3DXMATRIX World;
+	XMMATRIX World;
 };
 
 
-D3DEffect* effect;
-D3DEffect::Technique tech;
 D3DVertexBuffer<Vertex> * vb;
+D3DIndexBuffer<> * ib;
 D3DInputLayout* ia;
+
+Shaders::VertexShader* vs;
+Shaders::PixelShader* ps;
+Shaders::PixelShader* ps2;
+D3DConstantBuffer<CB_Scene>* cb_scene;
+D3DConstantBuffer<CB_Object>* cb_obj;
+
 
 WindowTest::~WindowTest(void)
 {
 	delete ia;
+	delete ib;
 	delete vb;
-	delete effect;
+	delete cb_obj;
+	delete cb_scene;
+	delete ps2;
+	delete ps;
+	delete vs;
 
 	wnd.Dispose();
 }
@@ -145,21 +156,27 @@ int WindowTest::Initialize(void){
 	d3d10 = new D3DCore(&wnd);
 	d3d10->Initialize();
 
-	// ためしにエフェクトを読んでみよう
-	effect = new D3DEffect(d3d10, "Debug\\Effect1.fxo");
-	tech = effect->GetTechnique(0);
+	vs = Shaders::Load<Shaders::VertexShader>(d3d10, "VS_Transform.cso");
+	ps = Shaders::Load<Shaders::PixelShader>(d3d10, "PS_NormalColor.cso");
+	ps2 = Shaders::Load<Shaders::PixelShader>(d3d10, "PS_EmitColor.cso");
+	cb_scene = new D3DConstantBuffer<CB_Scene>(d3d10);
+	cb_obj = new D3DConstantBuffer<CB_Object>(d3d10);
 
-
-	Vertex vs[4] = {
+	Vertex vertices[4] = {
 		{ {  0 ,  0 , 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } },
 		{ {  0 , .5f, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
 		{ { .5f, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
 		{ { .5f, .5f, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
 	};
 
-	vb = new D3DVertexBuffer<Vertex>(d3d10, vs);
+	vb = new D3DVertexBuffer<Vertex>(d3d10, vertices);
 
-	ia = new D3DInputLayout(d3d10, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), tech, 0);
+	ib = new D3DIndexBuffer<>(d3d10, 5);
+
+	unsigned short indices[] = { 0, 1, 3, 2, 0 };
+	ib->Update(indices);
+
+	ia = new D3DInputLayout(d3d10, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), vs, 0);
 
 	return 0;
 }
@@ -172,32 +189,33 @@ void WindowTest::Update(void) {
 	// ここでフレームごとの処理を行う
 	d3d10->Clear();
 
-	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
 	vb->Apply();
+	ib->Apply();
 	ia->Apply();
 
-	// エフェクトのパラメータ
-	{
-		auto obj = effect->GetConstantBuffer<CB_Object>("Object");
-		auto op = obj.lock();
-		auto or = op->GetPointer();
-		D3DXMatrixRotationZ(&or->World, this->ticks / 32.0f);
-		op->Update();
+	CB_Scene s;
+	s.View = XMMatrixIdentity();
+	s.Projection = XMMatrixIdentity();
+	cb_scene->Update(&s);
+	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
 
-		auto scene = effect->GetConstantBuffer<CB_Scene>("Scene");
-		auto sp = scene.lock();
-		auto sr = sp->GetPointer();
-		D3DXMatrixIdentity(&sr->View);
-		D3DXMatrixIdentity(&sr->Projection);
-		sp->Update();
-	}
-
-	tech.SetPass(0);
-	tech.ApplyPass();
+	CB_Object o;
+	o.World = XMMatrixRotationZ(GetTickCount() / 256.0f);
+	cb_obj->Update(&o);
+	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
 
 	// テストコード（のちのちD3DCoreにラップする)
 	auto device = d3d10->GetDeviceContext();
+
+	vs->Apply();
+
+	ps->Apply();
+	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
 	device->Draw(4, 0);
+
+	ps2->Apply();
+	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::LineStrip);
+	device->DrawIndexed(5, 0, 0);
 
 	d3d10->Update();
 

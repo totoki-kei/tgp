@@ -25,7 +25,7 @@ void PrintDebug(const TCHAR* filename, int line, const TCHAR* fn, const TCHAR* f
 	_vstprintf_s(buff, format, args);
 
 	TCHAR buff2[256];
-	_stprintf_s(buff2, _T("%10d %s:%d [%s] %s"), GetTickCount(), filename, line, fn, buff);
+	_stprintf_s(buff2, _T("%10d\t%s:%d\t[%s]\t%s"), GetTickCount(), filename, line, fn, buff);
 	OutputDebugString(buff2);
 
 	va_end(args);

@@ -3,7 +3,6 @@
 // DXGIŠÖŒW‚Ì‚à‚Ì‚ªÄ’è‹`‚³‚ê‚é‚½‚ßAˆê•”Œx‚ğ–³Œø‚É
 #include "D3DHeaders.h"
 #include "D3DLibs.h"
-#include "D3DStruct.h"
 
 #include "Resource.h"
 #include "GameWindow.h"
@@ -20,7 +19,7 @@ class D3DCore : public Resource
 
 	GameWindow* wnd;
 
-	D3DFloats<4> clearColor;
+	float clearColor[4];
 public:
 	D3DCore(GameWindow* wnd);
 	~D3DCore(void);

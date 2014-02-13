@@ -1,25 +1,6 @@
 #include "D3DBuffer.h"
 #include "DirectXUtil.h"
 
-#pragma region BufferData
-/*
-D3DBuffer::BufferData::~BufferData(){
-	Release();
-}
-
-void* D3DBuffer::BufferData::GetPointer() const {
-	return data;
-}
-
-void D3DBuffer::BufferData::Release(){
-	if (this->data){
-		buffer->buffer->Unmap();
-		this->data = nullptr;
-	}
-}
-*/
-#pragma endregion
-
 D3DBuffer::D3DBuffer(D3DCore* core) : core(core) {
 	buffer = nullptr;
 //	mapped = std::weak_ptr<D3DBuffer::BufferData>();
@@ -38,7 +19,7 @@ void D3DBuffer::Dispose(){
 	Resource::Dispose();
 }
 
-void D3DBuffer::InitializeBuffer(void* bufferData, int bufferSize, UINT usage, bool readonly) {
+void D3DBuffer::InitializeBuffer(const void* bufferData, int bufferSize, UINT usage, bool readonly) {
 	// ‚·‚Å‚É‘¶Ý‚·‚éê‡‚Ííœ
 	if (buffer) buffer->Release();
 
@@ -65,6 +46,31 @@ void D3DBuffer::InitializeBuffer(void* bufferData, int bufferSize, UINT usage, b
 		DBG_OUT("failed to create buffer hresult = %X, args(%p, %d, %u, %d)", result, bufferData, bufferSize, usage, readonly);
 	}
 }
+
+void D3DBuffer::UpdateBuffer(const void* bufferData, int bufferSize){
+	void* data = nullptr;
+
+	D3D11_MAPPED_SUBRESOURCE msr;
+
+	auto ctx = core->GetDeviceContext();
+	auto hresult = ctx->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
+
+	IF_NG(hresult) {
+		// ƒ}ƒbƒvŽ¸”s
+		return;
+	}
+	data = msr.pData;
+	CopyMemory(data, bufferData, bufferSize);
+	//buffer->Unmap();
+	ctx->Unmap(buffer, 0);
+
+}
+
+
+ID3D11Buffer* D3DBuffer::GetRawBuffer() const {
+	return buffer;
+}
+
 
 /*
 std::shared_ptr<D3DBuffer::BufferData> D3DBuffer::GetData(){

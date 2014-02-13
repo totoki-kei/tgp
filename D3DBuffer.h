@@ -4,7 +4,9 @@
 class D3DBuffer;
 
 #include "D3DCore.h"
+#include "D3DShader.h"
 #include "Resource.h"
+#include "DirectXUtil.h"
 
 
 class D3DBuffer :	public Resource {
@@ -24,26 +26,14 @@ public:
 
 	//std::shared_ptr<BufferData> GetData();
 
+	ID3D11Buffer* GetRawBuffer() const;
+
 protected:
-	void InitializeBuffer(void* bufferData, int bufferSize, UINT usage, bool readonly = true);
+	void InitializeBuffer(const void* bufferData, int bufferSize, UINT usage, bool readonly = true);
+	void UpdateBuffer(const void* bufferData, int bufferSize);
 
 };
-/*
-class BufferData {
-	friend class D3DBuffer;
-protected:
-	D3DBuffer* buffer;
-	void* data;
 
-
-public:
-	void* GetPointer() const;
-
-	BufferData(){};
-	virtual ~BufferData();
-	void Release();
-};
-*/
 //// ここから用途別に特殊化されたバッファ
 
 template <typename T>
@@ -53,6 +43,7 @@ public:
 	enum {
 		Stride = sizeof(T),
 	};
+	typedef T vertex_t;
 
 	D3DVertexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
 		this->length = length;
@@ -72,16 +63,13 @@ public:
 
 
 	void Update(const T* b){
-		void* data = nullptr;
-		buffer->Map(D3D11_MAP_READ_WRITE, 0, &data);
-		CopyMemory(data, b, Stride * length);
-		buffer->Unmap();
+		UpdateBuffer(b, Stride * length);
 	}
 
 	void Apply(){
 		UINT stride[] = { Stride };
 		UINT offset[] = { 0 };
-		core->GetDevice()->IASetVertexBuffers(0, 1, &buffer, stride, offset);
+		core->GetDeviceContext()->IASetVertexBuffers(0, 1, &buffer, stride, offset);
 	}
 
 	int GetLength() { return length; }
@@ -91,6 +79,7 @@ template <typename IndexT = unsigned short, int Format = DXGI_FORMAT::DXGI_FORMA
 class D3DIndexBuffer : D3DBuffer {
 	int length;
 public:
+	typedef IndexT index_t;
 
 	D3DIndexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
 		this->length = length;
@@ -109,21 +98,50 @@ public:
 	}
 
 
-	void Update(IndexT* b){
-		void* data = nullptr;
-		buffer->Map(D3D11_MAP_WRITE_DISCARD, 0, &data);
-		if (data == nullptr){
-			// マップ失敗
-			return;
-		}
-		CopyMemory(data, b, sizeof(IndexT) * length);
-		buffer->Unmap();
+	void Update(const IndexT* b){
+		UpdateBuffer(b, sizeof(IndexT)* length);
 	}
 
 	void Apply(){
-		auto device = core->GetDevice();
-		device->IASetIndexBuffer(buffer, (DXGI_FORMAT)Format, 0);
+		auto ctx = core->GetDeviceContext();
+		ctx->IASetIndexBuffer(buffer, (DXGI_FORMAT)Format, 0);
 	}
 
 	int GetLength() { return length; }
+};
+
+template <typename T>
+class D3DConstantBuffer : public D3DBuffer {
+	friend class D3DEffect;
+	//T data;
+
+public:
+	typedef T data_t;
+
+	D3DConstantBuffer(D3DCore *core) : D3DBuffer(core) {
+		InitializeBuffer(nullptr, sizeof(T), D3D11_BIND_CONSTANT_BUFFER, false);
+	}
+	D3DConstantBuffer(const D3DConstantBuffer<T>& deletedConstractor) = delete;
+
+
+	void Update(const T* b){
+		UpdateBuffer(b, sizeof(T));
+	}
+
+	void Apply(Shaders::ShaderFlag targetShader, int index) {
+		auto ctx = core->GetDeviceContext();
+
+		if (Shaders::CheckFlag(targetShader , Shaders::ShaderFlag::Vertex) ){
+			ctx->VSSetConstantBuffers(index, 1, &this->buffer);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Pixel)){
+			ctx->PSSetConstantBuffers(index, 1, &this->buffer);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Geometry)){
+			ctx->GSSetConstantBuffers(index, 1, &this->buffer);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Compute)){
+			ctx->PSSetConstantBuffers(index, 1, &this->buffer);
+		}
+	}
 };
