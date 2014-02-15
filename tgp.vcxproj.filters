@@ -117,16 +117,31 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{249cddfe-2e58-4dd4-88ab-d4b0eafe49f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Model">
+      <UniqueIdentifier>{66d9f34c-bce8-4154-8f64-2bb69a66cc79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Effector">
+      <UniqueIdentifier>{7c5df23f-80f2-43ca-a56e-85f31cd151b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VS_Transform.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_NormalColor.hlsl">
-      <Filter>Shaders</Filter>
+    <FxCompile Include="GS_ID2Quad.hlsl">
+      <Filter>Shaders\Effector</Filter>
     </FxCompile>
     <FxCompile Include="PS_EmitColor.hlsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_NormalColor.hlsl">
+      <Filter>Shaders\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Transform.hlsl">
+      <Filter>Shaders\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_TextureOnly.hlsl">
+      <Filter>Shaders\Effector</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_ThroughID.hlsl">
+      <Filter>Shaders\Effector</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,8 +151,11 @@
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="PL_Effector.hlsli">
+      <Filter>Shaders\Effector</Filter>
+    </None>
     <None Include="PL_Model.hlsli">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Model</Filter>
     </None>
   </ItemGroup>
 </Project>
