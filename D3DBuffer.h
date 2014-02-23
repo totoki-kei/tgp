@@ -37,7 +37,7 @@ protected:
 //// ここから用途別に特殊化されたバッファ
 
 template <typename T>
-class D3DVertexBuffer : D3DBuffer {
+class D3DVertexBuffer : public D3DBuffer {
 	int length;
 public:
 	enum {
@@ -72,11 +72,17 @@ public:
 		core->GetDeviceContext()->IASetVertexBuffers(0, 1, &buffer, stride, offset);
 	}
 
+	void Unapply(){
+		UINT stride[] = { Stride };
+		UINT offset[] = { 0 };
+		core->GetDeviceContext()->IASetVertexBuffers(0, 1, nullptr, stride, offset);
+	}
+
 	int GetLength() { return length; }
 };
 
 template <typename IndexT = unsigned short, int Format = DXGI_FORMAT::DXGI_FORMAT_R16_UINT>
-class D3DIndexBuffer : D3DBuffer {
+class D3DIndexBuffer : public D3DBuffer {
 	int length;
 public:
 	typedef IndexT index_t;
@@ -105,6 +111,11 @@ public:
 	void Apply(){
 		auto ctx = core->GetDeviceContext();
 		ctx->IASetIndexBuffer(buffer, (DXGI_FORMAT)Format, 0);
+	}
+
+	void Unapply(){
+		auto ctx = core->GetDeviceContext();
+		ctx->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 	}
 
 	int GetLength() { return length; }
@@ -144,4 +155,24 @@ public:
 			ctx->PSSetConstantBuffers(index, 1, &this->buffer);
 		}
 	}
+
+	void Unapply(Shaders::ShaderFlag targetShader, int index) {
+		auto ctx = core->GetDeviceContext();
+
+		ID3D11Buffer* nullbuffer[] = { nullptr };
+
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Vertex)){
+			ctx->VSSetConstantBuffers(index, 1, nullbuffer);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Pixel)){
+			ctx->PSSetConstantBuffers(index, 1, nullbuffer);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Geometry)){
+			ctx->GSSetConstantBuffers(index, 1, nullbuffer);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Compute)){
+			ctx->PSSetConstantBuffers(index, 1, nullbuffer);
+		}
+	}
+
 };

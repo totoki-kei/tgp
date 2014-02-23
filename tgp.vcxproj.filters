@@ -37,6 +37,18 @@
     <ClCompile Include="D3DShader.cpp">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
+    <ClCompile Include="D3DTexture.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageLoader.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DSampler.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DStencilState.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -95,6 +107,18 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="D3DShader.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DTexture.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageLoader.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DSampler.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DStencilState.h">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
   </ItemGroup>

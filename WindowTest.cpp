@@ -70,23 +70,25 @@ void WindowTest::Draw(void) {
 #include "D3DBuffer.h"
 #include "D3DShader.h"
 #include "D3DInputLayout.h"
+#include "D3DTexture.h"
+#include "D3DSampler.h"
+#include "D3DStencilState.h"
 
-
-WindowTest::WindowTest(void) : wnd(640, 480)
+WindowTest::WindowTest(void) : wnd(800, 600)
 {
-	wnd.SetWindowTitle(TEXT("ほげほげほげ"));
+	wnd.SetWindowTitle(_T("ほげほげほげ"));
 	GameWindow::SetMessageHandler(
 		WM_KEYDOWN,
 		[this](UINT msg, WPARAM wp, LPARAM lp) {
-		DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
-
-		if (wp == VK_ESCAPE) {
-			this->wnd.SetWindowTitle("Escaped.");
-			GameWindow::ResetMessageHandler(WM_KEYDOWN);
+			DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
+	
+			if (wp == VK_ESCAPE) {
+				this->wnd.SetWindowTitle(_T("Escaped."));
+				GameWindow::ResetMessageHandler(WM_KEYDOWN);
+			}
+	
+			return 0;
 		}
-
-		return 0;
-	}
 	);
 
 	GameWindow::SetMessageHandler(
@@ -139,28 +141,31 @@ D3DConstantBuffer<CB_Object>* cb_obj;
 
 WindowTest::~WindowTest(void)
 {
-	delete ia;
-	delete ib;
-	delete vb;
-	delete cb_obj;
-	delete cb_scene;
-	delete ps2;
-	delete ps;
-	delete vs;
 
 	wnd.Dispose();
 }
 
 int WindowTest::Initialize(void){
+	using namespace std;
+
 	wnd.Initialize();
 	d3d10 = new D3DCore(&wnd);
 	d3d10->Initialize();
 
-	vs = Shaders::Load<Shaders::VertexShader>(d3d10, "VS_Transform.cso");
-	ps = Shaders::Load<Shaders::PixelShader>(d3d10, "PS_NormalColor.cso");
-	ps2 = Shaders::Load<Shaders::PixelShader>(d3d10, "PS_EmitColor.cso");
+	vs = Shaders::Load<Shaders::VertexShader>(d3d10, _T("VS_Transform.cso"));
+	wnd.AddResource(shared_ptr<Resource>(vs));
+
+	ps = Shaders::Load<Shaders::PixelShader>(d3d10, _T("PS_NormalColor.cso"));
+	wnd.AddResource(shared_ptr<Resource>(ps));
+
+	ps2 = Shaders::Load<Shaders::PixelShader>(d3d10, _T("PS_EmitColor.cso"));
+	wnd.AddResource(shared_ptr<Resource>(ps2));
+
 	cb_scene = new D3DConstantBuffer<CB_Scene>(d3d10);
+	wnd.AddResource(shared_ptr<Resource>(cb_scene));
+
 	cb_obj = new D3DConstantBuffer<CB_Object>(d3d10);
+	wnd.AddResource(shared_ptr<Resource>(cb_obj));
 
 	Vertex vertices[4] = {
 		{ {  0 ,  0 , 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } },
@@ -170,13 +175,16 @@ int WindowTest::Initialize(void){
 	};
 
 	vb = new D3DVertexBuffer<Vertex>(d3d10, vertices);
+	wnd.AddResource(shared_ptr<Resource>(vb));
 
 	ib = new D3DIndexBuffer<>(d3d10, 5);
+	wnd.AddResource(shared_ptr<Resource>(ib));
 
 	unsigned short indices[] = { 0, 1, 3, 2, 0 };
 	ib->Update(indices);
 
 	ia = new D3DInputLayout(d3d10, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), vs, 0);
+	wnd.AddResource(shared_ptr<Resource>(ia));
 
 	return 0;
 }
@@ -200,22 +208,27 @@ void WindowTest::Update(void) {
 	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
 
 	CB_Object o;
-	o.World = XMMatrixRotationZ(GetTickCount() / 256.0f);
+	//o.World = XMMatrixRotationZ(GetTickCount() / 256.0f);
+	o.World = XMMatrixRotationZ(GetTickCount() / 1000.0f * XM_2PI);
 	cb_obj->Update(&o);
 	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
 
 	// テストコード（のちのちD3DCoreにラップする)
-	auto device = d3d10->GetDeviceContext();
+	//auto device = d3d10->GetDeviceContext();
 
 	vs->Apply();
 
 	ps->Apply();
 	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
-	device->Draw(4, 0);
+	d3d10->Draw(4, 0);
+
+
+	o.World = XMMatrixTranslation(0, 0, 0.5f) * XMMatrixRotationZ(GetTickCount() / 1500.0f * XM_2PI);
+	cb_obj->Update(&o);
 
 	ps2->Apply();
 	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::LineStrip);
-	device->DrawIndexed(5, 0, 0);
+	d3d10->DrawIndexed(5, 0, 0);
 
 	d3d10->Update();
 

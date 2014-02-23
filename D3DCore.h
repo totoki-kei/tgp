@@ -1,5 +1,7 @@
 #pragma once
 
+class D3DCore;
+
 // DXGIŠÖŒW‚Ì‚à‚Ì‚ªÄ’è‹`‚³‚ê‚é‚½‚ßAˆê•”Œx‚ğ–³Œø‚É
 #include "D3DHeaders.h"
 #include "D3DLibs.h"
@@ -15,11 +17,16 @@ class D3DCore : public Resource
 	ID3D11Device* device;
 	ID3D11DeviceContext* cxt;
 	ID3D11RenderTargetView* rtv;
+
+	ID3D11Texture2D* depthStencil;
+	ID3D11DepthStencilView* dsv;
+	ID3D11DepthStencilState* dss;
 	D3D11_VIEWPORT viewport;
 
 	GameWindow* wnd;
 
 	float clearColor[4];
+	int vsyncWait;
 public:
 	D3DCore(GameWindow* wnd);
 	~D3DCore(void);
@@ -39,5 +46,12 @@ public:
 public:
 	void SetPrimitiveTopology(D3DPrimitiveTopology topology);
 
+	void Draw(int vertexCount, int offset);
+	void DrawIndexed(int indexCount, int vertexOffset, int indexOffset);
+
+	void SetVSyncWait(int wait);
+	int GetVSyncWait();
+
+	void SetDefaultRenderTarget();
 };
 

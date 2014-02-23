@@ -19,6 +19,7 @@
 class Resource{
 	/*
 	Resourceのサブクラスは以下の処理を必ず実装すること。
+	(0) Resourceは「パブリック継承」すること。
 	(1) デストラクタによるDispose漏れ対処
 	(2) isDisposed()の適切なオーバーライド
 	(3) Dispose()の適切なオーバーライド
@@ -61,8 +62,11 @@ public:
 		item(i),
 		disposer(dispose_fn),
 		disposed(false) {
-
+#ifdef UNICODE
+		RSC_DBG_OUT("ResourceItem #%d as %S(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+#else
 		RSC_DBG_OUT("ResourceItem #%d as %s(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+#endif
 	}
 
 	ResourceItem(T p) :
@@ -72,8 +76,11 @@ public:
 		i = nullptr;
 	}),
 		disposed(false) {
-
+#ifdef UNICODE
+		RSC_DBG_OUT("ResourceItem #%d as %S(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+#else
 		RSC_DBG_OUT("ResourceItem #%d as %s(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+#endif
 	}
 
 	~ResourceItem(){
@@ -98,6 +105,10 @@ public:
 template <typename T>
 inline std::shared_ptr< ResourceItem<T*> > PtrToRes(T* p){
 	auto res = new ResourceItem<T*>(p);
+#ifdef UNICODE
+	RSC_DBG_OUT("Pointer %p of type %S -> Resource #%d.\n", p, typeid(T).name(), res->GetResourceID());
+#else
 	RSC_DBG_OUT("Pointer %p of type %s -> Resource #%d.\n", p, typeid(T).name(), res->GetResourceID());
+#endif
 	return std::shared_ptr< ResourceItem<T*> >(res);
 }

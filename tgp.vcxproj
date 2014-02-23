@@ -23,7 +23,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -44,13 +44,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\lpng\lpng169;d:\lib\lpng\zlib-1.2.5;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Debug Library;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\DXSDK\201206\Include;D:\lib\lpng\lpng169;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Release Library;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -59,11 +59,14 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libpng16.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderModel>4.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -78,6 +81,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>libpng16.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -88,11 +92,15 @@
     <ClInclude Include="D3DInputLayout.h" />
     <ClInclude Include="D3DLibs.h" />
     <ClInclude Include="D3DShader.h" />
+    <ClInclude Include="D3DStencilState.h" />
+    <ClInclude Include="D3DTexture.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="D3DSampler.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="DirectXUtil.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameWindow.h" />
+    <ClInclude Include="ImageLoader.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Program.h" />
@@ -107,9 +115,13 @@
     <ClCompile Include="D3DBuffer.cpp" />
     <ClCompile Include="D3DInputLayout.cpp" />
     <ClCompile Include="D3DShader.cpp" />
+    <ClCompile Include="D3DStencilState.cpp" />
+    <ClCompile Include="D3DTexture.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="D3DSampler.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameWindow.cpp" />
+    <ClCompile Include="ImageLoader.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Resource.cpp" />
