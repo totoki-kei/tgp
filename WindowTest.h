@@ -8,7 +8,7 @@
 class WindowTest : public Game
 {
 	GameWindow wnd;
-	D3DCore* d3d10;
+	D3DCore* core;
 
 public:
 	WindowTest(void);
@@ -18,6 +18,10 @@ public:
 	void Update();
 	void Draw();
 
-
+private:
+	void draw1();
+	void draw2();
+	void draw3();
+		
 };
 

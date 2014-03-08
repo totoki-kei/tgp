@@ -21,14 +21,15 @@ public:
 		if (!isDisposed()) Dispose();
 	}
 
-	bool isDisposed(){
-		return texture == nullptr;
-	}
+	//bool isDisposed(){
+	//	return texture == nullptr;
+	//}
 
-	void Dispose(){
-		texture->Release();
-		texture = nullptr;
-	}
+	//void Dispose(){
+	//	texture->Release();
+	//	texture = nullptr;
+	//	Resource::Dispose();
+	//}
 
 	void Apply(Shaders::ShaderFlag targetShader, int index){
 		if (!srv) {
@@ -83,11 +84,16 @@ public:
 
 	D3DTexture2D(D3DCore *core, ID3D11Texture2D* hnd);
 	D3DTexture2D(D3DCore *core, int width, int height,
-		DXGI_FORMAT format, D3D11_BIND_FLAG bind = D3D11_BIND_SHADER_RESOURCE);
+		DXGI_FORMAT format, UINT bind = D3D11_BIND_SHADER_RESOURCE, UINT misc = 0U);
 
 	void SetToRenderTarget();
 	void SetToDepthStencil();
 	void SetToRenderTargetAndDepth(D3DTexture2D *depth);
+
+	void ClearAsRenderTarget(XMFLOAT4 color);
+	void ClearAsDepthStencil();
+
+	void DrawAsDc(std::function<void(const HDC, RECT**)> fn);
 
 };
 

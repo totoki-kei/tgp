@@ -45,9 +45,6 @@ D3DStencilState::~D3DStencilState()
 	if (!isDisposed())Dispose();
 }
 
-bool D3DStencilState::isDisposed(){
-	return dss == nullptr;
-}
 
 void D3DStencilState::Apply(){
 	core->GetDeviceContext()->OMSetDepthStencilState(dss, 0);

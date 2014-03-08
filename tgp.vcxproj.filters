@@ -49,6 +49,8 @@
     <ClCompile Include="D3DStencilState.cpp">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
+    <ClCompile Include="D3DPipeline.cpp" />
+    <ClCompile Include="D3DRasterizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -120,6 +122,11 @@
     </ClInclude>
     <ClInclude Include="D3DStencilState.h">
       <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DPipeline.h" />
+    <ClInclude Include="D3DRasterizer.h" />
+    <ClInclude Include="ResourceItem.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

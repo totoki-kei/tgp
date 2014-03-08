@@ -8,7 +8,7 @@ D3DSampler::D3DSampler(D3DCore *core)
 	GetDefaultSamplerDesc(&desc);
 	core->GetDevice()->CreateSamplerState(&desc, &sampler);
 
-	this->AddResource(PtrToRes(sampler));
+	this->AddResource(HndToRes(sampler));
 }
 
 D3DSampler::D3DSampler(D3DCore *core, D3D11_SAMPLER_DESC* desc)
@@ -42,9 +42,6 @@ D3DSampler::~D3DSampler(){
 	if (!isDisposed())Dispose();
 }
 
-bool D3DSampler::isDisposed(){
-	return sampler == nullptr;
-}
 
 
 void D3DSampler::Apply(Shaders::ShaderFlag targetShader, int index) {

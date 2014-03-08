@@ -31,7 +31,7 @@ Resource::Resource(unsigned int id) {
 
 
 Resource::~Resource () {
-	if( !isDisposed() ) DisposeChildren(); 
+	if( !isDisposed() ) DisposeResources(); 
 	RSC_DBG_OUT("Resource #%d deleted\n", this->ResourceId);
 }
 
@@ -99,13 +99,13 @@ void Resource::Dispose(void) {
 
 	RSC_DBG_OUT("Resource #%d disposing...\n", this->ResourceId);
 
-	DisposeChildren();
+	DisposeResources();
 
 	RSC_DBG_OUT("Resource #%d disposed\n", this->ResourceId);
 
 }
 
-void Resource::DisposeChildren(){
+void Resource::DisposeResources(){
 	// ’Ç‰Á‚³‚ê‚½‡˜‚Æ‚Í‹t‡‚É‰ğ•ú
 	for (auto i = children.rbegin(); i != children.rend(); i++){
 		auto r = *i;

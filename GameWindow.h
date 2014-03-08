@@ -36,6 +36,9 @@ protected:
 	MSG msg;
 	bool closed;
 
+	HCURSOR cursor;
+	HICON icon;
+
 	DWORD width, height;
 	
 	tstring wndTitle;
@@ -47,6 +50,7 @@ public:
 	static int WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
 
 	GameWindow(long width, long height);
+	GameWindow(long width, long height, HCURSOR cursor, HICON icon);
 	~GameWindow(void);
 
 	void SetWindowTitle(const TCHAR* title);

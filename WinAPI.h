@@ -8,4 +8,3 @@
 #ifdef FindResource
 #undef FindResource
 #endif
-

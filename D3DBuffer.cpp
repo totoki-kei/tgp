@@ -11,11 +11,12 @@ D3DBuffer::~D3DBuffer(){
 }
 
 bool D3DBuffer::isDisposed(){
-	return buffer != nullptr;
+	return buffer == nullptr;
 }
 
 void D3DBuffer::Dispose(){
 	buffer->Release();
+	buffer = nullptr;
 	Resource::Dispose();
 }
 

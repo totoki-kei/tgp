@@ -25,6 +25,17 @@ GameWindow::GameWindow(long width, long height) :
 	Resource(), wndTitle(TEXT("GameWindow")) {
 	this->width = width;
 	this->height = height;
+	this->icon = nullptr;
+	this->cursor = nullptr;
+	this->stat = Status::NotInitialized;
+}
+
+GameWindow::GameWindow(long width, long height, HCURSOR cursor, HICON icon) :
+Resource(), wndTitle(TEXT("GameWindow")) {
+	this->width = width;
+	this->height = height;
+	this->icon = icon;
+	this->cursor = cursor;
 	this->stat = Status::NotInitialized;
 }
 
@@ -36,8 +47,8 @@ void GameWindow::Initialize(void) {
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = g_MainArgs.hInstance;
-	wc.hIcon = NULL;
-	wc.hCursor = NULL;
+	wc.hIcon = icon;
+	wc.hCursor = cursor;
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = GameWindow::WndClassName;

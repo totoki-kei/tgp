@@ -141,4 +141,6 @@ namespace Shaders {
 	inline bool CheckFlag(ShaderFlag left, ShaderFlag right){
 		return (((int)left) & ((int)right)) != 0;
 	}
+
+	void Unapply(D3DCore* core, ShaderFlag shader);
 };

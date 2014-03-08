@@ -142,5 +142,24 @@ namespace Shaders {
 		context->CSSetShader(this->shader, nullptr, 0);
 	}
 
+
+	void Unapply(D3DCore* core, ShaderFlag targetShader){
+		auto ctx = core->GetDeviceContext();
+
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Vertex)){
+			ctx->VSSetShader(nullptr, nullptr, 0);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Pixel)){
+			ctx->PSSetShader(nullptr, nullptr, 0);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Geometry)){
+			ctx->GSSetShader(nullptr, nullptr, 0);
+		}
+		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Compute)){
+			ctx->PSSetShader(nullptr, nullptr, 0);
+		}
+
+	}
+
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Resource.h"
+#include "ResourceItem.h"
 
 #include "Debug.h"
 
@@ -14,12 +15,9 @@
 #endif
 
 
-
-
 #ifndef IF_OK
 #define IF_OK(cond) if(SUCCEEDED(cond))
 #define IF_OK2(cond, hr) if(SUCCEEDED( hr = (cond)))
-
 #endif
 
 #ifndef IF_NG

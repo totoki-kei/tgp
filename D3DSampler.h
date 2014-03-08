@@ -16,7 +16,7 @@ public:
 	D3DSampler(D3DCore *core, D3D11_SAMPLER_DESC* desc);
 	~D3DSampler();
 
-	bool isDisposed();
+	//bool isDisposed();
 	//void Dispose();
 
 	void Apply(Shaders::ShaderFlag targetShader, int index);

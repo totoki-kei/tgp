@@ -6,6 +6,8 @@
 D3DCore::D3DCore(GameWindow* wnd)
 {
 	this->wnd = wnd;
+
+	// ウィンドウ削除時には自分も死ぬようにする
 	wnd->AddResource(PtrToRes(this));
 }
 
@@ -48,8 +50,10 @@ bool D3DCore::Initialize() {
 		NULL,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
+		//D3D11_CREATE_DEVICE_DEBUG,
 		0,
-		nullptr, 0,
+		nullptr, 
+		/*D3D_FEATURE_LEVEL_11_0,*/0,
 		D3D11_SDK_VERSION,
 		&scd,
 		&swapChain,
@@ -132,6 +136,30 @@ bool D3DCore::Initialize() {
 	cxt->RSSetViewports(1, &viewport);
 
 
+	// ブレンドステート
+	D3D11_BLEND_DESC bd;
+	bd.AlphaToCoverageEnable = false;
+	bd.IndependentBlendEnable = false;
+	{
+		auto tg = &bd.RenderTarget[0];
+		tg->BlendEnable = true;
+		tg->BlendOp = D3D11_BLEND_OP_ADD;
+		tg->SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		tg->DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		tg->BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		tg->SrcBlendAlpha = D3D11_BLEND_ONE;
+		tg->DestBlendAlpha = D3D11_BLEND_ZERO;
+
+		tg->RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	}
+	IF_NG2(device->CreateBlendState(&bd, &this->bs), hr){
+		return false;
+	}
+	wnd->AddResource(HndToRes(bs));
+	float zero[4] = { 0, 0, 0, 0 };
+	cxt->OMSetBlendState(bs, zero, 0xffffffff);
+
+
 	// 画面消去をするときの色
 	this->clearColor[0] = 0.0f;
 	this->clearColor[1] = 0.0f;
@@ -152,14 +180,30 @@ bool D3DCore::isDisposed() {
 void D3DCore::Dispose() {
 	if(isDisposed()) return;
 	cxt->ClearState();
-	Resource::Dispose();
 	device = nullptr;
+	Resource::Dispose();
 }
 
 void D3DCore::Clear() {
 	cxt->ClearRenderTargetView(rtv, clearColor);
 	cxt->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
+
+
+void D3DCore::ClearRenderTarget(){
+	cxt->ClearRenderTargetView(rtv, clearColor);
+}
+
+void D3DCore::ClearRenderTarget(XMFLOAT4 color){
+	FLOAT f[] = { color.x, color.y, color.z, color.w };
+	cxt->ClearRenderTargetView(rtv, f);
+}
+
+void D3DCore::ClearDepth(){
+	cxt->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+}
+
+
 
 void D3DCore::Update() {
 	swapChain->Present(this->vsyncWait, 0);
@@ -187,10 +231,25 @@ void D3DCore::DrawIndexed(int indexCount, int vertexOffset, int indexOffset){
 
 void D3DCore::SetVSyncWait(int wait){ this->vsyncWait = wait; }
 int D3DCore::GetVSyncWait() { return this->vsyncWait; }
+ID3D11RenderTargetView* D3DCore::GetDefaultRenderTargetView(){ return this->rtv; }
+ID3D11DepthStencilView* D3DCore::GetDefaultDepthStencilView(){ return this->dsv; }
+
 
 void D3DCore::SetDefaultRenderTarget() {
 	cxt->OMSetRenderTargets(1, &this->rtv, dsv);
-	
+}
+
+void D3DCore::SetViewport(D3D11_VIEWPORT* viewport){
+	cxt->RSSetViewports(1, viewport);
+}
+
+
+void D3DCore::SetDefaultViewport(){
+	cxt->RSSetViewports(1, &this->viewport);
+}
+
+void D3DCore::GetDefaultViewport(D3D11_VIEWPORT* viewport){
+	*viewport = this->viewport;
 }
 
 

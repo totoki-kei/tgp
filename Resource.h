@@ -18,97 +18,68 @@
 
 class Resource{
 	/*
-	Resourceのサブクラスは以下の処理を必ず実装すること。
-	(0) Resourceは「パブリック継承」すること。
-	(1) デストラクタによるDispose漏れ対処
-	(2) isDisposed()の適切なオーバーライド
-	(3) Dispose()の適切なオーバーライド
+	Resourceのサブクラスは、内部で独自に作成したリソース(ハンドルやポインタ)を
+	AddResourceして自身に登録しておくことで、削除時に自動的に削除される。
+	ただし、実際に削除が行われるのはResourceのデストラクタが呼ばれた時なので
+	サブクラス自身のデストラクタ完了までに削除済みである必要があるリソースは
+	以下のどちらかで対応すること。
+	 (1) デストラクタで 「if(!isDisposed()) Dispose();」を行う
+	 (2) AddResourceせずに、独自に管理してデストラクタで「通常通り」開放する
+
+
+	なお、削除時の動作順序は以下のようになる：
+	1. サブクラスのデストラクタが呼ばれる(必要に応じてリソースの解放(Dispose呼び出し含む)を行う)
+	2. Resourceのデストラクタが呼ばれる
+	2.1. isDisposedを呼び、Disposeが呼ばれたか確認する(オーバーライドしていればそれが呼ばれる)
+	2.2. もしisDisposedがfalseであればAddResourceされているリソースを全てDisposeする
+	3. デストラクタが完了し削除される
 	*/
+
 protected:
+	// 登録されているリソース
 	std::vector< std::shared_ptr<Resource> > children;
+
+	// 自身のリソースID
 	unsigned int ResourceId;
 
 public:
+	// 自動削除されるリソースを登録する
 	void AddResource(std::shared_ptr<Resource>);
+
+	// 登録されているリソースから削除する
 	bool RemoveResource(std::shared_ptr<Resource>, bool all = false, bool recursive = false);
+
+	// このリソースのリソースIDを得る
 	unsigned int GetResourceID() const;
+
+	// 登録されているリソースから指定のリソースIDを持ったリソースを検索する
 	std::weak_ptr<Resource> FindResource(unsigned int id, bool recursive = false);
-
-
+	
+	// コンストラクタ、リソースIDを自動的に割り当てる
 	Resource(void);
+	// コンストラクタ、指定のリソースIDを使用する
 	Resource(unsigned int);
+
+	// リソース解放済みの場合はtrueを返す。
+	// 既定の実相では、登録されているリソースが存在しない、またはすべて解放済みである場合trueとなる
+	// [オーバーライド時の規約] Dispose() が呼ばれた後は、かならずtrueを返すようにすること
 	virtual bool isDisposed();
+
+	// リソースを開放する
+	// 既定の実装では、登録されているリソースをすべて解放(Dispose)し、登録解除する
+	// [オーバーライド時の規約] 必ずResource::Dispose()を1回以上呼ぶこと
 	virtual void Dispose();
+
+	// 登録されているリソースをすべて解放し、登録解除する
+	void DisposeResources();
+
+	// デストラクタ
+	// 既定の実装では、もしisDisposed()がfalseの時にはDisposeを呼ぶ
 	virtual ~Resource();
 
 private:
-	void DisposeChildren();
 
 	static unsigned int nextid;
 
 };
 
-template<typename T>
-class ResourceItem : public Resource {
-	T item;
-	std::function< void(T&) > disposer;
-	bool disposed;
-
-public:
-	T& get() { return T; }
-
-	template <typename TCallback>
-	ResourceItem(T i, TCallback dispose_fn) :
-		item(i),
-		disposer(dispose_fn),
-		disposed(false) {
-#ifdef UNICODE
-		RSC_DBG_OUT("ResourceItem #%d as %S(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
-#else
-		RSC_DBG_OUT("ResourceItem #%d as %s(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
-#endif
-	}
-
-	ResourceItem(T p) :
-		item(p),
-		disposer([](T& i){
-		delete i;
-		i = nullptr;
-	}),
-		disposed(false) {
-#ifdef UNICODE
-		RSC_DBG_OUT("ResourceItem #%d as %S(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
-#else
-		RSC_DBG_OUT("ResourceItem #%d as %s(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
-#endif
-	}
-
-	~ResourceItem(){
-		if (!isDisposed()) Dispose();
-	}
-
-	virtual bool isDisposed() { return disposed; }
-	virtual void Dispose() {
-		if (!isDisposed()) {
-			RSC_DBG_OUT("ResourceItem #%d disposing...\n", this->ResourceId);
-			disposer(item);
-			disposed = true;
-			Resource::Dispose();
-			RSC_DBG_OUT("ResourceItem #%d disposed.\n", this->ResourceId);
-		}
-		else {
-			RSC_DBG_OUT("ResourceItem #%d is already disposed.\n", this->ResourceId);
-		}
-	}
-};
-
-template <typename T>
-inline std::shared_ptr< ResourceItem<T*> > PtrToRes(T* p){
-	auto res = new ResourceItem<T*>(p);
-#ifdef UNICODE
-	RSC_DBG_OUT("Pointer %p of type %S -> Resource #%d.\n", p, typeid(T).name(), res->GetResourceID());
-#else
-	RSC_DBG_OUT("Pointer %p of type %s -> Resource #%d.\n", p, typeid(T).name(), res->GetResourceID());
-#endif
-	return std::shared_ptr< ResourceItem<T*> >(res);
-}

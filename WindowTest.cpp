@@ -45,8 +45,8 @@ WindowTest::~WindowTest(void)
 
 int WindowTest::Initialize(void){
 	wnd.Initialize();
-	d3d10 = new D3DCore(&wnd);
-	d3d10->Initialize();
+	core = new D3DCore(&wnd);
+	core->Initialize();
 	return 0;
 }
 
@@ -56,8 +56,8 @@ void WindowTest::Update(void) {
 	if(ret != 0) exitLoop = true;
 
 	// ここでフレームごとの処理を行う
-	d3d10->Clear();
-	d3d10->Update();
+	core->Clear();
+	core->Update();
 	
 }
 
@@ -67,6 +67,10 @@ void WindowTest::Draw(void) {
 
 #elif TEST_ID == 1
 
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
+
+#include "Program.h"
 #include "D3DBuffer.h"
 #include "D3DShader.h"
 #include "D3DInputLayout.h"
@@ -74,7 +78,11 @@ void WindowTest::Draw(void) {
 #include "D3DSampler.h"
 #include "D3DStencilState.h"
 
-WindowTest::WindowTest(void) : wnd(800, 600)
+#include "resource1.h"
+
+HICON icon;
+
+WindowTest::WindowTest(void) : wnd(WINDOW_WIDTH, WINDOW_HEIGHT, nullptr, icon = LoadIcon(g_MainArgs.hInstance, MAKEINTRESOURCE(IDI_ICON1)))
 {
 	wnd.SetWindowTitle(_T("ほげほげほげ"));
 	GameWindow::SetMessageHandler(
@@ -86,6 +94,7 @@ WindowTest::WindowTest(void) : wnd(800, 600)
 				this->wnd.SetWindowTitle(_T("Escaped."));
 				GameWindow::ResetMessageHandler(WM_KEYDOWN);
 			}
+
 	
 			return 0;
 		}
@@ -127,6 +136,7 @@ struct CB_Object {
 	XMMATRIX World;
 };
 
+using std::shared_ptr;
 
 D3DVertexBuffer<Vertex> * vb;
 D3DIndexBuffer<> * ib;
@@ -139,54 +149,176 @@ D3DConstantBuffer<CB_Scene>* cb_scene;
 D3DConstantBuffer<CB_Object>* cb_obj;
 
 
+Shaders::VertexShader* e_vs;
+Shaders::GeometryShader* e_gs;
+Shaders::PixelShader* e_ps;
+D3DTexture2D* e_rt;
+D3D11_VIEWPORT e_vp;
+D3DStencilState *e_st;
+D3DSampler* e_sm;
+
 WindowTest::~WindowTest(void)
 {
+	timeEndPeriod(1);
 
 	wnd.Dispose();
 }
 
 int WindowTest::Initialize(void){
-	using namespace std;
 
 	wnd.Initialize();
-	d3d10 = new D3DCore(&wnd);
-	d3d10->Initialize();
+	core = new D3DCore(&wnd);
+	core->Initialize();
 
-	vs = Shaders::Load<Shaders::VertexShader>(d3d10, _T("VS_Transform.cso"));
+	vs = Shaders::Load<Shaders::VertexShader>(core, _T("VS_Transform.cso"));
 	wnd.AddResource(shared_ptr<Resource>(vs));
 
-	ps = Shaders::Load<Shaders::PixelShader>(d3d10, _T("PS_NormalColor.cso"));
+	ps = Shaders::Load<Shaders::PixelShader>(core, _T("PS_NormalColor.cso"));
 	wnd.AddResource(shared_ptr<Resource>(ps));
 
-	ps2 = Shaders::Load<Shaders::PixelShader>(d3d10, _T("PS_EmitColor.cso"));
+	ps2 = Shaders::Load<Shaders::PixelShader>(core, _T("PS_EmitColor.cso"));
 	wnd.AddResource(shared_ptr<Resource>(ps2));
 
-	cb_scene = new D3DConstantBuffer<CB_Scene>(d3d10);
+	cb_scene = new D3DConstantBuffer<CB_Scene>(core);
 	wnd.AddResource(shared_ptr<Resource>(cb_scene));
 
-	cb_obj = new D3DConstantBuffer<CB_Object>(d3d10);
+	cb_obj = new D3DConstantBuffer<CB_Object>(core);
 	wnd.AddResource(shared_ptr<Resource>(cb_obj));
 
 	Vertex vertices[4] = {
-		{ {  0 ,  0 , 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } },
-		{ {  0 , .5f, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
-		{ { .5f, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
-		{ { .5f, .5f, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
+		{ {  0 ,  0 , 0, 1 }, {  1,   1,   1,  1 }, { 0, 0, 0, 1 } },
+		{ {  0 , .5f, 0, 1 }, {  1,   0,   1,  1 }, { 0, 1, 0, 1 } },
+		{ { .5f,  0 , 0, 1 }, {  0,   1,   1,  1 }, { 1, 0, 0, 1 } },
+		{ { .5f, .5f, 0, 1 }, {  1,   1,   0,  1 }, { 0, 0, 1, 1 } },
 	};
 
-	vb = new D3DVertexBuffer<Vertex>(d3d10, vertices);
+	vb = new D3DVertexBuffer<Vertex>(core, vertices);
 	wnd.AddResource(shared_ptr<Resource>(vb));
 
-	ib = new D3DIndexBuffer<>(d3d10, 5);
+	ib = new D3DIndexBuffer<>(core, 5);
 	wnd.AddResource(shared_ptr<Resource>(ib));
 
 	unsigned short indices[] = { 0, 1, 3, 2, 0 };
 	ib->Update(indices);
 
-	ia = new D3DInputLayout(d3d10, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), vs, 0);
+	ia = new D3DInputLayout(core, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), vs, 0);
 	wnd.AddResource(shared_ptr<Resource>(ia));
 
+	// テクスチャを使う方のシェーダ
+	e_vs = Shaders::Load<Shaders::VertexShader>(core, _T("VS_ThroughID.cso"));
+	e_gs = Shaders::Load<Shaders::GeometryShader>(core, _T("GS_ID2Quad.cso"));
+	e_ps = Shaders::Load<Shaders::PixelShader>(core, _T("PS_TextureOnly.cso"));
+	wnd.AddResource(shared_ptr<Resource>(e_vs));
+	wnd.AddResource(shared_ptr<Resource>(e_gs));
+	wnd.AddResource(shared_ptr<Resource>(e_ps));
+
+	//e_rt = new D3DTexture2D(core, WINDOW_WIDTH / 8, WINDOW_HEIGHT / 8, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET);
+	e_rt = new D3DTexture2D(
+		core, 
+		WINDOW_WIDTH / 8, 
+		WINDOW_HEIGHT / 8,
+		DXGI_FORMAT_B8G8R8A8_UNORM,
+		D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
+		D3D11_RESOURCE_MISC_GDI_COMPATIBLE);
+	wnd.AddResource(shared_ptr<Resource>(e_rt));
+
+	e_st = new D3DStencilState(core, false, false);
+	wnd.AddResource(shared_ptr<Resource>(e_st));
+	
+	{
+		D3D11_SAMPLER_DESC desc;
+		D3DSampler::GetDefaultSamplerDesc(&desc);
+
+		desc.Filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
+
+		e_sm = new D3DSampler(core, &desc);
+	}
+	wnd.AddResource(shared_ptr<Resource>(e_sm));
+
+
+	core->GetDefaultViewport(&e_vp);
+	e_vp.Width = WINDOW_WIDTH / 8;
+	e_vp.Height = WINDOW_HEIGHT / 8;
+
+	core->SetVSyncWait(1);
+
+
+	SetCursor(LoadCursor(0, IDC_ARROW));
+
+	auto hr = timeBeginPeriod(1);
+
+
 	return 0;
+}
+
+void WindowTest::draw1(){
+	CB_Scene s;
+	CB_Object o;
+	s.View = XMMatrixIdentity();
+	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 100, WINDOW_HEIGHT / 100, 0, 10);
+	cb_scene->Update(&s);
+	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
+	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
+
+	//o.World = XMMatrixRotationZ(ticks / 256.0f);
+	//o.World = XMMatrixRotationZ(timeGetTime() / 1000.0f * XM_2PI);
+	o.World = XMMatrixRotationZ((timeGetTime() % 1000) * XM_2PI / 1000.0f);
+	cb_obj->Update(&o);
+	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
+
+
+	vs->Apply();
+	Shaders::Unapply(core, Shaders::ShaderFlag::Geometry);
+	e_st->Unapply();
+
+	ps->Apply();
+	core->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
+	core->Draw(4, 0);
+
+}
+
+void WindowTest::draw2(){
+
+	CB_Scene s;
+	CB_Object o;
+	s.View = XMMatrixIdentity();
+	s.Projection = XMMatrixIdentity();
+	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 100, WINDOW_HEIGHT / 100, 0, 10);
+	cb_scene->Update(&s);
+	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
+	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
+
+	//o.World = XMMatrixRotationZ(ticks / 256.0f);
+	o.World = XMMatrixRotationZ((timeGetTime() % 1000) * XM_2PI / 1000.0f);
+	cb_obj->Update(&o);
+	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
+
+
+	vs->Apply();
+	Shaders::Unapply(core, Shaders::ShaderFlag::Geometry);
+	e_st->Unapply();
+
+	ps2->Apply();
+	core->SetPrimitiveTopology(D3DPrimitiveTopology::LineStrip);
+	core->DrawIndexed(5, 0, 0);
+
+}
+
+void WindowTest::draw3(){
+	e_rt->Apply(Shaders::ShaderFlag::Pixel, 0);
+
+	e_vs->Apply();
+	e_gs->Apply();
+	e_ps->Apply();
+	core->SetPrimitiveTopology(D3DPrimitiveTopology::PointList);
+
+	e_st->Apply();
+	e_sm->Apply(Shaders::ShaderFlag::All, 0);
+
+	core->Draw(1, 0);
+	e_rt->Unapply(Shaders::ShaderFlag::Pixel, 0);
+
+
 }
 
 void WindowTest::Update(void) {
@@ -194,43 +326,65 @@ void WindowTest::Update(void) {
 	auto ret = wnd.ProcessMessage();
 	if (ret != 0) exitLoop = true;
 
+	//Sleep(100);
 	// ここでフレームごとの処理を行う
-	d3d10->Clear();
+
 
 	vb->Apply();
 	ib->Apply();
 	ia->Apply();
 
-	CB_Scene s;
-	s.View = XMMatrixIdentity();
-	s.Projection = XMMatrixIdentity();
-	cb_scene->Update(&s);
-	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
-
-	CB_Object o;
-	//o.World = XMMatrixRotationZ(GetTickCount() / 256.0f);
-	o.World = XMMatrixRotationZ(GetTickCount() / 1000.0f * XM_2PI);
-	cb_obj->Update(&o);
-	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
-
-	// テストコード（のちのちD3DCoreにラップする)
-	//auto device = d3d10->GetDeviceContext();
-
-	vs->Apply();
-
-	ps->Apply();
-	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
-	d3d10->Draw(4, 0);
 
 
-	o.World = XMMatrixTranslation(0, 0, 0.5f) * XMMatrixRotationZ(GetTickCount() / 1500.0f * XM_2PI);
-	cb_obj->Update(&o);
+	e_rt->SetToRenderTarget();
+	core->SetViewport(&e_vp);
+	core->ClearDepth();
+	e_rt->ClearAsRenderTarget(XMFLOAT4(0, 0, 0, 0));
 
-	ps2->Apply();
-	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::LineStrip);
-	d3d10->DrawIndexed(5, 0, 0);
+	draw2();
+	
 
-	d3d10->Update();
+	e_rt->DrawAsDc([this](HDC hdc, RECT** rect) {
+		*rect = new RECT;
+		(*rect)->top = 0;
+		(*rect)->bottom = 75;
+		(*rect)->left = 0;
+		(*rect)->right = 100;
+
+		COLORREF color = RGB(255, 0, 255);
+		SetTextColor(hdc, color);
+
+		BOOL ret;
+
+		TCHAR str[32];
+		int len = _stprintf_s(str, _T("%f"), (timeGetTime() % 1000) * XM_2PI / 1000.0f);
+
+		DrawText(hdc, str, -1, *rect, DT_CENTER);
+		//LPCWSTR strW = L"hoge";
+		//int lenW = lstrlenW(strW);
+		//ret = TextOutW(hdc, 0, 0, strW, lenW);
+
+		//LPCSTR strA = "hoge";
+		//int lenA = lstrlenA(strA);
+		//ret = TextOutA(hdc, 0, 32, strA, lenA);
+
+	});
+
+	// ===========================================
+	core->SetDefaultRenderTarget();
+	core->SetDefaultViewport();
+	core->ClearRenderTarget(XMFLOAT4(1, 1, 1, 1));
+	core->ClearDepth();
+
+
+
+
+
+	draw3();
+	draw1();
+
+	core->Update();
+
 
 }
 

@@ -21,6 +21,8 @@ class D3DCore : public Resource
 	ID3D11Texture2D* depthStencil;
 	ID3D11DepthStencilView* dsv;
 	ID3D11DepthStencilState* dss;
+
+	ID3D11BlendState* bs;
 	D3D11_VIEWPORT viewport;
 
 	GameWindow* wnd;
@@ -39,6 +41,10 @@ public:
 	void Clear();
 	void Update();
 
+	void ClearRenderTarget();
+	void ClearRenderTarget(XMFLOAT4 color);
+	void ClearDepth();
+
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 
@@ -52,6 +58,13 @@ public:
 	void SetVSyncWait(int wait);
 	int GetVSyncWait();
 
+	ID3D11RenderTargetView* GetDefaultRenderTargetView();
+	ID3D11DepthStencilView* GetDefaultDepthStencilView();
 	void SetDefaultRenderTarget();
+
+	void SetViewport(D3D11_VIEWPORT* viewport);
+
+	void SetDefaultViewport();
+	void GetDefaultViewport(D3D11_VIEWPORT* viewport);
 };
 

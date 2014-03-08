@@ -16,7 +16,7 @@ public:
 	~D3DStencilState();
 
 
-	bool isDisposed();
+	//bool isDisposed();
 	//void Dispose();
 
 	void Apply();
