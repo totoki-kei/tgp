@@ -168,7 +168,7 @@ int WindowTest::Initialize(void){
 
 	wnd.Initialize();
 	core = new D3DCore(&wnd);
-	core->Initialize();
+	core->Initialize(true);
 
 	vs = Shaders::Load<Shaders::VertexShader>(core, _T("VS_Transform.cso"));
 	wnd.AddResource(shared_ptr<Resource>(vs));
@@ -334,8 +334,6 @@ void WindowTest::Update(void) {
 	ib->Apply();
 	ia->Apply();
 
-
-
 	e_rt->SetToRenderTarget();
 	core->SetViewport(&e_vp);
 	core->ClearDepth();
@@ -354,19 +352,10 @@ void WindowTest::Update(void) {
 		COLORREF color = RGB(255, 0, 255);
 		SetTextColor(hdc, color);
 
-		BOOL ret;
-
 		TCHAR str[32];
 		int len = _stprintf_s(str, _T("%f"), (timeGetTime() % 1000) * XM_2PI / 1000.0f);
 
 		DrawText(hdc, str, -1, *rect, DT_CENTER);
-		//LPCWSTR strW = L"hoge";
-		//int lenW = lstrlenW(strW);
-		//ret = TextOutW(hdc, 0, 0, strW, lenW);
-
-		//LPCSTR strA = "hoge";
-		//int lenA = lstrlenA(strA);
-		//ret = TextOutA(hdc, 0, 32, strA, lenA);
 
 	});
 
@@ -376,15 +365,10 @@ void WindowTest::Update(void) {
 	core->ClearRenderTarget(XMFLOAT4(1, 1, 1, 1));
 	core->ClearDepth();
 
-
-
-
-
 	draw3();
 	draw1();
 
 	core->Update();
-
 
 }
 

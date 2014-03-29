@@ -17,7 +17,7 @@ D3DCore::~D3DCore(void)
 	if (!isDisposed()) Dispose();
 }
 
-bool D3DCore::Initialize() {
+bool D3DCore::Initialize(bool debugDevice) {
 	HRESULT hr;
 
 	// スワップチェインの設定
@@ -50,10 +50,9 @@ bool D3DCore::Initialize() {
 		NULL,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
-		//D3D11_CREATE_DEVICE_DEBUG,
-		0,
+		debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
 		nullptr, 
-		/*D3D_FEATURE_LEVEL_11_0,*/0,
+		0,
 		D3D11_SDK_VERSION,
 		&scd,
 		&swapChain,

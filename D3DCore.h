@@ -33,7 +33,7 @@ public:
 	D3DCore(GameWindow* wnd);
 	~D3DCore(void);
 
-	bool Initialize();
+	bool Initialize(bool debugDevice = false);
 
 	bool isDisposed();
 	void Dispose();
