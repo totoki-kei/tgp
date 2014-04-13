@@ -41,6 +41,7 @@ public:
 	void Clear();
 	void Update();
 
+	void SetClearColor(XMFLOAT4 color);
 	void ClearRenderTarget();
 	void ClearRenderTarget(XMFLOAT4 color);
 	void ClearDepth();

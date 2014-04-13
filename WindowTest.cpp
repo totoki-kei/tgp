@@ -1,10 +1,10 @@
 #include "WindowTest.h"
 
 #include "Debug.h"
-
-Game* GenerateGame() {
-	return new WindowTest();
-}
+//
+//Game* GenerateGame() {
+//	return new WindowTest();
+//}
 
 #define TEST_ID 1
 

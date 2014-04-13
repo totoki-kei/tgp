@@ -37,19 +37,20 @@
     <ClCompile Include="D3DTexture.cpp">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
-    <ClCompile Include="ImageLoader.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
     <ClCompile Include="D3DSampler.cpp">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="D3DStencilState.cpp">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
-    <ClCompile Include="D3DPipeline.cpp" />
-    <ClCompile Include="D3DRasterizer.cpp" />
     <ClCompile Include="WindowTest.cpp">
       <Filter>App\WindowTest</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DRasterizer.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Game1.cpp">
+      <Filter>App\Game1</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,9 +70,6 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="Task.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Delegate.h">
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="GameWindow.h">
@@ -111,22 +109,23 @@
     <ClInclude Include="D3DTexture.h">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
-    <ClInclude Include="ImageLoader.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="D3DSampler.h">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="D3DStencilState.h">
       <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
-    <ClInclude Include="D3DPipeline.h" />
-    <ClInclude Include="D3DRasterizer.h" />
     <ClInclude Include="ResourceItem.h">
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="WindowTest.h">
       <Filter>App\WindowTest</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DRasterizer.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Game1.h">
+      <Filter>App\Game1</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +158,9 @@
     </Filter>
     <Filter Include="App\WindowTest">
       <UniqueIdentifier>{5eb4e367-c10d-443c-a293-ce804669c592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Game1">
+      <UniqueIdentifier>{64c06b93-4f86-419f-9f24-03dd3ac6c852}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

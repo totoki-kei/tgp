@@ -65,9 +65,14 @@ bool D3DCore::Initialize(bool debugDevice) {
 			return false;
 	}
 
+	NameToResource(device, "MainDevice");
 	auto dev = HndToRes(device);
 	AddResource(dev);
-	AddResource(HndToRes(swapChain));
+
+	NameToResource(cxt, "MainDeviceContext");
+	dev->AddResource(HndToRes(cxt));
+	NameToResource(swapChain, "MainSwapchain");
+	dev->AddResource(HndToRes(swapChain));
 
 	
 
@@ -86,6 +91,7 @@ bool D3DCore::Initialize(bool debugDevice) {
 			// 失敗
 			return false;
 	}
+	NameToResource(rtv, "DefaultRenderTargetView");
 	dev->AddResource(HndToRes(rtv));
 
 	// 深度バッファの作成
@@ -112,11 +118,13 @@ bool D3DCore::Initialize(bool debugDevice) {
 	IF_NG2(device->CreateTexture2D(&txd, nullptr, &this->depthStencil), hr){
 		return false;
 	}
+	NameToResource(depthStencil, "DefaultDepthStencil");
 	dev->AddResource(HndToRes(depthStencil));
 
 	IF_NG2(device->CreateDepthStencilView(this->depthStencil, nullptr, &this->dsv), hr){
 		return false;
 	}
+	NameToResource(dsv, "DefaultDepthStencilView");
 	dev->AddResource(HndToRes(dsv));
 
 	// バックバッファと深度バッファを設定
@@ -154,7 +162,8 @@ bool D3DCore::Initialize(bool debugDevice) {
 	IF_NG2(device->CreateBlendState(&bd, &this->bs), hr){
 		return false;
 	}
-	wnd->AddResource(HndToRes(bs));
+	NameToResource(bs, "DefaultBlendState");
+	dev->AddResource(HndToRes(bs));
 	float zero[4] = { 0, 0, 0, 0 };
 	cxt->OMSetBlendState(bs, zero, 0xffffffff);
 
@@ -191,6 +200,13 @@ void D3DCore::Clear() {
 
 void D3DCore::ClearRenderTarget(){
 	cxt->ClearRenderTargetView(rtv, clearColor);
+}
+
+void D3DCore::SetClearColor(XMFLOAT4 color){
+	clearColor[0] = color.x;
+	clearColor[1] = color.y;
+	clearColor[2] = color.z;
+	clearColor[3] = color.w;
 }
 
 void D3DCore::ClearRenderTarget(XMFLOAT4 color){
