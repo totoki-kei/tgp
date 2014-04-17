@@ -125,16 +125,33 @@ namespace Shaders {
 		void Dispose();
 	};
 
+
 	template <typename ShaderT>
 	ShaderT* Load(D3DCore* core, const TCHAR* filename) {
 		int size = -1;
 		BYTE* data = LoadFileToMemory(filename, &size);
 		if (!data) {
 			// “Ç‚Ýž‚ß‚È‚©‚Á‚½
+			return nullptr;
 		}
 
 		ShaderT* ret = new ShaderT(core, data, size);
 		ret->AddResource(PtrToRes(data));
+
+#ifdef _DEBUG
+#ifdef UNICODE
+		{
+			size_t clen = wcslen(filename) * 2;
+			char* name = new char[clen];
+			size_t len;
+			wcstombs_s(&len, name, clen, filename, clen);
+			NameToResource(ret->GetShader(), name);
+			delete name;
+		}
+#else
+		NameToResource(ret, filename);
+#endif
+#endif
 		return ret;
 	}
 

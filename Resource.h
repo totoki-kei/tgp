@@ -26,25 +26,36 @@ class Resource{
 	 (1) デストラクタで 「if(!isDisposed()) Dispose();」を行う
 	 (2) AddResourceせずに、独自に管理してデストラクタで「通常通り」開放する
 
-
 	なお、削除時の動作順序は以下のようになる：
 	1. サブクラスのデストラクタが呼ばれる(必要に応じてリソースの解放(Dispose呼び出し含む)を行う)
 	2. Resourceのデストラクタが呼ばれる
 	2.1. isDisposedを呼び、Disposeが呼ばれたか確認する(オーバーライドしていればそれが呼ばれる)
 	2.2. もしisDisposedがfalseであればAddResourceされているリソースを全てDisposeする
 	3. デストラクタが完了し削除される
+
+	【注意】
+	このクラスは、親リソースが解放されたときに子リソースの解放漏れを防ぐ目的の物であり
+	使われなくなったリソースを自動解放するための物ではない。
+	むしろAddResourceされたインスタンスは、親リソースにハンドルされている限り
+	実際のdeleteとメモリ解放は行われない。
+	手動で開放したい場合は、以下の手順で親リソースから取り除くこと
+	(1) 親リソース.FindResource(子リソースのID) でweak_ptr取得
+	(2) weak_ptrをロックしてshared_ptr取得
+	(3) 取得したshared_ptrを使用して親リソースのRemoveResourceを呼ぶ。
 	*/
 
 protected:
+	typedef std::vector< std::shared_ptr<Resource> > children_type;
 	// 登録されているリソース
-	std::vector< std::shared_ptr<Resource> > children;
+	children_type* children;
 
 	// 自身のリソースID
 	unsigned int ResourceId;
 
 public:
 	// 自動削除されるリソースを登録する
-	void AddResource(std::shared_ptr<Resource>);
+	// 登録されたリソースのポインタをそのまま返す
+	std::shared_ptr<Resource> AddResource(std::shared_ptr<Resource>);
 
 	// 登録されているリソースから削除する
 	bool RemoveResource(std::shared_ptr<Resource>, bool all = false, bool recursive = false);

@@ -118,6 +118,12 @@ public:
 		ctx->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 	}
 
+	static void Unapply(D3DCore *core){
+		auto ctx = core->GetDeviceContext();
+		ctx->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+	}
+
+
 	int GetLength() { return length; }
 };
 

@@ -52,6 +52,15 @@
     <ClCompile Include="Game1.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Shaders\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -126,6 +135,21 @@
     </ClInclude>
     <ClInclude Include="Game1.h">
       <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Shaders\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockArray.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Pool.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

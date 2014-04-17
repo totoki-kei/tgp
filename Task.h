@@ -4,41 +4,36 @@
 #include <typeinfo>
 #include <cassert>
 
+#include "BlockArray.h"
+
 using std::function;
 
-template < typename TRet = int, typename TParam = void*>
+template < typename TRet = int, typename TParam = void*, typename TExtraParam = void*>
 class Task {
 
 public:
 	class Container;
 
+	typedef TRet ret_type;
+	typedef TParam param_type;
+	typedef TExtraParam exparam_type;
+	typedef Task<TRet, TParam> task_type;
+	typedef Container container_type;
+	typedef function < ret_type (param_type, exparam_type) > act_fn;
+
 private:
+	act_fn action;
+	param_type param;
 
-	typedef TRet ret_t;
-	typedef TParam param_t;
-	typedef Task<TRet, TParam> task_t;
-	typedef Container container_t;
-	typedef function < ret_t (param_t) > act_f;
+	task_type *next;
+	task_type *prev;
 
-	act_f action;
-	param_t param;
+	container_type *container;
 
-	task_t *next;
-	task_t *prev;
-
-	container_t *container;
-
-	Task(const task_t&) {}
+	Task(const task_type&) {}
 
 	static int s_id;
 	int id;
-	static int GetTypeHead() {
-		const int h = (int)typeid(task_t).hash_code();
-		const int s = (int)sizeof(int) * 8 / 2;
-		const int m = (1 << s) - 1;
-		return (h & (m << s)) ^ ((h & m) << s);
-	};
-
 
 
 public:
@@ -49,10 +44,12 @@ public:
 		SetAction(act, param);
 		this->next = this->prev = nullptr;
 
-		id = GetTypeHead() ^ s_id++;
-		s_id &= ( 1 << (sizeof(int) * 8 / 2) ) - 1;
+		// 連番を設定
+		id = s_id++;
 
 	}
+
+	Task() : Task([](param_type, exparam_type){ return (ret_type)0; }, (param_type)0){}
 	
 	template<class TAction>
 	void SetAction(TAction act, TParam param)
@@ -63,73 +60,75 @@ public:
 
 	int ID() const { return id; }
 	
-	void InsertPrev(task_t* task) {
+	void InsertPrev(task_type* task) {
 		task->prev = this->prev;
 		task->next = this;
 		this->prev = task->prev->next = task;
 	}
 
-	void InsertNext(task_t* task) {
+	void InsertNext(task_type* task) {
 		task->next = this->next;
 		task->prev = this;
 		this->next = task->next->prev = task;
 	}
 
-	ret_t Invoke() {
-		return action(param);
+	ret_type Invoke(exparam_type ext) {
+		return action(param, ext);
 	}
 
 
 public:
 	class Container {
 		// 円形リンクリストの起点
-		task_t root;
+		task_type root;
 
 	public:
 
-		Container() : root([](void*){ return (ret_t)0; }, (param_t)0){
+		Container()
+			: root([](param_type, exparam_type){ return (ret_type)0; }, (param_type)0) {
 			root.next = &root;
 			root.prev = &root;
-			root.id = GetTypeHead();
+			root.id = -1;
+
 		}
 
-		task_t& Root() { return root; }
+		task_type* Root() { return $root; }
 
-		void InsertHead(task_t* task) {
+		void InsertHead(task_type* task) {
 			assert(!task->next && !task->prev);
 			InsertAfter(task, &root);
 		}
 
-		void InsertTail(task_t* task) {
+		void InsertTail(task_type* task) {
 			assert(!task->next && !task->prev);
 			InsertBefore(task, &root);
 		}
 
-		void InsertAfter(task_t* task, task_t* p) {
+		void InsertAfter(task_type* task, task_type* p) {
 			assert(!task->next && !task->prev);
 			p->InsertNext(task);
 		}
 
-		void InsertBefore(task_t* task, task_t* p) {
+		void InsertBefore(task_type* task, task_type* p) {
 			assert(!task->next && !task->prev);
 			p->InsertPrev(task);
 		}
 
-		void Remove(task_t* task) {
+		void Remove(task_type* task) {
 			task->next->prev = task->prev;
 			task->prev->next = task->next;
 			task->prev = task->next = nullptr;
 		}
 
-		void Invoke() {
-			for( task_t* t = root.next; t != &root; t = t->next){
-				task_t& tr = *t;
-				tr.Invoke();
+		void Invoke(exparam_type ext) {
+			for( task_type* t = root.next; t != &root; t = t->next){
+				task_type& tr = *t;
+				tr.Invoke(ext);
 			}
 		}
 	};
 
 };
 
-template <class T1, class T2>
-int Task<T1, T2>::s_id;
+template <class T1, class T2, class T3>
+int Task<T1, T2, T3>::s_id;
