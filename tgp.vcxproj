@@ -20,13 +20,11 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -44,26 +42,29 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\lpng\lpng169;d:\lib\lpng\zlib-1.2.5;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Debug Library;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\DXSDK\201206\Include;D:\lib\lpng\lpng169;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Release Library;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level2</WarningLevel>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;libpng16.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderModel>4.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -78,79 +79,106 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>winmm.lib;libpng16.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="D3DCore.h" />
-    <ClInclude Include="D3DEffect.h" />
-    <ClInclude Include="D3DBuffer.h" />
-    <ClInclude Include="D3DEnum.h" />
-    <ClInclude Include="D3DHeaders.h" />
-    <ClInclude Include="D3DInputLayout.h" />
-    <ClInclude Include="D3DLibs.h" />
-    <ClInclude Include="Debug.h" />
-    <ClInclude Include="Delegate.h" />
-    <ClInclude Include="DirectXUtil.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameWindow.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="Program.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="Framework\BlockArray.h" />
+    <ClInclude Include="Framework\D3DCore.h" />
+    <ClInclude Include="Framework\D3DBuffer.h" />
+    <ClInclude Include="Framework\D3DEnum.h" />
+    <ClInclude Include="Framework\D3DHeaders.h" />
+    <ClInclude Include="Framework\D3DInputLayout.h" />
+    <ClInclude Include="Framework\D3DLibs.h" />
+    <ClInclude Include="Framework\D3DRasterizer.h" />
+    <ClInclude Include="Framework\D3DShader.h" />
+    <ClInclude Include="Framework\D3DStencilState.h" />
+    <ClInclude Include="Framework\D3DTexture.h" />
+    <ClInclude Include="Framework\Debug.h" />
+    <ClInclude Include="Framework\D3DSampler.h" />
+    <ClInclude Include="Framework\DirectXUtil.h" />
+    <ClInclude Include="Framework\Game.h" />
+    <ClInclude Include="Game1.h" />
+    <ClInclude Include="Framework\GameWindow.h" />
+    <ClInclude Include="Framework\Model.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Framework\Pool.h" />
+    <ClInclude Include="Framework\ResourceItem.h" />
+    <ClInclude Include="Framework\Utility.h" />
+    <ClInclude Include="Framework\Logger.h" />
+    <ClInclude Include="Framework\Program.h" />
+    <ClInclude Include="Framework\Resource.h" />
     <ClInclude Include="resource1.h" />
-    <ClInclude Include="Task.h" />
-    <ClInclude Include="WinAPI.h" />
+    <ClInclude Include="Framework\Task.h" />
+    <ClInclude Include="Framework\WinAPI.h" />
     <ClInclude Include="WindowTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3DCore.cpp" />
-    <ClCompile Include="D3DEffect.cpp" />
-    <ClCompile Include="D3DBuffer.cpp" />
-    <ClCompile Include="D3DInputLayout.cpp" />
-    <ClCompile Include="Debug.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameWindow.cpp" />
-    <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="Program.cpp" />
-    <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="WindowTest.cpp" />
+    <ClCompile Include="Framework\D3DCore.cpp" />
+    <ClCompile Include="Framework\D3DBuffer.cpp" />
+    <ClCompile Include="Framework\D3DInputLayout.cpp" />
+    <ClCompile Include="Framework\D3DRasterizer.cpp" />
+    <ClCompile Include="Framework\D3DShader.cpp" />
+    <ClCompile Include="Framework\D3DStencilState.cpp" />
+    <ClCompile Include="Framework\D3DTexture.cpp" />
+    <ClCompile Include="Framework\Debug.cpp" />
+    <ClCompile Include="Framework\D3DSampler.cpp" />
+    <ClCompile Include="Framework\Game.cpp" />
+    <ClCompile Include="Game1.cpp" />
+    <ClCompile Include="Framework\GameWindow.cpp" />
+    <ClCompile Include="Framework\Logger.cpp" />
+    <ClCompile Include="Framework\Model.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Framework\Program.cpp" />
+    <ClCompile Include="Framework\Resource.cpp" />
+    <ClCompile Include="Framework\Utility.cpp" />
+    <ClCompile Include="WindowTest.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Common.fx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Effect2.fx">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+    <FxCompile Include="Framework\GS_CreateEdge.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">g_Effect_%(Filename)</VariableName>
-      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">g_Effect_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect_%(Filename).h</HeaderFileOutput>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect_%(Filename).h</HeaderFileOutput>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)%(Filename).fxo</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)%(Filename).fxo</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Effect1.fx">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect</ShaderType>
+    <FxCompile Include="Framework\GS_ID2Quad.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Effect_%(Filename).h</HeaderFileOutput>
-      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">g_Effect_%(Filename)</VariableName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </EntryPointName>
-      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">g_Effect_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect_%(Filename).h</HeaderFileOutput>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)%(Filename).fxo</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)%(Filename).fxo</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Framework\PS_EmitColor.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\PS_NormalColor.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\PS_TextureOnly.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Framework\VS_ThroughID.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Framework\VS_Transform.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </VariableName>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </HeaderFileOutput>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bytecode_%(Filename)</VariableName>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileOutput>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +186,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Framework\PL_Effector.hlsli" />
+    <None Include="Framework\PL_Model.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
