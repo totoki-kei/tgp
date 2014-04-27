@@ -174,6 +174,10 @@ bool D3DCore::Initialize(bool debugDevice) {
 	this->clearColor[2] = 0.0f;
 	this->clearColor[3] = 1.0f;
 
+	// 初期ステートの設定
+	this->SetDefaultRenderTarget();
+	this->SetDefaultViewport();
+
 	// VSync待ち(デフォルトは待たない)
 	this->vsyncWait = 0;
 

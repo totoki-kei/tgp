@@ -1,20 +1,29 @@
 #include "Game1.h"
 
-#include "Utility.h"
+#include "Framework/Utility.h"
 
+#include "Player.h"
+
+Player *player;
 
 Game* GenerateGame() {
-	return new Game1();
+	return Game1::GetInstance();
 
 }
 
-Game1::Game1() : window(800, 600)
-{
+Game1* gm;
+Game1* Game1::GetInstance(){
+	if (!gm) gm = new Game1();
+	return gm;
+}
 
+Game1::Game1() : windowWidth(800), windowHeight(600), window(800, 600)
+{
 }
 
 Game1::~Game1()
 {
+	delete player;
 }
 
 int Game1::Initialize(){ 
@@ -23,6 +32,9 @@ int Game1::Initialize(){
 	InitializeD3DCore();
 
 	SetCursor(LoadCursor(0, IDC_ARROW));
+
+	player = new Player();
+	player->Initialize(this->core);
 
 	return 0; 
 }
@@ -39,8 +51,10 @@ void Game1::Draw(){
 	n += 1 / 60.0f;
 	if (n >= 1) n -= 1.0f;
 	core->ClearRenderTarget(DirectX::XMFLOAT4(n, 0, 0, 0));
+	core->ClearDepth();
 
 	drawTasks.Invoke(nullptr);
+	drawTasks.Sweep();
 
 	core->Update();
 }
@@ -50,23 +64,8 @@ void Game1::Draw(){
 void Game1::InitializeD3DCore(){
 	core = new D3DCore(&window);
 
-	core->Initialize(false);
+	core->Initialize(true);
 	core->SetVSyncWait(1);
 
-	// initialize shaders
-	modelVS = Shaders::Load<Shaders::VertexShader>(core, _T("VS_Transform.cso"));
-	core->AddResource(PtrToRes(modelVS));
-
-	modelPS = Shaders::Load<Shaders::PixelShader>(core, _T("PS_NormalColor.cso"));
-	core->AddResource(PtrToRes(modelPS));
-
-	modelPS2 = Shaders::Load<Shaders::PixelShader>(core, _T("PS_EmitColor.cso"));
-	core->AddResource(PtrToRes(modelPS2));
-
-	cb_scene = new D3DConstantBuffer<CB_Scene>(core);
-	core->AddResource(PtrToRes(cb_scene));
-
-	cb_obj = new D3DConstantBuffer<CB_Object>(core);
-	core->AddResource(PtrToRes(cb_obj));
-
+	Models::Model::InitializeSharedResource(core);
 }

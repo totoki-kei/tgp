@@ -1,10 +1,10 @@
 #include "WindowTest.h"
 
 #include "Debug.h"
-//
-//Game* GenerateGame() {
-//	return new WindowTest();
-//}
+
+Game* GenerateGame() {
+	return new WindowTest();
+}
 
 #define TEST_ID 1
 
@@ -78,6 +78,8 @@ void WindowTest::Draw(void) {
 #include "D3DSampler.h"
 #include "D3DStencilState.h"
 
+#include "Model.h"
+
 #include "resource1.h"
 
 HICON icon;
@@ -127,26 +129,23 @@ struct Vertex {
 	static int GetInputElementDescCount(){ return 3; }
 };
 
-struct CB_Scene {
-	XMMATRIX View;
-	XMMATRIX Projection;
-};
-
-struct CB_Object {
-	XMMATRIX World;
-};
-
 using std::shared_ptr;
 
 D3DVertexBuffer<Vertex> * vb;
 D3DIndexBuffer<> * ib;
 D3DInputLayout* ia;
 
+typedef Models::SceneParameter CB_Scene;
+typedef Models::ObjectParameter CB_Object;
+typedef Models::SubsetParameter CB_Subset;
+
 Shaders::VertexShader* vs;
+Shaders::GeometryShader* gs;
 Shaders::PixelShader* ps;
 Shaders::PixelShader* ps2;
 D3DConstantBuffer<CB_Scene>* cb_scene;
 D3DConstantBuffer<CB_Object>* cb_obj;
+D3DConstantBuffer<CB_Subset>* cb_ss;
 
 
 Shaders::VertexShader* e_vs;
@@ -173,6 +172,9 @@ int WindowTest::Initialize(void){
 	vs = Shaders::Load<Shaders::VertexShader>(core, _T("VS_Transform.cso"));
 	wnd.AddResource(shared_ptr<Resource>(vs));
 
+	gs = Shaders::Load<Shaders::GeometryShader>(core, _T("GS_CreateEdge.cso"));
+	wnd.AddResource(shared_ptr<Resource>(gs));
+
 	ps = Shaders::Load<Shaders::PixelShader>(core, _T("PS_NormalColor.cso"));
 	wnd.AddResource(shared_ptr<Resource>(ps));
 
@@ -184,6 +186,9 @@ int WindowTest::Initialize(void){
 
 	cb_obj = new D3DConstantBuffer<CB_Object>(core);
 	wnd.AddResource(shared_ptr<Resource>(cb_obj));
+
+	cb_ss = new D3DConstantBuffer<CB_Subset>(core);
+	wnd.AddResource(shared_ptr<Resource>(cb_ss));
 
 	Vertex vertices[4] = {
 		{ {  0 ,  0 , 0, 1 }, {  1,   1,   1,  1 }, { 0, 0, 0, 1 } },
@@ -198,7 +203,7 @@ int WindowTest::Initialize(void){
 	ib = new D3DIndexBuffer<>(core, 5);
 	wnd.AddResource(shared_ptr<Resource>(ib));
 
-	unsigned short indices[] = { 0, 1, 3, 2, 0 };
+	D3DIndexBuffer<>::index_t indices[] = { 0, 1, 3, 2, 0 };
 	ib->Update(indices);
 
 	ia = new D3DInputLayout(core, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), vs, 0);
@@ -254,11 +259,12 @@ int WindowTest::Initialize(void){
 void WindowTest::draw1(){
 	CB_Scene s;
 	CB_Object o;
+	CB_Subset ss;
 	s.View = XMMatrixIdentity();
-	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 100, WINDOW_HEIGHT / 100, 0, 10);
+	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 200, WINDOW_HEIGHT / 200, 0, 10);
 	cb_scene->Update(&s);
 	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
-	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
+//	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
 
 	//o.World = XMMatrixRotationZ(ticks / 256.0f);
 	//o.World = XMMatrixRotationZ(timeGetTime() / 1000.0f * XM_2PI);
@@ -266,9 +272,13 @@ void WindowTest::draw1(){
 	cb_obj->Update(&o);
 	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
 
+	ss.BaseColor = XMFLOAT4(0, 0, 0, 0);
+	ss.EdgeGradient = XMFLOAT4(1, 1, 1, 0);
+	cb_ss->Update(&ss);
+	cb_ss->Apply(Shaders::ShaderFlag::All, 2);
 
 	vs->Apply();
-	Shaders::Unapply(core, Shaders::ShaderFlag::Geometry);
+	gs->Apply();
 	e_st->Unapply();
 
 	ps->Apply();
@@ -281,26 +291,32 @@ void WindowTest::draw2(){
 
 	CB_Scene s;
 	CB_Object o;
+	CB_Subset ss;
 	s.View = XMMatrixIdentity();
-	s.Projection = XMMatrixIdentity();
-	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 100, WINDOW_HEIGHT / 100, 0, 10);
+	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 200, WINDOW_HEIGHT / 200, 0, 10);
 	cb_scene->Update(&s);
 	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
-	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
+	//e_sm->Unapply(Shaders::ShaderFlag::All, 0);
 
 	//o.World = XMMatrixRotationZ(ticks / 256.0f);
 	o.World = XMMatrixRotationZ((timeGetTime() % 1000) * XM_2PI / 1000.0f);
 	cb_obj->Update(&o);
 	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
 
+	ss.BaseColor = XMFLOAT4(0, 0, 0, 0);
+	ss.EdgeGradient = XMFLOAT4(0, 0, 0, 1);
+	cb_ss->Update(&ss);
+	cb_ss->Apply(Shaders::ShaderFlag::All, 2);
+
 
 	vs->Apply();
-	Shaders::Unapply(core, Shaders::ShaderFlag::Geometry);
-	e_st->Unapply();
+	gs->Apply();
+	//e_st->Unapply();
 
 	ps2->Apply();
-	core->SetPrimitiveTopology(D3DPrimitiveTopology::LineStrip);
-	core->DrawIndexed(5, 0, 0);
+	core->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
+	//core->DrawIndexed(5, 0, 0);
+	core->Draw(4, 0);
 
 }
 
@@ -362,7 +378,7 @@ void WindowTest::Update(void) {
 	// ===========================================
 	core->SetDefaultRenderTarget();
 	core->SetDefaultViewport();
-	core->ClearRenderTarget(XMFLOAT4(1, 1, 1, 1));
+	core->ClearRenderTarget(XMFLOAT4(1, 1, 0, 1));
 	core->ClearDepth();
 
 	draw3();

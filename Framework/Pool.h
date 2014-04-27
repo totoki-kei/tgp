@@ -9,6 +9,7 @@ class Pool {
 public:
 	typedef Pool<T, Size> Self;
 	typedef T Value;
+	typedef function<void(Value&)> Activator;
 
 	struct ListEntry {
 		ListEntry* prev;
@@ -22,9 +23,10 @@ public:
 		friend class Self;
 	private:
 		ListEntry *ent;
+		Item(ListEntry* e) : ent(e) { }
 
 	public:
-		Item(ListEntry* e) : ent(e) { }
+		Item() : ent(nullptr) { }
 
 		operator bool(){
 			return ent != nullptr;
@@ -43,7 +45,6 @@ public:
 		PoolSize = Size,
 	};
 
-	std::function<void(Value&)> Activator;
 
 private:
 	ListEntry entries[Size];
@@ -53,15 +54,19 @@ private:
 public:
 
 	Pool() {
-		for (int i = 0; i < Size - 1; i++){
+		entries[0].next = &entries[1];
+		for (int i = 1; i < Size - 1; i++){
 			entries[i].next = &entries[i + 1];
+			entries[i].prev = &entries[i - 1];
 		}
+		entries[Size - 1].prev = &entries[Size - 2];
+
 		activeHead = nullptr;
 		stockHead = &entries[0];
 	}
 
-	// InitialiserT ... void operator () (Value&) を持つファンクタ
-	Item Activate(){
+	template <typename InitFn>
+	Item Activate(InitFn &activator){
 
 		// find entry
 		ListEntry* target = stockHead;
@@ -77,9 +82,14 @@ public:
 		activeHead = target;
 
 		// activate
-		Activator(target->e);
+		activator(target->e);
 		return Item(target);
 	}
+
+	Item Activate(){
+		return Activate([](Value&){});
+	}
+
 
 	void Deactivate(Item& i){
 		auto ent = i.ent;

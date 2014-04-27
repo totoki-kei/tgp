@@ -15,7 +15,6 @@ protected:
 
 	D3DCore* core;
 	ID3D11Buffer *buffer;
-	//std::weak_ptr<BufferData> mapped;
 
 	D3DBuffer(D3DCore*);
 public:
@@ -23,8 +22,6 @@ public:
 
 	bool isDisposed();
 	void Dispose();
-
-	//std::shared_ptr<BufferData> GetData();
 
 	ID3D11Buffer* GetRawBuffer() const;
 
@@ -72,10 +69,10 @@ public:
 		core->GetDeviceContext()->IASetVertexBuffers(0, 1, &buffer, stride, offset);
 	}
 
-	void Unapply(){
+	static void Unapply(){
 		UINT stride[] = { Stride };
 		UINT offset[] = { 0 };
-		core->GetDeviceContext()->IASetVertexBuffers(0, 1, nullptr, stride, offset);
+		core->GetDeviceContext()->IASetVertexBuffers(0, 0, nullptr, stride, offset);
 	}
 
 	int GetLength() { return length; }
@@ -162,7 +159,7 @@ public:
 		}
 	}
 
-	void Unapply(Shaders::ShaderFlag targetShader, int index) {
+	static void Unapply(D3DCore *core, Shaders::ShaderFlag targetShader, int index) {
 		auto ctx = core->GetDeviceContext();
 
 		ID3D11Buffer* nullbuffer[] = { nullptr };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "D3DCore.h"
+#include "Framework/D3DCore.h"
 
 
 class Player

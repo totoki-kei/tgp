@@ -1,46 +1,39 @@
 #pragma once
 
-#include "Game.h"
-#include "GameWindow.h"
-#include "D3DCore.h"
+#include "Framework/Game.h"
+#include "Framework/GameWindow.h"
+#include "Framework/D3DCore.h"
 
-#include "D3DShader.h"
-#include "D3DBuffer.h"
+#include "Framework/D3DShader.h"
+#include "Framework/D3DBuffer.h"
 
-#include "Task.h"
-#include "Pool.h"
+#include "Framework/Task.h"
+#include "Framework/Pool.h"
+
+#include "Framework/Model.h"
 
 class Game1;
 
-struct CB_Scene {
-	XMMATRIX View;
-	XMMATRIX Projection;
-};
-
-struct CB_Object {
-	XMMATRIX World;
-};
 
 
 class Game1 : public Game
 {
+public:
 	typedef Task<int, void*, void*> task_type;
-
+	typedef Pool<task_type, 4096> pool_type;
+private:
 	GameWindow window;
 	D3DCore* core;
 
-	Shaders::VertexShader *modelVS;
-	Shaders::PixelShader  *modelPS;
-	Shaders::PixelShader  *modelPS2;
+	int windowWidth;
+	int windowHeight;
 
-	D3DConstantBuffer<CB_Scene>* cb_scene;
-	D3DConstantBuffer<CB_Object>* cb_obj;
-
-
-	Pool<task_type, 4096> taskPool;
+public:
+	pool_type taskPool;
 	task_type::container_type updateTasks;
 	task_type::container_type drawTasks;
 	
+	static Game1* GetInstance();
 
 public:
 	Game1();
@@ -49,6 +42,9 @@ public:
 	int Initialize();
 	void Update();
 	void Draw();
+
+	inline int GetWindowWidth(){ return windowWidth; }
+	inline int GetWindowHeight(){ return windowHeight; }
 
 private:
 	void InitializeD3DCore();

@@ -7,12 +7,13 @@ namespace Shaders {
 	class ComputeShader;
 
 
-	enum class ShaderFlag{
+	enum class ShaderFlag : unsigned int {
 		Vertex = 0x01,
 		Geometry = 0x02,
 		Pixel = 0x04,
 		Compute = 0x08,
 
+		Render = Vertex | Geometry | Pixel,
 		All = Vertex | Geometry | Pixel | Compute,
 	};
 }

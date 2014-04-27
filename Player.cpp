@@ -1,86 +1,127 @@
 #include "Player.h"
 
-#include "Model.h"
+#include "Framework/Model.h"
+#include "Game1.h"
+
+using namespace Models;
+using std::shared_ptr;
 
 namespace {
+	D3DCore* core;
+
 	Model* model;
 
-	D3DIndexBuffer<> *ib_sphere; // モデル用
-	D3DIndexBuffer<> *ib_corner; // ワイヤーフレーム用
+	void InitializeModel(D3DCore* core_){
+		core = core_;
 
-	void InitializeModel(D3DCore* core){
 		Vertex vertex[8 + 12];
+		SubsetParameter subsetParam;
 
 		// 頂点の初期化
-		// 立方体部分
-		vertex[0 + 0] = Vertex(XMFLOAT4(-1, -1, -1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[0 + 1] = Vertex(XMFLOAT4(-1, -1,  1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[0 + 2] = Vertex(XMFLOAT4(-1,  1, -1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[0 + 3] = Vertex(XMFLOAT4(-1,  1,  1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[0 + 4] = Vertex(XMFLOAT4( 1, -1, -1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[0 + 5] = Vertex(XMFLOAT4( 1, -1,  1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[0 + 6] = Vertex(XMFLOAT4( 1,  1, -1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[0 + 7] = Vertex(XMFLOAT4( 1,  1,  1,  1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+		{
+			int i = 0;
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+		}
 
-		D3DIndexBuffer<>::index_t corner[] = {
-			0, 1,
-			0, 2,
-			0, 4,
-			1, 3,
-			1, 5,
-			2, 3,
-			2, 6,
-			3, 7,
-			4, 5,
-			4, 6,
-			5, 7,
-			6, 7
-		};
-
-		ib_corner = new D3DIndexBuffer<>(core, corner);
-
-		// 切頂立方体部分
-		vertex[8 + 0] = Vertex(XMFLOAT4(1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 1] = Vertex(XMFLOAT4(0, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 2] = Vertex(XMFLOAT4(1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 3] = Vertex(XMFLOAT4(0, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 4] = Vertex(XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 5] = Vertex(XMFLOAT4(-1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 6] = Vertex(XMFLOAT4(-1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 7] = Vertex(XMFLOAT4(-1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 8] = Vertex(XMFLOAT4(0, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 9] = Vertex(XMFLOAT4(-1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 10] = Vertex(XMFLOAT4(0, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-		vertex[8 + 11] = Vertex(XMFLOAT4(1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
 
 		D3DIndexBuffer<>::index_t sphere[] = {
-			8 + 0, 8 + 1, 8 + 2,
-			8 + 3, 8 + 0, 8 + 4,
-			8 + 5, 8 + 3, 8 + 6,
-			8 + 1, 8 + 5, 8 + 7,
-			8 + 1, 8 + 0, 8 + 5,
-			8 + 0, 8 + 3, 8 + 5,
-			8 + 8, 8 + 3, 8 + 4,
-			8 + 6, 8 + 3, 8 + 8,
-			8 + 7, 8 + 5, 8 + 6,
-			8 + 6, 8 + 9, 8 + 7,
-			8 + 7, 8 + 10, 8 + 1,
-			8 + 10, 8 + 2, 8 + 1,
-			8 + 2, 8 + 4, 8 + 0,
-			8 + 2, 8 + 11, 8 + 4,
-			8 + 11, 8 + 8, 8 + 4,
-			8 + 9, 8 + 6, 8 + 8,
-			8 + 10, 8 + 7, 8 + 9,
-			8 + 10, 8 + 11, 8 + 2,
-			8 + 11, 8 + 10, 8 + 9,
-			8 + 11, 8 + 9, 8 + 8,
+			3, 2, 19,
+			5, 3, 8,
+			0, 5, 9,
+			2, 0, 16,
+			2, 3, 0,
+			3, 5, 0,
+			11, 5, 8,
+			9, 5, 11,
+			16, 0, 9,
+			9, 15, 16,
+			16, 18, 2,
+			18, 19, 2,
+			19, 8, 3,
+			19, 17, 8,
+			17, 11, 8,
+			15, 9, 11,
+			18, 16, 15,
+			18, 17, 19,
+			17, 18, 15,
+			17, 15, 11,
 		};
 
-		ib_sphere = new D3DIndexBuffer<>(core, sphere);
+		subsetParam.BaseColor = XMFLOAT4(0, 0, 0, 1);
+		subsetParam.EdgeGradient = XMFLOAT2(0, 1);
+		auto ss_sphere = shared_ptr<ModelSubset>(new ModelSubset(sphere, &subsetParam));
 
-		model = new Model(core, vertex, 20);
+
+		D3DIndexBuffer<>::index_t corner[] = {
+			0,    2,    1,   
+			4,    2,    3,   
+			3,    5,    6,   
+			7,    5,    0,   
+			6,    5,    8,   
+			9,    5,    7,   
+			11,     9,   10,   
+			9,    7,    0,   
+			10,     9,   15,   
+			14,     15,  16,    
+			0,     1,   16,   
+			11,     10,  15,    
+			12,     11,  17,    
+			17,     18,  13,    
+			14,     18,  15,    
+			18,     14,  16,    
+			13,     18,  19,    
+			19,    2,    4,   
+			2,    16,   1,    
+			4,     3,   19,   
+			8,    3,    6,   
+			8,     11,  12,    
+			17,     8,   12,   
+			19,     17,  13,    
+		};
+
+		subsetParam.BaseColor = XMFLOAT4(0, 0, 0, 1);
+		subsetParam.EdgeGradient = XMFLOAT2(1, 0);
+		auto ss_corner = shared_ptr<ModelSubset>(new ModelSubset(corner, &subsetParam));
 
 
+		model = new Model(vertex, 20);
+
+		model->AddSubset(ss_sphere); // 内側が先
+		model->AddSubset(ss_corner);
+
+		SceneParameter scp;
+
+		auto g = Game1::GetInstance();
+		XMVECTOR eye = { 0, 0, 10, 1 };
+		XMVECTOR lookat = { 0, 0, 0, 1 };
+		XMVECTOR up = { 0, 1, 0, 1 };
+		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 800.0f ,g->GetWindowHeight() / 800.0f, 0.25, 100);
+		scp.View = XMMatrixLookAtLH(eye, lookat, up);
+		model->UpdateSceneParams(&scp);
+
+	}
+
+	void TerminateModel(){
+		delete model;
 	}
 }
 
@@ -88,11 +129,70 @@ Player::Player()
 {
 }
 
+
+Game1::pool_type::Item task;
+int draw(Game1::task_type& task, void*, void*);
+int draw_r(Game1::task_type& task, void*, void*);
+
+int draw(Game1::task_type& task, void*, void*){
+	static float n = 0;
+
+	//model->Draw();
+	ObjectParameter obj;
+	obj.World = XMMatrixRotationX(n) * XMMatrixRotationY(n / 2);
+	model->UpdateObjectParams(&obj);
+
+	model->Draw();
+
+	n += 1 / 32.0f;
+
+	if (n > 20){
+		n = 0;
+		auto newtask = Game1::GetInstance()->taskPool.Activate();
+		newtask->SetAction(draw_r, nullptr);
+		task.InsertNext(&*newtask);
+		task.MarkToRemove();
+		Game1::GetInstance()->taskPool.Deactivate(::task);
+		::task = newtask;
+	}
+	return 0;
+}
+
+int draw_r(Game1::task_type& task, void*, void*){
+	static float n = 0;
+
+	//model->Draw();
+	ObjectParameter obj;
+	obj.World = XMMatrixRotationX(-n) * XMMatrixRotationY(-n / 2);
+	model->UpdateObjectParams(&obj);
+
+	model->Draw();
+
+	n += 1 / 32.0f;
+
+	if (n > 20) {
+		n = 0;
+		auto newtask = Game1::GetInstance()->taskPool.Activate();
+		newtask->SetAction(draw, nullptr);
+		task.InsertNext(&*newtask);
+		task.MarkToRemove();
+		Game1::GetInstance()->taskPool.Deactivate(::task);
+		::task = newtask;
+	}
+	return 0;
+}
+
+
 void Player::Initialize(D3DCore * core){
 	InitializeModel(core);
+
+	task = Game1::GetInstance()->taskPool.Activate();
+	task->SetAction(draw, nullptr);
+	Game1::GetInstance()->drawTasks.InsertHead(&*task);
 }
 
 
 Player::~Player()
 {
+	TerminateModel();
 }
