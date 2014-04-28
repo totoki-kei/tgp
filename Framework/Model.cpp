@@ -220,17 +220,109 @@ namespace Models {
 			return ReadParam(buffer, Length, p);
 		}
 
-		Vertex ReadVertex(const char* p, Vertex& tpl){
-			// TODO : é¿ëï
-			return tpl;
+		Vertex ReadVertex(char* p, Vertex& tpl){
+			Vertex v = tpl;
+
+			// à íuèÓïÒÇÃì«Ç›éÊÇË
+			{
+				char part[128];
+				char *sp = part, *ep = nullptr;
+				double n;
+				ReadParam(part, p);
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto POSITION_END;
+				v.position.x = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto POSITION_END;
+				v.position.y = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto POSITION_END;
+				v.position.z = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto POSITION_END;
+				v.position.w = n;
+				sp = ep;
+
+			}
+		POSITION_END:
+
+			// êFèÓïÒÇPÇÃì«Ç›éÊÇË
+			{
+				char part[128];
+				char *sp = part, *ep = nullptr;
+				double n;
+				ReadParam(part, p);
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto COLOR_END;
+				v.color.x = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto COLOR_END;
+				v.color.y = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto COLOR_END;
+				v.color.z = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto COLOR_END;
+				v.color.w = n;
+				sp = ep;
+
+			}
+		COLOR_END:
+
+			// êFèÓïÒÇQÇÃì«Ç›éÊÇË
+			{
+				char part[128];
+				char *sp = part, *ep = nullptr;
+				double n;
+				ReadParam(part, p);
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto EMIT_END;
+				v.emit.x = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto EMIT_END;
+				v.emit.y = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto EMIT_END;
+				v.emit.z = n;
+				sp = ep;
+
+				n = strtod(sp, &ep);
+				if (sp == ep) goto EMIT_END;
+				v.emit.w = n;
+				sp = ep;
+
+			}
+		EMIT_END:
+
+			return v;
 		}
 
-		void ReadSubsetParam(const char* p, ColoringType* color, SubsetParameter* param){
+		void ReadSubsetParam(char* p, ColoringType* color, SubsetParameter* param){
 			// TODO : é¿ëï
+
 		}
 
 		template<typename VectorT>
-		void ReadIndices(const char* p, VectorT &vec){
+		void ReadIndices(char* p, VectorT &vec){
 			// TODO : é¿ëï
 		}
 	}
@@ -300,6 +392,8 @@ namespace Models {
 		std::copy(subsets.begin(), subsets.end(), std::back_inserter(m->subsets));
 
 		fclose(fp);
+
+		return m;
 	}
 #pragma endregion
 }
