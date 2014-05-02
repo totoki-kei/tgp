@@ -47,10 +47,10 @@ void Game1::Update(){
 
 }
 void Game1::Draw(){
-	static float n = 0.0f;
-	n += 1 / 60.0f;
-	if (n >= 1) n -= 1.0f;
-	core->ClearRenderTarget(DirectX::XMFLOAT4(n, 0, 0, 0));
+	//static float n = 0.0f;
+	//n += 1 / 60.0f;
+	//if (n >= 1) n -= 1.0f;
+	core->ClearRenderTarget(DirectX::XMFLOAT4(0, 0.25, 0.5, 0));
 	core->ClearDepth();
 
 	drawTasks.Invoke(nullptr);

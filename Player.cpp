@@ -21,20 +21,20 @@ namespace {
 		{
 			int i = 0;
 			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(0, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(0, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(-1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(0, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(-1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
 			vertex[i++] = Vertex(XMFLOAT4(1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
@@ -114,7 +114,7 @@ namespace {
 		XMVECTOR eye = { 0, 0, 10, 1 };
 		XMVECTOR lookat = { 0, 0, 0, 1 };
 		XMVECTOR up = { 0, 1, 0, 1 };
-		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 800.0f ,g->GetWindowHeight() / 800.0f, 0.25, 100);
+		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 3200.0 ,g->GetWindowHeight() / 3200.0, 0.25, 100);
 		scp.View = XMMatrixLookAtLH(eye, lookat, up);
 		model->UpdateSceneParams(&scp);
 
@@ -144,7 +144,7 @@ int draw(Game1::task_type& task, void*, void*){
 
 	model->Draw();
 
-	n += 1 / 32.0f;
+	n += 1 / 32.0;
 
 	if (n > 20){
 		n = 0;

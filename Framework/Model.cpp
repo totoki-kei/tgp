@@ -317,7 +317,6 @@ namespace Models {
 		}
 
 		void ReadSubsetParam(char* p, ColoringType* color, SubsetParameter* param){
-			// TODO : 実装
 
 		}
 
@@ -386,6 +385,21 @@ namespace Models {
 				break;
 			}
 		}
+
+		// ループ終了後
+		if (indices.size() > 0){
+			// 前のグループが存在したらその分をサブセットとして確定
+			auto data = indices.data();
+			subsets.push_back(shared_ptr<ModelSubset>(new ModelSubset(
+				indices.size(),
+				data,
+				&ssparam,
+				false,
+				sscolor)));
+
+			indices.clear();
+		}
+
 
 		auto vp = vertices.data();
 		Model* m = new Model(vp, vertices.size());
