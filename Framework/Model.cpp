@@ -11,8 +11,12 @@ namespace Models {
 	D3DRasterizer *Model::rasterizer;
 	Shaders::VertexShader *Model::vsTransform;
 	Shaders::GeometryShader *Model::gsEdge;
-	Shaders::PixelShader *Model::psNormalColor;
-	Shaders::PixelShader *Model::psEmitColor;
+	Shaders::PixelShader *Model::psColoring;
+	Shaders::ClassLinkage  *Model::classLinkage;
+	Shaders::ClassInstance *Model::instNormalColor;
+	Shaders::ClassInstance *Model::instEmitColor;
+	Shaders::ClassInstance *Model::instLightedColor;
+
 
 	D3DConstantBuffer<SceneParameter> *Model::cbScene;
 	D3DConstantBuffer<ObjectParameter> *Model::cbObject;
@@ -22,14 +26,19 @@ namespace Models {
 	void Model::InitializeSharedResource(D3DCore* core){
 		Model::core = core;
 
+		classLinkage = new Shaders::ClassLinkage(core);
+		core->AddResource(PtrToRes(classLinkage));
+
 		vsTransform = Shaders::Load<Shaders::VertexShader>(core, _T("VS_Transform.cso"));
 		core->AddResource(PtrToRes(vsTransform));
 		gsEdge = Shaders::Load<Shaders::GeometryShader>(core, _T("GS_CreateEdge.cso"));
 		core->AddResource(PtrToRes(gsEdge));
-		psNormalColor = Shaders::Load<Shaders::PixelShader>(core, _T("PS_NormalColor.cso"));
-		core->AddResource(PtrToRes(psNormalColor));
-		psEmitColor = Shaders::Load<Shaders::PixelShader>(core, _T("PS_EmitColor.cso"));
-		core->AddResource(PtrToRes(psEmitColor));
+		psColoring = Shaders::Load<Shaders::PixelShader>(core, _T("PS_OutputColor.cso"), classLinkage);
+		core->AddResource(PtrToRes(psColoring));
+		
+		instNormalColor = classLinkage->Create("NormalColor");
+		instEmitColor = classLinkage->Create("EmitColor");
+		instLightedColor = classLinkage->Create("LightedColor");
 
 		inputLayout = new D3DInputLayout(core, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), vsTransform, 0);
 		core->AddResource(PtrToRes(inputLayout));
@@ -66,11 +75,15 @@ namespace Models {
 		gsEdge->Apply();
 
 		switch (colortype){
+		case COLORING_LIGHTED:
+			psColoring->Apply({ instLightedColor });
+			break;
 		case COLORING_EMIT:
-			psEmitColor->Apply();
+			psColoring->Apply({ instEmitColor });
+			break;
 		case COLORING_NORMAL:
 		default:
-			psNormalColor->Apply();
+			psColoring->Apply({ instNormalColor });
 			break;
 		}
 

@@ -12,9 +12,9 @@ void main(
 	float  dotval;
 
 	// 法線を計算
-	normal = cross(input[1].position.xyz - input[0].position.xyz, input[2].position.xyz - input[0].position.xyz);
+	normal = normalize(cross(input[1].position.xyz - input[0].position.xyz, input[2].position.xyz - input[0].position.xyz));
 	// 法線と光の方向との内積を計算
-	dotval = dot(normal, LightDirection);
+	dotval = dot(normal, normalize(LightDirection));
 	// 0以下の場合は0に補正する
 	element.light = clamp(dotval, 0, 1);
 

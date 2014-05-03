@@ -36,11 +36,10 @@ using std::shared_ptr;
 	};
 
 
-	__declspec(align(16))
 	struct SceneParameter {
 		XMMATRIX View;
 		XMMATRIX Projection;
-		XMFLOAT3 LightDirection;
+		XMFLOAT4 LightDirection;
 		XMFLOAT4 LightColor;
 	};
 
@@ -58,6 +57,7 @@ using std::shared_ptr;
 	enum ColoringType {
 		COLORING_NORMAL,
 		COLORING_EMIT,
+		COLORING_LIGHTED,
 	};
 
 	class ModelSubset {
@@ -118,8 +118,12 @@ using std::shared_ptr;
 
 		static Shaders::VertexShader *vsTransform;
 		static Shaders::GeometryShader *gsEdge;
-		static Shaders::PixelShader *psNormalColor;
-		static Shaders::PixelShader *psEmitColor;
+		static Shaders::PixelShader *psColoring;
+
+		static Shaders::ClassLinkage *classLinkage;
+		static Shaders::ClassInstance *instNormalColor;
+		static Shaders::ClassInstance *instEmitColor;
+		static Shaders::ClassInstance *instLightedColor;
 
 		static D3DConstantBuffer<SceneParameter> *cbScene;
 		static D3DConstantBuffer<ObjectParameter> *cbObject;

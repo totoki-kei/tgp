@@ -20,55 +20,55 @@ namespace {
 		// í∏ì_ÇÃèâä˙âª
 		{
 			int i = 0;
-			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, 1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(0, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, 1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(0, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(0, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, -1, 1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, -1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, -1, -1, 1), XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(-1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(0, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
-			vertex[i++] = Vertex(XMFLOAT4(1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 0, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, 1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(-1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, -1, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(0, -1, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
+			vertex[i++] = Vertex(XMFLOAT4(1, 0, -1, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 1));
 		}
 
 
 		D3DIndexBuffer<>::index_t sphere[] = {
-			3, 2, 19,
-			5, 3, 8,
-			0, 5, 9,
-			2, 0, 16,
-			2, 3, 0,
-			3, 5, 0,
-			11, 5, 8,
-			9, 5, 11,
-			16, 0, 9,
-			9, 15, 16,
-			16, 18, 2,
-			18, 19, 2,
-			19, 8, 3,
-			19, 17, 8,
-			17, 11, 8,
-			15, 9, 11,
-			18, 16, 15,
-			18, 17, 19,
-			17, 18, 15,
-			17, 15, 11,
+			3, 19, 2,
+			5, 8, 3,
+			0, 9, 5,
+			2, 16, 0,
+			2, 0, 3,
+			3, 0, 5,
+			11, 8, 5,
+			9, 11, 5,
+			16, 9, 0,
+			9, 16, 15,
+			16, 2, 18,
+			18, 2, 19,
+			19, 3, 8,
+			19, 8, 17,
+			17, 8, 11,
+			15, 11, 9,
+			18, 15, 16,
+			18, 19, 17,
+			17, 15, 18,
+			17, 11, 15,
 		};
 
 		subsetParam.BaseColor = XMFLOAT4(0, 0, 0, 1);
 		subsetParam.EdgeGradient = XMFLOAT2(0, 1);
-		auto ss_sphere = shared_ptr<ModelSubset>(new ModelSubset(sphere, &subsetParam));
+		auto ss_sphere = shared_ptr<ModelSubset>(new ModelSubset(sphere, &subsetParam, false, Models::COLORING_LIGHTED));
 
 
 		D3DIndexBuffer<>::index_t corner[] = {
@@ -100,7 +100,7 @@ namespace {
 
 		subsetParam.BaseColor = XMFLOAT4(0, 0, 0, 1);
 		subsetParam.EdgeGradient = XMFLOAT2(1, 0);
-		auto ss_corner = shared_ptr<ModelSubset>(new ModelSubset(corner, &subsetParam));
+		auto ss_corner = shared_ptr<ModelSubset>(new ModelSubset(corner, &subsetParam, false, Models::COLORING_EMIT));
 
 
 		model = new Model(vertex, 20);
@@ -116,6 +116,8 @@ namespace {
 		XMVECTOR up = { 0, 1, 0, 1 };
 		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 3200.0 ,g->GetWindowHeight() / 3200.0, 0.25, 100);
 		scp.View = XMMatrixLookAtLH(eye, lookat, up);
+		scp.LightDirection = XMFLOAT4(0, 0, -1, 1);
+		scp.LightColor = XMFLOAT4(1, 0.5, 0, 1);
 		model->UpdateSceneParams(&scp);
 
 	}
@@ -137,7 +139,6 @@ int draw_r(Game1::task_type& task, void*, void*);
 int draw(Game1::task_type& task, void*, void*){
 	static float n = 0;
 
-	//model->Draw();
 	ObjectParameter obj;
 	obj.World = XMMatrixRotationX(n) * XMMatrixRotationY(n / 2);
 	model->UpdateObjectParams(&obj);
@@ -161,7 +162,6 @@ int draw(Game1::task_type& task, void*, void*){
 int draw_r(Game1::task_type& task, void*, void*){
 	static float n = 0;
 
-	//model->Draw();
 	ObjectParameter obj;
 	obj.World = XMMatrixRotationX(-n) * XMMatrixRotationY(-n / 2);
 	model->UpdateObjectParams(&obj);

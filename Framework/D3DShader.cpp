@@ -9,7 +9,7 @@ namespace Shaders {
 	VertexShader::VertexShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreateVertexShader(data, dataSize, linkage->$Linkage, &this->shader);
+		auto result = device->CreateVertexShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;
@@ -47,7 +47,7 @@ namespace Shaders {
 	PixelShader::PixelShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreatePixelShader(data, dataSize, linkage->$Linkage, &this->shader);
+		auto result = device->CreatePixelShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;
@@ -87,7 +87,7 @@ namespace Shaders {
 	GeometryShader::GeometryShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreateGeometryShader(data, dataSize, linkage->$Linkage, &this->shader);
+		auto result = device->CreateGeometryShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;
@@ -126,7 +126,7 @@ namespace Shaders {
 	ComputeShader::ComputeShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreateComputeShader(data, dataSize, linkage->$Linkage, &this->shader);
+		auto result = device->CreateComputeShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;

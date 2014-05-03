@@ -197,7 +197,9 @@
     <FxCompile Include="Framework\HLSL\PostEffect\VS_ThroughID.hlsl">
       <Filter>Shaders\Effector</Filter>
     </FxCompile>
-    <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl" />
+    <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
+      <Filter>Shaders\Model</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tgp.rc" />
@@ -215,11 +217,13 @@
     <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli">
       <Filter>Shaders\Model</Filter>
     </None>
-    <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli" />
     <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
       <Filter>Shaders\Model</Filter>
     </None>
     <None Include="Framework\HLSL\Model\CLS_NormalColor.hlsli">
+      <Filter>Shaders\Model</Filter>
+    </None>
+    <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli">
       <Filter>Shaders\Model</Filter>
     </None>
   </ItemGroup>

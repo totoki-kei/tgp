@@ -137,7 +137,7 @@ namespace Shaders {
 			return nullptr;
 		}
 
-		ShaderT* ret = new ShaderT(core, data, size);
+		ShaderT* ret = new ShaderT(core, data, size, linkage);
 		ret->AddResource(PtrToRes(data));
 
 #ifdef _DEBUG
