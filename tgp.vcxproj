@@ -64,6 +64,7 @@
     </Link>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
+      <AdditionalOptions>/Cc</AdditionalOptions>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,31 +142,37 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Framework\GS_CreateEdge.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\GS_CreateEdge.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
     </FxCompile>
-    <FxCompile Include="Framework\GS_ID2Quad.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\PostEffect\GS_ID2Quad.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
     </FxCompile>
-    <FxCompile Include="Framework\PS_EmitColor.hlsl">
+    <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Framework\HLSL\Model\CLS_NormalColor.hlsli">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <FxCompile Include="Framework\HLSL\PostEffect\PS_TextureOnly.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="Framework\PS_NormalColor.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Framework\PS_TextureOnly.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Framework\VS_ThroughID.hlsl">
+    <FxCompile Include="Framework\HLSL\PostEffect\VS_ThroughID.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Framework\VS_Transform.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -183,8 +190,10 @@
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Framework\PL_Effector.hlsli" />
-    <None Include="Framework\PL_Model.hlsli" />
+    <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli" />
+    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli" />
+    <None Include="Framework\HLSL\Model\PL_Model.hlsli" />
+    <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

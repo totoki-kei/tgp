@@ -36,11 +36,15 @@ using std::shared_ptr;
 	};
 
 
+	__declspec(align(16))
 	struct SceneParameter {
 		XMMATRIX View;
 		XMMATRIX Projection;
+		XMFLOAT3 LightDirection;
+		XMFLOAT4 LightColor;
 	};
 
+	__declspec(align(16))
 	struct ObjectParameter {
 		XMMATRIX World;
 	};

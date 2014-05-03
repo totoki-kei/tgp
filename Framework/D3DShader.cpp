@@ -1,13 +1,15 @@
+#include <initializer_list>
+
 #include "D3DShader.h"
 
 #include "DirectXUtil.h"
 
 namespace Shaders {
 
-	VertexShader::VertexShader(D3DCore* core, const BYTE* data, SIZE_T dataSize){
+	VertexShader::VertexShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreateVertexShader(data, dataSize, nullptr, &this->shader);
+		auto result = device->CreateVertexShader(data, dataSize, linkage->$Linkage, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;
@@ -36,13 +38,16 @@ namespace Shaders {
 		context->VSSetShader(this->shader, nullptr, 0);
 	}
 
+	void VertexShader::Apply(const ClassInstanceList& clsinst){
+		auto context = core->GetDeviceContext();
+		context->VSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+	}
 
 
-
-	PixelShader::PixelShader(D3DCore* core, const BYTE* data, SIZE_T dataSize){
+	PixelShader::PixelShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreatePixelShader(data, dataSize, nullptr, &this->shader);
+		auto result = device->CreatePixelShader(data, dataSize, linkage->$Linkage, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;
@@ -71,13 +76,18 @@ namespace Shaders {
 		context->PSSetShader(this->shader, nullptr, 0);
 	}
 
+	void PixelShader::Apply(const ClassInstanceList& clsinst){
+		auto context = core->GetDeviceContext();
+		context->PSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+	}
 
 
 
-	GeometryShader::GeometryShader(D3DCore* core, const BYTE* data, SIZE_T dataSize){
+
+	GeometryShader::GeometryShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreateGeometryShader(data, dataSize, nullptr, &this->shader);
+		auto result = device->CreateGeometryShader(data, dataSize, linkage->$Linkage, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;
@@ -106,13 +116,17 @@ namespace Shaders {
 		context->GSSetShader(this->shader, nullptr, 0);
 	}
 
+	void GeometryShader::Apply(const ClassInstanceList& clsinst){
+		auto context = core->GetDeviceContext();
+		context->GSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+	}
 
 
 
-	ComputeShader::ComputeShader(D3DCore* core, const BYTE* data, SIZE_T dataSize){
+	ComputeShader::ComputeShader(D3DCore* core, const BYTE* data, SIZE_T dataSize, ClassLinkage* linkage){
 		this->core = core;
 		auto device = core->GetDevice();
-		auto result = device->CreateComputeShader(data, dataSize, nullptr, &this->shader);
+		auto result = device->CreateComputeShader(data, dataSize, linkage->$Linkage, &this->shader);
 		IF_NG(result){
 			DBG_OUT("Failed to create shader.");
 			this->shader = nullptr;
@@ -143,6 +157,11 @@ namespace Shaders {
 	}
 
 
+	void ComputeShader::Apply(const ClassInstanceList& clsinst){
+		auto context = core->GetDeviceContext();
+		context->CSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+	}
+
 	void Unapply(D3DCore* core, ShaderFlag targetShader){
 		auto ctx = core->GetDeviceContext();
 
@@ -159,6 +178,48 @@ namespace Shaders {
 			ctx->PSSetShader(nullptr, nullptr, 0);
 		}
 
+	}
+
+
+
+	ClassLinkage::ClassLinkage(D3DCore* core){
+		auto device = core->GetDevice();
+		device->CreateClassLinkage(&this->linkage);
+		NameToResource(linkage, "ClassLinkage");
+		core->AddResource(HndToRes(linkage));
+	}
+
+	ClassInstance* ClassLinkage::Create(const char* className){
+		ID3D11ClassInstance *instance;
+		linkage->CreateClassInstance(
+			className, 0, 0, 0, 0, &instance
+			);
+		// CreateClassInstanceの引数に定数バッファオフセットなどを設定するバージョンは
+		// メンバフィールドを持つclassをcreateする必要が出てから作る
+
+		NameToResourceFormated(instance, "ClassInstance_new_%s", className);
+		auto ret = new ClassInstance(instance);
+		this->AddResource(PtrToRes(ret));
+		return ret;
+	}
+
+	ClassInstance* ClassLinkage::Get(const char* instanceName, int instanceIndex){
+		ID3D11ClassInstance *instance;
+		linkage->GetClassInstance(instanceName, instanceIndex, &instance);
+
+		NameToResourceFormated(instance, "ClassInstance_%s", instanceIndex);
+		auto ret = new ClassInstance(instance);
+		this->AddResource(PtrToRes(ret));
+		return ret;
+
+
+		D3D11_CLASS_INSTANCE_DESC desc;
+		instance->GetDesc(&desc);
+	}
+
+	ClassInstance::ClassInstance(ID3D11ClassInstance* instance){
+		this->inst = instance;
+		AddResource(HndToRes(instance));
 	}
 
 }
