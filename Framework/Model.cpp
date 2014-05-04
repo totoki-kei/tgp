@@ -213,8 +213,8 @@ namespace Models {
 				return 0;
 			}
 
-			char* end = slash - 1;
-			while (iswspace(*end) && end != p) end--;
+			char* end = slash;
+			while (iswspace(*(end-1)) && (end-1) != p) end--;
 
 			int count = 0;
 			for (auto rp = start; rp != end; rp++){
@@ -224,7 +224,7 @@ namespace Models {
 			}
 			buffer[count] = '\0';
 			p = slash;
-			if (*slash != '/') p++;
+			if (*slash == '/') p++;
 
 			return count;
 		}
@@ -233,115 +233,116 @@ namespace Models {
 			return ReadParam(buffer, Length, p);
 		}
 
+		template <typename T, int Count = sizeof(T) / 4>
+		inline int ReadNums(char* &p, T& v){
+			char part[128];
+			char *sp = part, *ep = nullptr;
+			double n;
+			ReadParam(part, p);
+
+			float* fp = (float*)&v;
+
+			for (int i = 0; i < Count; i++){
+				n = strtod(sp, &ep);
+				if (sp == ep) return i;
+				*fp++ = n;
+				sp = ep;
+			}
+
+			return Count;
+
+		}
+
 		Vertex ReadVertex(char* p, Vertex& tpl){
+			// v/<position>/<color>/<emit>
 			Vertex v = tpl;
 
 			// 位置情報の読み取り
-			{
-				char part[128];
-				char *sp = part, *ep = nullptr;
-				double n;
-				ReadParam(part, p);
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto POSITION_END;
-				v.position.x = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto POSITION_END;
-				v.position.y = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto POSITION_END;
-				v.position.z = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto POSITION_END;
-				v.position.w = n;
-				sp = ep;
-
-			}
-		POSITION_END:
+			ReadNums(p, v.position);
 
 			// 色情報１の読み取り
-			{
-				char part[128];
-				char *sp = part, *ep = nullptr;
-				double n;
-				ReadParam(part, p);
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto COLOR_END;
-				v.color.x = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto COLOR_END;
-				v.color.y = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto COLOR_END;
-				v.color.z = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto COLOR_END;
-				v.color.w = n;
-				sp = ep;
-
-			}
-		COLOR_END:
+			ReadNums(p, v.color);
 
 			// 色情報２の読み取り
-			{
-				char part[128];
-				char *sp = part, *ep = nullptr;
-				double n;
-				ReadParam(part, p);
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto EMIT_END;
-				v.emit.x = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto EMIT_END;
-				v.emit.y = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto EMIT_END;
-				v.emit.z = n;
-				sp = ep;
-
-				n = strtod(sp, &ep);
-				if (sp == ep) goto EMIT_END;
-				v.emit.w = n;
-				sp = ep;
-
-			}
-		EMIT_END:
+			ReadNums(p, v.emit);
 
 			return v;
 		}
 
+		int ReadMultipleInteger(char* p, int** outptr){
+			vector<int> is;
+			char* s = p;
+			char* e = nullptr;
+
+			while ((!e || *e != '\0') && *s != '\0'){
+				int i = (int)strtol(s, &e, 10);
+				if (e == s) break;
+				is.push_back(i);
+				s = e;
+			}
+
+			*outptr = new int[is.size()];
+			int* ap = *outptr;
+			for (int i : is){
+				*ap++ = i;
+			}
+
+			return is.size();
+		}
+
 		void ReadSubsetParam(char* p, ColoringType* color, SubsetParameter* param){
+			// g/[c|e|l]/<basecolor>/<edgegradient>
+
+			char str[32];
+
+			ReadParam(str, p);
+			switch (tolower(str[0])){
+			case 'c':
+				*color = ColoringType::COLORING_NORMAL;
+				break;
+			case 'e':
+				*color = ColoringType::COLORING_EMIT;
+				break;
+			case 'l':
+			default:
+				*color = ColoringType::COLORING_LIGHTED;
+				break;
+			}
+
+			ReadNums(p, param->BaseColor);
+			ReadNums(p, param->EdgeGradient);
 
 		}
 
-		template<typename VectorT>
-		void ReadIndices(char* p, VectorT &vec){
-			// TODO : 実装
+		void ReadIndices(char* p, vector<ModelSubset::IndexBuffer::index_t> &vec){
+			// t/<indices...>
+
+			int* indices;
+			int count;
+
+			count = ReadMultipleInteger(p, &indices);
+			if (count < 3) {
+				// 不足している -> 何もプッシュしない
+				return;
+			}
+
+			int root = indices[0];
+			int first = indices[1];
+			for (int i = 2; i < count; i++){
+				int second = indices[i];
+
+				vec.push_back(root);
+				vec.push_back(first);
+				vec.push_back(second);
+
+				first = second;;
+			}
 		}
 	}
 
 	Model* Model::Load(const TCHAR* filename) {
 		FILE* fp = _tfopen(filename, _T("rt"));
-		if (fp) return nullptr;
+		if (!fp) return nullptr;
 
 		char line[256] = { 0 };
 
