@@ -314,7 +314,7 @@ namespace Models {
 
 		}
 
-		void ReadIndices(char* p, vector<ModelSubset::IndexBuffer::index_t> &vec){
+		void ReadIndices(char* p, vector<ModelSubset::IndexBuffer::index_t> &vec, int offset){
 			// t/<indices...>
 
 			int* indices;
@@ -326,10 +326,10 @@ namespace Models {
 				return;
 			}
 
-			int root = indices[0];
-			int first = indices[1];
+			int root = indices[0] + offset;
+			int first = indices[1] + offset;
 			for (int i = 2; i < count; i++){
-				int second = indices[i];
+				int second = indices[i] + offset;
 
 				vec.push_back(root);
 				vec.push_back(first);
@@ -354,6 +354,7 @@ namespace Models {
 		vtemplate.emit = XMFLOAT4(0, 0, 0, 0);
 
 		vector<Vertex> vertices;
+		int verticesOffset{ 0 };
 
 		vector<shared_ptr<ModelSubset>> subsets;
 		vector<ModelSubset::IndexBuffer::index_t> indices;
@@ -377,6 +378,10 @@ namespace Models {
 				// 頂点
 				vertices.push_back(ReadVertex(p, vtemplate));
 				break;
+			case 'b':
+				// 頂点インデックスのオフセット
+				verticesOffset = vertices.size() - (int)strtol(p, nullptr, 10);
+				break;
 			case 'g':
 				// グループ開始
 				if (indices.size() > 0){
@@ -395,7 +400,7 @@ namespace Models {
 				break;
 			case 'f':
 				// 三角形
-				ReadIndices(p, indices);
+				ReadIndices(p, indices, verticesOffset);
 				break;
 			}
 		}
