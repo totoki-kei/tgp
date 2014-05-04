@@ -120,8 +120,8 @@ namespace {
 		XMVECTOR up = { 0, 1, 0, 1 };
 		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 3200.0 ,g->GetWindowHeight() / 3200.0, 0.25, 100);
 		scp.View = XMMatrixLookAtLH(eye, lookat, up);
-		scp.LightDirection = XMFLOAT4(0, 0, -1, 1);
-		scp.LightColor = XMFLOAT4(1, 0.5, 0, 1);
+		scp.LightDirection = XMFLOAT4(1, 1, -1, 1);
+		scp.LightColor = XMFLOAT4(1, 1, 1, 1);
 		model->UpdateSceneParams(&scp);
 
 	}
