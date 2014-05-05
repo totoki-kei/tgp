@@ -12,6 +12,7 @@ public:
 	void Initialize(D3DCore * core);
 	~Player();
 
+	void Reload(bool selectFile = false);
 
 };
 

@@ -323,6 +323,7 @@ namespace Models {
 			count = ReadMultipleInteger(p, &indices);
 			if (count < 3) {
 				// 不足している -> 何もプッシュしない
+				delete[] indices;
 				return;
 			}
 
@@ -337,6 +338,7 @@ namespace Models {
 
 				first = second;
 			}
+			delete[] indices;
 		}
 	}
 

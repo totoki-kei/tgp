@@ -56,7 +56,8 @@ bool D3DCore::Initialize(bool debugDevice) {
 	// TODO: とりあえず開発中はWAPRデバイスで行く
 	IF_NG2(D3D11CreateDeviceAndSwapChain(
 		NULL,
-		D3D_DRIVER_TYPE_WARP, // D3D_DRIVER_TYPE_HARDWARE,
+		// D3D_DRIVER_TYPE_WARP, 
+		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
 		debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
 		nullptr, 

@@ -29,6 +29,16 @@ Game1::~Game1()
 int Game1::Initialize(){ 
 	window.Initialize();
 
+	window.SetMessageHandler(WM_KEYDOWN, [](UINT m, WPARAM w, LPARAM L){
+		if (w == VK_F5){
+			player->Reload();
+		}
+		else if (w == VK_F6){
+			player->Reload(true);
+		}
+		return 0;
+	});
+
 	InitializeD3DCore();
 
 	SetCursor(LoadCursor(0, IDC_ARROW));
