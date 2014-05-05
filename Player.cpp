@@ -14,6 +14,7 @@ namespace {
 	void InitializeModel(D3DCore* core_){
 		core = core_;
 
+#if 0
 		Vertex vertex[8 + 12];
 		SubsetParameter subsetParam;
 
@@ -72,30 +73,30 @@ namespace {
 
 
 		D3DIndexBuffer<>::index_t corner[] = {
-			0,    2,    1,   
-			4,    2,    3,   
-			3,    5,    6,   
-			7,    5,    0,   
-			6,    5,    8,   
-			9,    5,    7,   
-			11,     9,   10,   
-			9,    7,    0,   
-			10,     9,   15,   
-			14,     15,  16,    
-			0,     1,   16,   
-			11,     10,  15,    
-			12,     11,  17,    
-			17,     18,  13,    
-			14,     18,  15,    
-			18,     14,  16,    
-			13,     18,  19,    
-			19,    2,    4,   
-			2,    16,   1,    
-			4,     3,   19,   
-			8,    3,    6,   
-			8,     11,  12,    
-			17,     8,   12,   
-			19,     17,  13,    
+			0, 2, 1,
+			4, 2, 3,
+			3, 5, 6,
+			7, 5, 0,
+			6, 5, 8,
+			9, 5, 7,
+			11, 9, 10,
+			9, 7, 0,
+			10, 9, 15,
+			14, 15, 16,
+			0, 1, 16,
+			11, 10, 15,
+			12, 11, 17,
+			17, 18, 13,
+			14, 18, 15,
+			18, 14, 16,
+			13, 18, 19,
+			19, 2, 4,
+			2, 16, 1,
+			4, 3, 19,
+			8, 3, 6,
+			8, 11, 12,
+			17, 8, 12,
+			19, 17, 13,
 		};
 
 		subsetParam.BaseColor = XMFLOAT4(0, 0, 0, 1);
@@ -108,6 +109,9 @@ namespace {
 		model->AddSubset(ss_sphere); // “à‘¤‚ªæ
 		model->AddSubset(ss_corner);
 
+#endif // 0
+		model = Model::Load(_T("testmodel.txt"));
+
 		SceneParameter scp;
 
 		auto g = Game1::GetInstance();
@@ -116,8 +120,8 @@ namespace {
 		XMVECTOR up = { 0, 1, 0, 1 };
 		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 3200.0 ,g->GetWindowHeight() / 3200.0, 0.25, 100);
 		scp.View = XMMatrixLookAtLH(eye, lookat, up);
-		scp.LightDirection = XMFLOAT4(0, 0, -1, 1);
-		scp.LightColor = XMFLOAT4(1, 0.5, 0, 1);
+		scp.LightDirection = XMFLOAT4(1, 1, -1, 1);
+		scp.LightColor = XMFLOAT4(1, 1, 1, 1);
 		model->UpdateSceneParams(&scp);
 
 	}

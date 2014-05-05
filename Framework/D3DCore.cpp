@@ -45,10 +45,18 @@ bool D3DCore::Initialize(bool debugDevice) {
 	//D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_10_1 };
 	D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
+	/*
+	 * TODO:
+	 *  デバイスタイプをハードウェアにするかWAPRにするか 
+	 *  引数で区別できるようにする
+	 *  (可能であれば、自動推論もできるように)
+	*/
+
 	// デバイスとスワップチェインの作成
+	// TODO: とりあえず開発中はWAPRデバイスで行く
 	IF_NG2(D3D11CreateDeviceAndSwapChain(
 		NULL,
-		D3D_DRIVER_TYPE_HARDWARE,
+		D3D_DRIVER_TYPE_WARP, // D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
 		debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
 		nullptr, 
