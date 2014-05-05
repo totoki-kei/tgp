@@ -132,6 +132,7 @@
     <ClCompile Include="Framework\GameWindow.cpp" />
     <ClCompile Include="Framework\Logger.cpp" />
     <ClCompile Include="Framework\Model.cpp" />
+    <ClCompile Include="Framework\ModelLoader.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Framework\Program.cpp" />
     <ClCompile Include="Framework\Resource.cpp" />

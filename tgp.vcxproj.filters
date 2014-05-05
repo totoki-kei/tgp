@@ -58,6 +58,9 @@
     <ClCompile Include="Framework\Utility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\ModelLoader.cpp">
+      <Filter>Shaders\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
