@@ -9,7 +9,7 @@ class EmitColor : IPixelColor  {
 		float4 output;
 		float alpha;
 
-		output = input.emit;
+		output.rgb = input.emit.rgb * (1 - BaseColor.a) + BaseColor.rgb * BaseColor.a;
 
 		alpha
 			= input.edge.x * input.edge.x
@@ -17,7 +17,7 @@ class EmitColor : IPixelColor  {
 			+ input.edge.z * input.edge.z
 			+ input.edge.w * input.edge.w;
 
-		output.a *= alpha;
+		output.a = input.emit.a + alpha;
 
 		return output;
 	}

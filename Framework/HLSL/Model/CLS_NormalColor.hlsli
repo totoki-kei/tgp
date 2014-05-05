@@ -9,7 +9,7 @@ class NormalColor : IPixelColor  {
 		float4 output;
 		float alpha;
 
-		output = input.color;
+		output.rgb = input.color.rgb * (1 - BaseColor.a) + BaseColor.rgb * BaseColor.a;
 
 		alpha
 			= input.edge.x * input.edge.x
@@ -17,7 +17,7 @@ class NormalColor : IPixelColor  {
 			+ input.edge.z * input.edge.z
 			+ input.edge.w * input.edge.w;
 
-		output.a *= alpha;
+		output.a = input.color.a + alpha;
 
 		return output;
 	}

@@ -9,9 +9,11 @@ class LightedColor : IPixelColor {
 		float4 output;
 		float alpha;
 
-		output = float4(input.color.rgb * LightColor.rgb, input.color.a);
-		output *= input.light;
-		output += input.emit;
+		output.rgb  = input.color.rgb * (1 - BaseColor.a) + BaseColor.rgb * BaseColor.a;
+		output.a    = input.color.a;
+		output.rgb *= LightColor.rgb;
+		output     *= input.light;
+		output.rgb += input.emit.rgb * input.emit.a;
 
 		alpha
 			= input.edge.x * input.edge.x
