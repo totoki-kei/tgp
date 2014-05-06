@@ -66,6 +66,11 @@
       <ShaderModel>5.0</ShaderModel>
       <AdditionalOptions>/Cc</AdditionalOptions>
     </FxCompile>
+    <PostBuildEvent>
+      <Command>copy /Y $(OutputPath)*.cso $(SolutionDir)Application\.
+copy /Y $(TargetPath) $(SolutionDir)Application\.
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -85,6 +90,11 @@
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
+    <PostBuildEvent>
+      <Command>copy /Y $(OutputPath)*.cso $(SolutionDir)Application\.
+copy /Y $(TargetPath) $(SolutionDir)Application\.
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Framework\BlockArray.h" />
@@ -195,6 +205,11 @@
     <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli" />
     <None Include="Framework\HLSL\Model\PL_Model.hlsli" />
     <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Application\testmodel.txt">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

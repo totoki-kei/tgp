@@ -546,7 +546,7 @@ const double M_2_PI  =  0.636619772367581343076	  ;
 			}
 			totalLines = lineNo - 1;
 
-			for(lineNo = 1; 0 < lineNo && lineNo < totalLines; lineNo++) {
+			for(lineNo = 1; 0 < lineNo && lineNo <= totalLines; lineNo++) {
 				strcpy_s(line, lineCache.at(lineNo).c_str());
 				char* p = line;
 

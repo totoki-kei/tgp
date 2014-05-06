@@ -230,4 +230,7 @@
       <Filter>Shaders\Model</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Application\testmodel.txt" />
+  </ItemGroup>
 </Project>
