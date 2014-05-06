@@ -30,7 +30,7 @@ namespace {
 		XMVECTOR up = { 0, 1, 0, 1 };
 		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 3200.0 ,g->GetWindowHeight() / 3200.0, 0.25, 100);
 		scp.View = XMMatrixLookAtLH(eye, lookat, up);
-		scp.LightDirection = XMFLOAT4(1, 1, -1, 1);
+		scp.LightDirection = XMFLOAT4(0, 0, -1, 1);
 		scp.LightColor = XMFLOAT4(1, 1, 1, 1);
 		model->UpdateSceneParams(&scp);
 
@@ -84,7 +84,7 @@ int draw(Game1::task_type& task, void*, void*){
 
 	model->Draw();
 
-	n += 1 / 32.0;
+	n += 1 / 64.0;
 
 	if (n > 20){
 		n = 0;
@@ -107,7 +107,7 @@ int draw_r(Game1::task_type& task, void*, void*){
 
 	model->Draw();
 
-	n += 1 / 32.0f;
+	n += 1 / 64.0f;
 
 	if (n > 20) {
 		n = 0;
