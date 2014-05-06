@@ -11,11 +11,11 @@ namespace Models {
 	using std::string;
 	using std::function;
 
-const double M_PI    =  3.14159265358979323846	  ;
-const double M_PI_2  =  1.57079632679489661923	  ;
-const double M_PI_4  =  0.785398163397448309616	  ;
-const double M_1_PI  =  0.318309886183790671538	  ;
-const double M_2_PI  =  0.636619772367581343076	  ;
+	const double M_PI = 3.14159265358979323846;
+	const double M_PI_2 = 1.57079632679489661923;
+	const double M_PI_4 = 0.785398163397448309616;
+	const double M_1_PI = 0.318309886183790671538;
+	const double M_2_PI = 0.636619772367581343076;
 
 	class ModelLoader {
 		Vertex vtemplate{ XMFLOAT4(0, 0, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 0) };
@@ -72,7 +72,7 @@ const double M_2_PI  =  0.636619772367581343076	  ;
 			Value(const Value& v) :d{ v.d }, s{ v.s }, s_ok{ v.s_ok }, d_ok{ v.d_ok }, type{ v.type }{}
 
 			inline void SetDouble(double n){ d = n; d_ok = true; s_ok = false; type = VAL_NUM; }
-			inline double GetDouble() { 
+			inline double GetDouble() {
 				if (!d_ok){
 					if (s_ok){
 						d = strtod(s.c_str(), nullptr);
@@ -496,7 +496,7 @@ const double M_2_PI  =  0.636619772367581343076	  ;
 
 			/*
 			funcMap.insert({ { "" }, [this](SV& sv){
-				return EvalRet::Continue;
+			return EvalRet::Continue;
 			} });
 			*/
 
@@ -513,7 +513,7 @@ const double M_2_PI  =  0.636619772367581343076	  ;
 
 			while (ReadParam(token, p)){
 				string tokenStr(token);
-				
+
 				auto fn = funcMap.find(tokenStr);
 				if (fn != funcMap.end()) {
 					// –½—ß‚Æƒ}ƒbƒ`‚µ‚½
@@ -546,7 +546,7 @@ const double M_2_PI  =  0.636619772367581343076	  ;
 			}
 			totalLines = lineNo - 1;
 
-			for(lineNo = 1; 0 < lineNo && lineNo <= totalLines; lineNo++) {
+			for (lineNo = 1; 0 < lineNo && lineNo <= totalLines; lineNo++) {
 				strcpy_s(line, lineCache.at(lineNo).c_str());
 				char* p = line;
 
@@ -627,7 +627,7 @@ const double M_2_PI  =  0.636619772367581343076	  ;
 			}
 
 			fclose(fp);
-			
+
 			DBG_OUT("Model load finished : %s (model : #%d[%p])\n", filename, m->GetResourceID(), m);
 
 			return m;
