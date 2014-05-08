@@ -490,6 +490,11 @@ namespace Models {
 				return EvalRet::Continue;
 			} });
 
+			funcMap.insert({ { "cat" }, [this](SV& sv){
+				Value sright = Pop(sv), sleft = Pop(sv);
+				sv.push_back(sleft.$String + sright.$String);
+				return EvalRet::Continue;
+			} });
 
 
 
