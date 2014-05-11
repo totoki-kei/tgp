@@ -25,7 +25,7 @@ Resource::Resource(unsigned int id) {
 
 
 Resource::~Resource () {
-	if( !isDisposed() ) DisposeResources(); 
+	if( !isDisposed() ) DisposeResources();
 	RSC_DBG_OUT("Resource #%d deleted\n", this->ResourceId);
 }
 

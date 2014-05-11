@@ -3,25 +3,22 @@
 
 #include "PL_Model.hlsli"
 #include "IF_PixelColor.hlsli"
+#include "../Functions.hlsli"
 
 class LightedColor : IPixelColor {
 	float4 GetColor(PS_IN input) {
 		float4 output;
 		float alpha;
 
-		output.rgb  = input.color.rgb * (1 - BaseColor.a) + BaseColor.rgb * BaseColor.a;
-		output.a    = input.color.a;
-		output.rgb *= LightColor.rgb;
-		output     *= input.light;
-		output.rgb += input.emit.rgb * input.emit.a;
+		alpha = Edge(input.edge);
 
-		alpha
-			= input.edge.x * input.edge.x
-			+ input.edge.y * input.edge.y
-			+ input.edge.z * input.edge.z
-			+ input.edge.w * input.edge.w;
+		output      = input.color;
+		output.rgb *= LightColor.rgb * input.light;
+		output.a *= AlphaBalance.z;
 
-		output.a *= alpha;
+		output = MidairBlend(output, float4(input.emit.rgb * alpha, alpha) * AlphaBalance.w);
+
+		output *= BaseColor;
 
 		return output;
 	}

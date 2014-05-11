@@ -219,7 +219,7 @@ namespace Models {
 		}
 
 		void ReadSubsetParam(char* p, ColoringType* color, SubsetParameter* param){
-			// g/[c|e|l]/<basecolor>/<edgegradient>
+			// g/[c|e|l]/<basecolor>/<AlphaBalance>
 
 			char str[32];
 
@@ -238,7 +238,7 @@ namespace Models {
 			}
 
 			ReadNums(p, param->BaseColor);
-			ReadNums(p, param->EdgeGradient);
+			ReadNums(p, param->AlphaBalance);
 
 		}
 

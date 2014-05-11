@@ -11,7 +11,7 @@
 typedef std::basic_string<
 	TCHAR,
 	std::char_traits<TCHAR>,
-	std::allocator<TCHAR> 
+	std::allocator<TCHAR>
 > tstring;
 
 typedef std::function<int (UINT, WPARAM, LPARAM)> msgfn_t;

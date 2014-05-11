@@ -26,7 +26,7 @@ Game1::~Game1()
 	delete player;
 }
 
-int Game1::Initialize(){ 
+int Game1::Initialize(){
 	window.Initialize();
 
 	window.SetMessageHandler(WM_KEYDOWN, [](UINT m, WPARAM w, LPARAM L){
@@ -46,7 +46,7 @@ int Game1::Initialize(){
 	player = new Player();
 	player->Initialize(this->core);
 
-	return 0; 
+	return 0;
 }
 
 void Game1::Update(){
@@ -60,7 +60,7 @@ void Game1::Draw(){
 	//static float n = 0.0f;
 	//n += 1 / 60.0f;
 	//if (n >= 1) n -= 1.0f;
-	core->ClearRenderTarget(DirectX::XMFLOAT4(0, 0.25, 0.5, 0));
+	core->ClearRenderTarget(DirectX::XMFLOAT4(0, 0, 0 , 1));
 	core->ClearDepth();
 
 	drawTasks.Invoke(nullptr);

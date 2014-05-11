@@ -130,7 +130,7 @@ namespace Models {
 		else {
 			ConstantBuffer::data_t data;
 			data.BaseColor = XMFLOAT4(0, 0, 0, 0);
-			data.EdgeGradient = XMFLOAT2(0, 1);
+			data.AlphaBalance = XMFLOAT4(0, 1, 1, 1);
 			subsetParam.Update(&data);
 		}
 	}

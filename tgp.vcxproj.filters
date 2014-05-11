@@ -229,6 +229,9 @@
     <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli">
       <Filter>Shaders\Model</Filter>
     </None>
+    <None Include="Framework\HLSL\Functions.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Application\testmodel.txt" />

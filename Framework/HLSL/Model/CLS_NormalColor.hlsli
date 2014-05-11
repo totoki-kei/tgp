@@ -3,21 +3,23 @@
 
 #include "PL_Model.hlsli"
 #include "IF_PixelColor.hlsli"
+#include "../Functions.hlsli"
 
 class NormalColor : IPixelColor  {
 	float4 GetColor(PS_IN input) {
 		float4 output;
-		float alpha;
+		float4 lower, upper;
 
-		output.rgb = input.color.rgb * (1 - BaseColor.a) + BaseColor.rgb * BaseColor.a;
+		lower.rgb = input.color.rgb;
+		lower.a = input.color.a * AlphaBalance.z;
 
-		alpha
-			= input.edge.x * input.edge.x
-			+ input.edge.y * input.edge.y
-			+ input.edge.z * input.edge.z
-			+ input.edge.w * input.edge.w;
+		upper.rgb = input.emit.rgb;
+		upper.a = Edge(input.edge);
+		upper.a *= AlphaBalance.w;
 
-		output.a = input.color.a + alpha;
+		output = MidairBlend(lower, upper);
+
+		output *= BaseColor;
 
 		return output;
 	}

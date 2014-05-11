@@ -34,7 +34,7 @@ inline void ReleaseHandle(THandle*& h){
 
 
 template <typename THandle>
-inline std::shared_ptr< ResourceItem<THandle*> > HndToRes(THandle* p){ 
+inline std::shared_ptr< ResourceItem<THandle*> > HndToRes(THandle* p){
 	return std::shared_ptr< ResourceItem<THandle*> >(new ResourceItem<THandle*>(p, ReleaseHandle<THandle> ));
 }
 

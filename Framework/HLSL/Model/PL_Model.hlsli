@@ -17,7 +17,7 @@ cbuffer Object : register(b1) {
 
 cbuffer Subset : register(b2) {
 	float4 BaseColor;
-	float2 EdgeGradient;
+	float4 AlphaBalance;
 };
 
 

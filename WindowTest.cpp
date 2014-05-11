@@ -15,24 +15,24 @@ WindowTest::WindowTest(void) : wnd(640, 480)
 	GameWindow::SetMessageHandler(
 		WM_KEYDOWN,
 		[this](UINT msg, WPARAM wp, LPARAM lp) {
-			DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
-			
-			if(wp == VK_ESCAPE) {
-				this->wnd.SetWindowTitle("Escaped.");
-				GameWindow::ResetMessageHandler(WM_KEYDOWN);
-			}
+		DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
 
-			return 0;
-		} 
+		if (wp == VK_ESCAPE) {
+			this->wnd.SetWindowTitle("Escaped.");
+			GameWindow::ResetMessageHandler(WM_KEYDOWN);
+		}
+
+		return 0;
+	}
 	);
 
 	GameWindow::SetMessageHandler(
 		WM_MOUSEMOVE,
 		[this](UINT msg, WPARAM wp, LPARAM lp) {
-			DBG_OUT("[%10d] msg = %08X, WPARAM = %08X, LPARAM = %08X\n", GetMessageTime(), msg, wp, lp);
-			
-			return 0;
-		} 
+		DBG_OUT("[%10d] msg = %08X, WPARAM = %08X, LPARAM = %08X\n", GetMessageTime(), msg, wp, lp);
+
+		return 0;
+	}
 	);
 
 }
@@ -53,12 +53,12 @@ int WindowTest::Initialize(void){
 void WindowTest::Update(void) {
 
 	auto ret = wnd.ProcessMessage();
-	if(ret != 0) exitLoop = true;
+	if (ret != 0) exitLoop = true;
 
 	// ‚±‚±‚ÅƒtƒŒ[ƒ€‚²‚Æ‚Ìˆ—‚ðs‚¤
 	core->Clear();
 	core->Update();
-	
+
 }
 
 void WindowTest::Draw(void) {
@@ -90,16 +90,16 @@ WindowTest::WindowTest(void) : wnd(WINDOW_WIDTH, WINDOW_HEIGHT, nullptr, icon = 
 	GameWindow::SetMessageHandler(
 		WM_KEYDOWN,
 		[this](UINT msg, WPARAM wp, LPARAM lp) {
-			DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
-	
-			if (wp == VK_ESCAPE) {
-				this->wnd.SetWindowTitle(_T("Escaped."));
-				GameWindow::ResetMessageHandler(WM_KEYDOWN);
-			}
+		DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
 
-	
-			return 0;
+		if (wp == VK_ESCAPE) {
+			this->wnd.SetWindowTitle(_T("Escaped."));
+			GameWindow::ResetMessageHandler(WM_KEYDOWN);
 		}
+
+
+		return 0;
+	}
 	);
 
 	GameWindow::SetMessageHandler(
@@ -121,8 +121,8 @@ struct Vertex {
 	static D3D11_INPUT_ELEMENT_DESC* GetInputElementDesc(){
 		static D3D11_INPUT_ELEMENT_DESC desc[] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "EMIT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "EMIT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 		return desc;
 	}
@@ -191,10 +191,10 @@ int WindowTest::Initialize(void){
 	wnd.AddResource(shared_ptr<Resource>(cb_ss));
 
 	Vertex vertices[4] = {
-		{ {  0 ,  0 , 0, 1 }, {  1,   1,   1,  1 }, { 0, 0, 0, 1 } },
-		{ {  0 , .5f, 0, 1 }, {  1,   0,   1,  1 }, { 0, 1, 0, 1 } },
-		{ { .5f,  0 , 0, 1 }, {  0,   1,   1,  1 }, { 1, 0, 0, 1 } },
-		{ { .5f, .5f, 0, 1 }, {  1,   1,   0,  1 }, { 0, 0, 1, 1 } },
+		{ { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 0, 0, 0, 1 } },
+		{ { 0, .5f, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
+		{ { .5f, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
+		{ { .5f, .5f, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
 	};
 
 	vb = new D3DVertexBuffer<Vertex>(core, vertices);
@@ -219,8 +219,8 @@ int WindowTest::Initialize(void){
 
 	//e_rt = new D3DTexture2D(core, WINDOW_WIDTH / 8, WINDOW_HEIGHT / 8, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET);
 	e_rt = new D3DTexture2D(
-		core, 
-		WINDOW_WIDTH / 8, 
+		core,
+		WINDOW_WIDTH / 8,
 		WINDOW_HEIGHT / 8,
 		DXGI_FORMAT_B8G8R8A8_UNORM,
 		D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
@@ -229,7 +229,7 @@ int WindowTest::Initialize(void){
 
 	e_st = new D3DStencilState(core, false, false);
 	wnd.AddResource(shared_ptr<Resource>(e_st));
-	
+
 	{
 		D3D11_SAMPLER_DESC desc;
 		D3DSampler::GetDefaultSamplerDesc(&desc);
@@ -264,7 +264,7 @@ void WindowTest::draw1(){
 	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 200, WINDOW_HEIGHT / 200, 0, 10);
 	cb_scene->Update(&s);
 	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
-//	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
+	//	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
 
 	//o.World = XMMatrixRotationZ(ticks / 256.0f);
 	//o.World = XMMatrixRotationZ(timeGetTime() / 1000.0f * XM_2PI);
@@ -357,7 +357,7 @@ void WindowTest::Update(void) {
 	e_rt->ClearAsRenderTarget(XMFLOAT4(0, 0, 0, 0));
 
 	draw2();
-	
+
 
 	e_rt->DrawAsDc([this](HDC hdc, RECT** rect) {
 		*rect = new RECT;

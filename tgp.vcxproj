@@ -160,6 +160,7 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DisableOptimizations>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\PostEffect\GS_ID2Quad.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
@@ -193,6 +194,7 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bytecode_%(Filename)</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileOutput>
     </FxCompile>
+    <None Include="Framework\HLSL\Functions.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tgp.rc" />

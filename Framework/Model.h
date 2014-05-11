@@ -51,7 +51,7 @@ using std::shared_ptr;
 	__declspec(align(16))
 	struct SubsetParameter{
 		XMFLOAT4 BaseColor;
-		XMFLOAT2 EdgeGradient;
+		XMFLOAT4 AlphaBalance;
 	};
 
 	enum ColoringType {
@@ -74,7 +74,7 @@ using std::shared_ptr;
 		ModelSubset(const int indexCount, const D3DIndexBuffer<>::index_t *indices, const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL);
 
 		template<int Length>
-		ModelSubset(D3DIndexBuffer<>::index_t(&indices)[Length], const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL) 
+		ModelSubset(D3DIndexBuffer<>::index_t(&indices)[Length], const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL)
 		: ModelSubset(Length, indices, param, isWireframe, type) {	}
 
 		~ModelSubset();
