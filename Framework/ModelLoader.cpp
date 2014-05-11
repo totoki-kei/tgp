@@ -439,6 +439,10 @@ namespace Models {
 			} });
 
 
+			funcMap.insert({ { "vcount" }, [this](SV& sv){
+				sv.push_back(vertices.size());
+				return EvalRet::Continue;
+			} });
 			funcMap.insert({ { "line" }, [this](SV& sv){
 				sv.push_back(lineNo);
 				return EvalRet::Continue;
