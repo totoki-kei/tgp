@@ -2,15 +2,15 @@
 
 #include "Framework/Game.h"
 #include "Framework/GameWindow.h"
-#include "Framework/D3DCore.h"
+#include "Framework/Graphics/D3DCore.h"
 
-#include "Framework/D3DShader.h"
-#include "Framework/D3DBuffer.h"
+#include "Framework/Graphics/D3DShader.h"
+#include "Framework/Graphics/D3DBuffer.h"
 
 #include "Framework/Task.h"
 #include "Framework/Pool.h"
 
-#include "Framework/Model.h"
+#include "Framework/Graphics/Model.h"
 
 class Game1;
 

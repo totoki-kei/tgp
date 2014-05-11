@@ -21,11 +21,11 @@ namespace Shaders {
 	};
 }
 
-#include "Resource.h"
+#include "../Resource.h"
 #include "D3DCore.h"
 #include "D3DBuffer.h"
 
-#include "Utility.h"
+#include "../Utility.h"
 
 
 namespace Shaders {

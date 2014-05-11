@@ -10,30 +10,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\D3DBuffer.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\D3DCore.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\D3DInputLayout.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\D3DRasterizer.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\D3DSampler.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\D3DShader.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\D3DStencilState.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\D3DTexture.cpp">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Debug.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -46,9 +22,6 @@
     <ClCompile Include="Framework\Logger.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\Model.cpp">
-      <Filter>Shaders\Model</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Program.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -58,7 +31,34 @@
     <ClCompile Include="Framework\Utility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\ModelLoader.cpp">
+    <ClCompile Include="Framework\Graphics\D3DBuffer.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DCore.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DInputLayout.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DRasterizer.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DSampler.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DShader.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DStencilState.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DTexture.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\Model.cpp">
+      <Filter>Shaders\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\ModelLoader.cpp">
       <Filter>Shaders\Model</Filter>
     </ClCompile>
   </ItemGroup>
@@ -76,39 +76,6 @@
     <ClInclude Include="Framework\BlockArray.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Framework\D3DBuffer.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DCore.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DEnum.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DHeaders.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DInputLayout.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DLibs.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DRasterizer.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DSampler.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DShader.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DStencilState.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\D3DTexture.h">
-      <Filter>Framework\D11\Direct3D</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\Debug.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -123,9 +90,6 @@
     </ClInclude>
     <ClInclude Include="Framework\Logger.h">
       <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\Model.h">
-      <Filter>Shaders\Model</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Pool.h">
       <Filter>Utility</Filter>
@@ -147,6 +111,45 @@
     </ClInclude>
     <ClInclude Include="Framework\WinAPI.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DBuffer.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DCore.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DEnum.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DHeaders.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DInputLayout.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DLibs.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DRasterizer.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DSampler.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DShader.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DStencilState.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DTexture.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Input\DIKeyboardListener.h">
+      <Filter>Framework\D11\XInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\Model.h">
+      <Filter>Shaders\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

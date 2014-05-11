@@ -5,8 +5,8 @@ class D3DBuffer;
 
 #include "D3DCore.h"
 #include "D3DShader.h"
-#include "Resource.h"
-#include "DirectXUtil.h"
+#include "../Resource.h"
+#include "../DirectXUtil.h"
 
 
 class D3DBuffer :	public Resource {

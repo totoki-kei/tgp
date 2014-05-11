@@ -3,7 +3,7 @@
 #include <array>
 #include "D3DCore.h"
 #include "D3DShader.h"
-#include "Resource.h"
+#include "../Resource.h"
 
 class D3DInputLayout : public Resource{
 	D3DCore* core;

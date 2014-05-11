@@ -1,6 +1,6 @@
 #include "Player.h"
 
-#include "Framework/Model.h"
+#include "Framework/Graphics/Model.h"
 #include "Game1.h"
 
 using namespace Models;

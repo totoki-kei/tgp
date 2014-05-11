@@ -3,7 +3,7 @@
 #include "D3DCore.h"
 
 #include "D3DShader.h"
-#include "Resource.h"
+#include "../Resource.h"
 
 template <typename TextureT, typename ResourceT>
 class D3DTextureBase : public Resource

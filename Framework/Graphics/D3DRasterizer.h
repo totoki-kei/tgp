@@ -1,5 +1,5 @@
 #pragma once
-#include "Resource.h"
+#include "../Resource.h"
 #include "D3DCore.h"
 
 class D3DRasterizer :
