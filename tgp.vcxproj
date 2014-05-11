@@ -97,6 +97,7 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Framework\Input\DIMouseListener.h" />
     <ClInclude Include="Framework\Input\DIKeyboardListener.h" />
     <ClInclude Include="Framework\BlockArray.h" />
     <ClInclude Include="Framework\Graphics\D3DCore.h" />
@@ -129,6 +130,8 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <ClInclude Include="WindowTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Framework\Input\DIMouseListener.cpp" />
+    <ClCompile Include="Framework\Input\DIKeyboardListener.cpp" />
     <ClCompile Include="Framework\Graphics\D3DCore.cpp" />
     <ClCompile Include="Framework\Graphics\D3DBuffer.cpp" />
     <ClCompile Include="Framework\Graphics\D3DInputLayout.cpp" />

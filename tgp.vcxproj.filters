@@ -61,6 +61,10 @@
     <ClCompile Include="Framework\Graphics\ModelLoader.cpp">
       <Filter>Shaders\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Input\DIKeyboardListener.cpp">
+      <Filter>Framework\D11\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Input\DIMouseListener.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
@@ -151,6 +155,7 @@
     <ClInclude Include="Framework\Graphics\Model.h">
       <Filter>Shaders\Model</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\Input\DIMouseListener.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Framework">
