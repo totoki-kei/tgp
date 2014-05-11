@@ -45,6 +45,7 @@ public:
 
 	inline int GetWindowWidth(){ return windowWidth; }
 	inline int GetWindowHeight(){ return windowHeight; }
+	inline HWND GetWindowHandle(){ return window.GetWindowHandle(); }
 
 private:
 	void InitializeD3DCore();

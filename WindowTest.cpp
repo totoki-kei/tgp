@@ -15,24 +15,24 @@ WindowTest::WindowTest(void) : wnd(640, 480)
 	GameWindow::SetMessageHandler(
 		WM_KEYDOWN,
 		[this](UINT msg, WPARAM wp, LPARAM lp) {
-			DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
-			
-			if(wp == VK_ESCAPE) {
-				this->wnd.SetWindowTitle("Escaped.");
-				GameWindow::ResetMessageHandler(WM_KEYDOWN);
-			}
+		DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
 
-			return 0;
-		} 
+		if (wp == VK_ESCAPE) {
+			this->wnd.SetWindowTitle("Escaped.");
+			GameWindow::ResetMessageHandler(WM_KEYDOWN);
+		}
+
+		return 0;
+	}
 	);
 
 	GameWindow::SetMessageHandler(
 		WM_MOUSEMOVE,
 		[this](UINT msg, WPARAM wp, LPARAM lp) {
-			DBG_OUT("[%10d] msg = %08X, WPARAM = %08X, LPARAM = %08X\n", GetMessageTime(), msg, wp, lp);
-			
-			return 0;
-		} 
+		DBG_OUT("[%10d] msg = %08X, WPARAM = %08X, LPARAM = %08X\n", GetMessageTime(), msg, wp, lp);
+
+		return 0;
+	}
 	);
 
 }
@@ -45,30 +45,20 @@ WindowTest::~WindowTest(void)
 
 int WindowTest::Initialize(void){
 	wnd.Initialize();
-<<<<<<< HEAD
-	d3d10 = new D3DCore(&wnd);
-	d3d10->Initialize();
-=======
 	core = new D3DCore(&wnd);
 	core->Initialize();
->>>>>>> DX11
 	return 0;
 }
 
 void WindowTest::Update(void) {
 
 	auto ret = wnd.ProcessMessage();
-	if(ret != 0) exitLoop = true;
+	if (ret != 0) exitLoop = true;
 
 	// ここでフレームごとの処理を行う
-<<<<<<< HEAD
-	d3d10->Clear();
-	d3d10->Update();
-=======
 	core->Clear();
 	core->Update();
->>>>>>> DX11
-	
+
 }
 
 void WindowTest::Draw(void) {
@@ -77,28 +67,6 @@ void WindowTest::Draw(void) {
 
 #elif TEST_ID == 1
 
-<<<<<<< HEAD
-#include "D3DBuffer.h"
-#include "D3DEffect.h"
-#include "D3DInputLayout.h"
-#include "Effect_Effect1.h"
-
-WindowTest::WindowTest(void) : wnd(640, 480)
-{
-	wnd.SetWindowTitle(TEXT("ほげほげほげ"));
-	GameWindow::SetMessageHandler(
-		WM_KEYDOWN,
-		[this](UINT msg, WPARAM wp, LPARAM lp) {
-		DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
-
-		if (wp == VK_ESCAPE) {
-			this->wnd.SetWindowTitle("Escaped.");
-			GameWindow::ResetMessageHandler(WM_KEYDOWN);
-		}
-
-		return 0;
-	}
-=======
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
@@ -122,17 +90,16 @@ WindowTest::WindowTest(void) : wnd(WINDOW_WIDTH, WINDOW_HEIGHT, nullptr, icon = 
 	GameWindow::SetMessageHandler(
 		WM_KEYDOWN,
 		[this](UINT msg, WPARAM wp, LPARAM lp) {
-			DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
-	
-			if (wp == VK_ESCAPE) {
-				this->wnd.SetWindowTitle(_T("Escaped."));
-				GameWindow::ResetMessageHandler(WM_KEYDOWN);
-			}
+		DBG_OUT("msg = %08X, WPARAM = %08X, LPARAM = %08X\n", msg, wp, lp);
 
-	
-			return 0;
+		if (wp == VK_ESCAPE) {
+			this->wnd.SetWindowTitle(_T("Escaped."));
+			GameWindow::ResetMessageHandler(WM_KEYDOWN);
 		}
->>>>>>> DX11
+
+
+		return 0;
+	}
 	);
 
 	GameWindow::SetMessageHandler(
@@ -147,17 +114,6 @@ WindowTest::WindowTest(void) : wnd(WINDOW_WIDTH, WINDOW_HEIGHT, nullptr, icon = 
 }
 
 struct Vertex {
-<<<<<<< HEAD
-	D3DXVECTOR4 position;
-	D3DXCOLOR color;
-	D3DXCOLOR emit;
-
-	static D3D10_INPUT_ELEMENT_DESC* GetInputElementDesc(){
-		static D3D10_INPUT_ELEMENT_DESC desc[] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
-			{ "EMIT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D10_INPUT_PER_VERTEX_DATA, 0 },
-=======
 	XMFLOAT4 position;
 	XMFLOAT4 color;
 	XMFLOAT4 emit;
@@ -165,37 +121,14 @@ struct Vertex {
 	static D3D11_INPUT_ELEMENT_DESC* GetInputElementDesc(){
 		static D3D11_INPUT_ELEMENT_DESC desc[] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "EMIT",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
->>>>>>> DX11
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "EMIT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D10_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 		return desc;
 	}
 	static int GetInputElementDescCount(){ return 3; }
 };
 
-<<<<<<< HEAD
-struct CB_Scene {
-	D3DXMATRIX View;
-	D3DXMATRIX Projection;
-};
-
-struct CB_Object {
-	D3DXMATRIX World;
-};
-
-
-D3DEffect* effect;
-D3DEffect::Technique tech;
-D3DVertexBuffer<Vertex> * vb;
-D3DInputLayout* ia;
-
-WindowTest::~WindowTest(void)
-{
-	delete ia;
-	delete vb;
-	delete effect;
-=======
 using std::shared_ptr;
 
 D3DVertexBuffer<Vertex> * vb;
@@ -226,33 +159,11 @@ D3DSampler* e_sm;
 WindowTest::~WindowTest(void)
 {
 	timeEndPeriod(1);
->>>>>>> DX11
 
 	wnd.Dispose();
 }
 
 int WindowTest::Initialize(void){
-<<<<<<< HEAD
-	wnd.Initialize();
-	d3d10 = new D3DCore(&wnd);
-	d3d10->Initialize();
-
-	// ためしにエフェクトを読んでみよう
-	effect = new D3DEffect(d3d10, "Debug\\Effect1.fxo");
-	tech = effect->GetTechnique(0);
-
-
-	Vertex vs[4] = {
-		{ {  0 ,  0 , 0, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 } },
-		{ {  0 , .5f, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
-		{ { .5f, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
-		{ { .5f, .5f, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
-	};
-
-	vb = new D3DVertexBuffer<Vertex>(d3d10, vs);
-
-	ia = new D3DInputLayout(d3d10, Vertex::GetInputElementDesc(), Vertex::GetInputElementDescCount(), tech, 0);
-=======
 
 	wnd.Initialize();
 	core = new D3DCore(&wnd);
@@ -280,10 +191,10 @@ int WindowTest::Initialize(void){
 	wnd.AddResource(shared_ptr<Resource>(cb_ss));
 
 	Vertex vertices[4] = {
-		{ {  0 ,  0 , 0, 1 }, {  1,   1,   1,  1 }, { 0, 0, 0, 1 } },
-		{ {  0 , .5f, 0, 1 }, {  1,   0,   1,  1 }, { 0, 1, 0, 1 } },
-		{ { .5f,  0 , 0, 1 }, {  0,   1,   1,  1 }, { 1, 0, 0, 1 } },
-		{ { .5f, .5f, 0, 1 }, {  1,   1,   0,  1 }, { 0, 0, 1, 1 } },
+		{ { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 0, 0, 0, 1 } },
+		{ { 0, .5f, 0, 1 }, { 1, 0, 1, 1 }, { 0, 1, 0, 1 } },
+		{ { .5f, 0, 0, 1 }, { 0, 1, 1, 1 }, { 1, 0, 0, 1 } },
+		{ { .5f, .5f, 0, 1 }, { 1, 1, 0, 1 }, { 0, 0, 1, 1 } },
 	};
 
 	vb = new D3DVertexBuffer<Vertex>(core, vertices);
@@ -308,8 +219,8 @@ int WindowTest::Initialize(void){
 
 	//e_rt = new D3DTexture2D(core, WINDOW_WIDTH / 8, WINDOW_HEIGHT / 8, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET);
 	e_rt = new D3DTexture2D(
-		core, 
-		WINDOW_WIDTH / 8, 
+		core,
+		WINDOW_WIDTH / 8,
 		WINDOW_HEIGHT / 8,
 		DXGI_FORMAT_B8G8R8A8_UNORM,
 		D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
@@ -318,7 +229,7 @@ int WindowTest::Initialize(void){
 
 	e_st = new D3DStencilState(core, false, false);
 	wnd.AddResource(shared_ptr<Resource>(e_st));
-	
+
 	{
 		D3D11_SAMPLER_DESC desc;
 		D3DSampler::GetDefaultSamplerDesc(&desc);
@@ -341,13 +252,10 @@ int WindowTest::Initialize(void){
 
 	auto hr = timeBeginPeriod(1);
 
->>>>>>> DX11
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 void WindowTest::draw1(){
 	CB_Scene s;
 	CB_Object o;
@@ -356,7 +264,7 @@ void WindowTest::draw1(){
 	s.Projection = XMMatrixOrthographicLH(WINDOW_WIDTH / 200, WINDOW_HEIGHT / 200, 0, 10);
 	cb_scene->Update(&s);
 	cb_scene->Apply(Shaders::ShaderFlag::All, 0);
-//	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
+	//	e_sm->Unapply(Shaders::ShaderFlag::All, 0);
 
 	//o.World = XMMatrixRotationZ(ticks / 256.0f);
 	//o.World = XMMatrixRotationZ(timeGetTime() / 1000.0f * XM_2PI);
@@ -365,7 +273,7 @@ void WindowTest::draw1(){
 	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
 
 	ss.BaseColor = XMFLOAT4(0, 0, 0, 0);
-	ss.EdgeGradient = XMFLOAT4(1, 1, 1, 0);
+	ss.AlphaBalance = XMFLOAT4(1, 1, 1, 0);
 	cb_ss->Update(&ss);
 	cb_ss->Apply(Shaders::ShaderFlag::All, 2);
 
@@ -396,7 +304,7 @@ void WindowTest::draw2(){
 	cb_obj->Apply(Shaders::ShaderFlag::All, 1);
 
 	ss.BaseColor = XMFLOAT4(0, 0, 0, 0);
-	ss.EdgeGradient = XMFLOAT4(0, 0, 0, 1);
+	ss.AlphaBalance = XMFLOAT4(0, 0, 0, 1);
 	cb_ss->Update(&ss);
 	cb_ss->Apply(Shaders::ShaderFlag::All, 2);
 
@@ -429,45 +337,12 @@ void WindowTest::draw3(){
 
 }
 
->>>>>>> DX11
 void WindowTest::Update(void) {
 
 	auto ret = wnd.ProcessMessage();
 	if (ret != 0) exitLoop = true;
 
-<<<<<<< HEAD
-	// ここでフレームごとの処理を行う
-	d3d10->Clear();
 
-	d3d10->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleStrip);
-	vb->Apply();
-	ia->Apply();
-
-	// エフェクトのパラメータ
-	{
-		auto obj = effect->GetConstantBuffer<CB_Object>("Object");
-		auto op = obj.lock();
-		auto or = op->GetPointer();
-		D3DXMatrixRotationZ(&or->World, this->ticks / 32.0f);
-		op->Update();
-
-		auto scene = effect->GetConstantBuffer<CB_Scene>("Scene");
-		auto sp = scene.lock();
-		auto sr = sp->GetPointer();
-		D3DXMatrixIdentity(&sr->View);
-		D3DXMatrixIdentity(&sr->Projection);
-		sp->Update();
-	}
-
-	tech.SetPass(0);
-	tech.ApplyPass();
-
-	// テストコード（のちのちD3DCoreにラップする)
-	auto device = d3d10->GetDevice();
-	device->Draw(4, 0);
-
-	d3d10->Update();
-=======
 	//Sleep(100);
 	// ここでフレームごとの処理を行う
 
@@ -482,7 +357,7 @@ void WindowTest::Update(void) {
 	e_rt->ClearAsRenderTarget(XMFLOAT4(0, 0, 0, 0));
 
 	draw2();
-	
+
 
 	e_rt->DrawAsDc([this](HDC hdc, RECT** rect) {
 		*rect = new RECT;
@@ -511,7 +386,6 @@ void WindowTest::Update(void) {
 	draw1();
 
 	core->Update();
->>>>>>> DX11
 
 }
 

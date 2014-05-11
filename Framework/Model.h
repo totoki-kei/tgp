@@ -39,8 +39,11 @@ using std::shared_ptr;
 	struct SceneParameter {
 		XMMATRIX View;
 		XMMATRIX Projection;
+		XMFLOAT4 LightDirection;
+		XMFLOAT4 LightColor;
 	};
 
+	__declspec(align(16))
 	struct ObjectParameter {
 		XMMATRIX World;
 	};
@@ -48,12 +51,13 @@ using std::shared_ptr;
 	__declspec(align(16))
 	struct SubsetParameter{
 		XMFLOAT4 BaseColor;
-		XMFLOAT2 EdgeGradient;
+		XMFLOAT4 AlphaBalance;
 	};
 
 	enum ColoringType {
 		COLORING_NORMAL,
 		COLORING_EMIT,
+		COLORING_LIGHTED,
 	};
 
 	class ModelSubset {
@@ -70,7 +74,7 @@ using std::shared_ptr;
 		ModelSubset(const int indexCount, const D3DIndexBuffer<>::index_t *indices, const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL);
 
 		template<int Length>
-		ModelSubset(D3DIndexBuffer<>::index_t(&indices)[Length], const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL) 
+		ModelSubset(D3DIndexBuffer<>::index_t(&indices)[Length], const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL)
 		: ModelSubset(Length, indices, param, isWireframe, type) {	}
 
 		~ModelSubset();
@@ -114,8 +118,12 @@ using std::shared_ptr;
 
 		static Shaders::VertexShader *vsTransform;
 		static Shaders::GeometryShader *gsEdge;
-		static Shaders::PixelShader *psNormalColor;
-		static Shaders::PixelShader *psEmitColor;
+		static Shaders::PixelShader *psColoring;
+
+		static Shaders::ClassLinkage *classLinkage;
+		static Shaders::ClassInstance *instNormalColor;
+		static Shaders::ClassInstance *instEmitColor;
+		static Shaders::ClassInstance *instLightedColor;
 
 		static D3DConstantBuffer<SceneParameter> *cbScene;
 		static D3DConstantBuffer<ObjectParameter> *cbObject;

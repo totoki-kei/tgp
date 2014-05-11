@@ -215,3 +215,7 @@ pip-log.txt
 .mr.developer.cfg
 *.lem
 *.cso
+<<<<<<< HEAD
+=======
+*.exe
+>>>>>>> origin/devel

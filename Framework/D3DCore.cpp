@@ -21,9 +21,9 @@ bool D3DCore::Initialize(bool debugDevice) {
 	HRESULT hr;
 
 	// スワップチェインの設定
-	DXGI_SWAP_CHAIN_DESC scd = {0};
+	DXGI_SWAP_CHAIN_DESC scd = { 0 };
 	scd.BufferCount = 1;
-	
+
 	scd.BufferDesc.Height = wnd->GetHeight();
 	scd.BufferDesc.Width = wnd->GetWidth();
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -45,13 +45,22 @@ bool D3DCore::Initialize(bool debugDevice) {
 	//D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_10_1 };
 	D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
+	/*
+	 * TODO:
+	 *  デバイスタイプをハードウェアにするかWAPRにするか
+	 *  引数で区別できるようにする
+	 *  (可能であれば、自動推論もできるように)
+	 */
+
 	// デバイスとスワップチェインの作成
+	// TODO: とりあえず開発中はWAPRデバイスで行く
 	IF_NG2(D3D11CreateDeviceAndSwapChain(
 		NULL,
+		// D3D_DRIVER_TYPE_WARP,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
 		debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
-		nullptr, 
+		nullptr,
 		0,
 		D3D11_SDK_VERSION,
 		&scd,
@@ -59,10 +68,10 @@ bool D3DCore::Initialize(bool debugDevice) {
 		&device,
 		flevels,
 		&cxt), hr) {
-			// 失敗
+		// 失敗
 
 
-			return false;
+		return false;
 	}
 
 	NameToResource(device, "MainDevice");
@@ -74,22 +83,22 @@ bool D3DCore::Initialize(bool debugDevice) {
 	NameToResource(swapChain, "MainSwapchain");
 	dev->AddResource(HndToRes(swapChain));
 
-	
+
 
 	// バックバッファの作成
 
 	ID3D11Texture2D *backbuffer;
 	IF_NG2(swapChain->GetBuffer(
 		0,
-		__uuidof(ID3D11Texture2D), 
-		(void**)&backbuffer) , hr) {
+		__uuidof(ID3D11Texture2D),
+		(void**)&backbuffer), hr) {
 
-			// 失敗
-			return false;
+		// 失敗
+		return false;
 	}
 	IF_NG2(device->CreateRenderTargetView(backbuffer, NULL, &rtv), hr){
-			// 失敗
-			return false;
+		// 失敗
+		return false;
 	}
 	NameToResource(rtv, "DefaultRenderTargetView");
 	dev->AddResource(HndToRes(rtv));
@@ -130,8 +139,8 @@ bool D3DCore::Initialize(bool debugDevice) {
 	// バックバッファと深度バッファを設定
 	cxt->OMSetRenderTargets(1, &rtv, dsv);
 	IF_NG2(backbuffer->Release(), hr){
-			// 失敗
-			return false;
+		// 失敗
+		return false;
 	};
 
 	// ビューポートの作成
@@ -182,7 +191,7 @@ bool D3DCore::Initialize(bool debugDevice) {
 	this->vsyncWait = 0;
 
 	return true;
-	
+
 }
 
 bool D3DCore::isDisposed() {
@@ -190,7 +199,7 @@ bool D3DCore::isDisposed() {
 }
 
 void D3DCore::Dispose() {
-	if(isDisposed()) return;
+	if (isDisposed()) return;
 	cxt->ClearState();
 	device = nullptr;
 	Resource::Dispose();

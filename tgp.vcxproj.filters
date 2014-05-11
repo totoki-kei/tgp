@@ -58,6 +58,9 @@
     <ClCompile Include="Framework\Utility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\ModelLoader.cpp">
+      <Filter>Shaders\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
@@ -182,26 +185,23 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Framework\GS_CreateEdge.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\GS_CreateEdge.hlsl">
       <Filter>Shaders\Model</Filter>
     </FxCompile>
-    <FxCompile Include="Framework\GS_ID2Quad.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
+      <Filter>Shaders\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\PostEffect\GS_ID2Quad.hlsl">
       <Filter>Shaders\Effector</Filter>
     </FxCompile>
-    <FxCompile Include="Framework\VS_ThroughID.hlsl">
+    <FxCompile Include="Framework\HLSL\PostEffect\PS_TextureOnly.hlsl">
       <Filter>Shaders\Effector</Filter>
     </FxCompile>
-    <FxCompile Include="Framework\VS_Transform.hlsl">
-      <Filter>Shaders\Model</Filter>
-    </FxCompile>
-    <FxCompile Include="Framework\PS_EmitColor.hlsl">
-      <Filter>Shaders\Model</Filter>
-    </FxCompile>
-    <FxCompile Include="Framework\PS_NormalColor.hlsl">
-      <Filter>Shaders\Model</Filter>
-    </FxCompile>
-    <FxCompile Include="Framework\PS_TextureOnly.hlsl">
+    <FxCompile Include="Framework\HLSL\PostEffect\VS_ThroughID.hlsl">
       <Filter>Shaders\Effector</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
+      <Filter>Shaders\Model</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,11 +211,29 @@
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Framework\PL_Effector.hlsli">
-      <Filter>Shaders\Effector</Filter>
-    </None>
-    <None Include="Framework\PL_Model.hlsli">
+    <None Include="Framework\HLSL\Model\PL_Model.hlsli">
       <Filter>Shaders\Model</Filter>
     </None>
+    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli">
+      <Filter>Shaders\Effector</Filter>
+    </None>
+    <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli">
+      <Filter>Shaders\Model</Filter>
+    </None>
+    <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
+      <Filter>Shaders\Model</Filter>
+    </None>
+    <None Include="Framework\HLSL\Model\CLS_NormalColor.hlsli">
+      <Filter>Shaders\Model</Filter>
+    </None>
+    <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli">
+      <Filter>Shaders\Model</Filter>
+    </None>
+    <None Include="Framework\HLSL\Functions.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Application\testmodel.txt" />
   </ItemGroup>
 </Project>

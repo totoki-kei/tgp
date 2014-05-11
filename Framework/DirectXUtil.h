@@ -34,21 +34,49 @@ inline void ReleaseHandle(THandle*& h){
 
 
 template <typename THandle>
-inline std::shared_ptr< ResourceItem<THandle*> > HndToRes(THandle* p){ 
+inline std::shared_ptr< ResourceItem<THandle*> > HndToRes(THandle* p){
 	return std::shared_ptr< ResourceItem<THandle*> >(new ResourceItem<THandle*>(p, ReleaseHandle<THandle> ));
+}
+
+inline void NameToResource(IDXGIObject* handle, const char* name){
+	handle->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name) + 1, name);
+}
+
+inline void NameToResource(ID3D11DeviceChild* handle, const char* name){
+	handle->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name) + 1, name);
 }
 
 template <typename THandle>
 inline void NameToResource(THandle* handle, const char* name){
+
 	handle->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name) + 1, name);
 }
 
-template <>
-inline void NameToResource<IDXGIObject>(IDXGIObject* handle, const char* name){
+inline void NameToResourceFormated(IDXGIObject* handle, const char* nameFormat, ...){
+	va_list valist;
+	va_start(valist, nameFormat);
+	char name[32];
+	vsprintf_s(name, nameFormat, valist);
+
 	handle->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name) + 1, name);
 }
 
-template <>
-inline void NameToResource<ID3D11DeviceChild>(ID3D11DeviceChild* handle, const char* name){
+inline void NameToResourceFormated(ID3D11DeviceChild* handle, const char* nameFormat, ...){
+	va_list valist;
+	va_start(valist, nameFormat);
+	char name[32];
+	vsprintf_s(name, nameFormat, valist);
+
 	handle->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name) + 1, name);
 }
+
+template <typename THandle>
+inline void NameToResourceFormated(THandle* handle, const char* nameFormat, ...){
+	va_list valist;
+	va_start(valist, nameFormat);
+	char name[32];
+	vsprintf_s(name, nameFormat, valist);
+
+	handle->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name) + 1, name);
+}
+

@@ -43,7 +43,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
     <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\lpng\lpng169;d:\lib\lpng\zlib-1.2.5;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Debug Library;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Debug Library;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
@@ -60,11 +60,17 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;libpng16.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ShaderModel>4.0</ShaderModel>
+      <ShaderModel>5.0</ShaderModel>
+      <AdditionalOptions>/Cc</AdditionalOptions>
     </FxCompile>
+    <PostBuildEvent>
+      <Command>copy /Y $(OutputPath)*.cso $(SolutionDir)Application\.
+copy /Y $(TargetPath) $(SolutionDir)Application\.
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -79,8 +85,16 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>winmm.lib;libpng16.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
+    <PostBuildEvent>
+      <Command>copy /Y $(OutputPath)*.cso $(SolutionDir)Application\.
+copy /Y $(TargetPath) $(SolutionDir)Application\.
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Framework\BlockArray.h" />
@@ -128,6 +142,7 @@
     <ClCompile Include="Framework\GameWindow.cpp" />
     <ClCompile Include="Framework\Logger.cpp" />
     <ClCompile Include="Framework\Model.cpp" />
+    <ClCompile Include="Framework\ModelLoader.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Framework\Program.cpp" />
     <ClCompile Include="Framework\Resource.cpp" />
@@ -138,41 +153,40 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Framework\GS_CreateEdge.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\GS_CreateEdge.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="Framework\GS_ID2Quad.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DisableOptimizations>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\PostEffect\GS_ID2Quad.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="Framework\PS_EmitColor.hlsl">
+    <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Framework\HLSL\Model\CLS_NormalColor.hlsli">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+    <FxCompile Include="Framework\HLSL\PostEffect\PS_TextureOnly.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="Framework\PS_NormalColor.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Framework\PS_TextureOnly.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="Framework\VS_ThroughID.hlsl">
+    <FxCompile Include="Framework\HLSL\PostEffect\VS_ThroughID.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="Framework\VS_Transform.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -180,6 +194,7 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bytecode_%(Filename)</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileOutput>
     </FxCompile>
+    <None Include="Framework\HLSL\Functions.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tgp.rc" />
@@ -188,8 +203,15 @@
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Framework\PL_Effector.hlsli" />
-    <None Include="Framework\PL_Model.hlsli" />
+    <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli" />
+    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli" />
+    <None Include="Framework\HLSL\Model\PL_Model.hlsli" />
+    <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Application\testmodel.txt">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
