@@ -1,7 +1,7 @@
 #pragma once
 #include "D3DCore.h"
-#include "Resource.h"
-#include "DirectXUtil.h"
+#include "../Resource.h"
+#include "../DirectXUtil.h"
 
 class D3DStencilState :
 	public Resource

@@ -97,24 +97,25 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Framework\Input\DIKeyboardListener.h" />
     <ClInclude Include="Framework\BlockArray.h" />
-    <ClInclude Include="Framework\D3DCore.h" />
-    <ClInclude Include="Framework\D3DBuffer.h" />
-    <ClInclude Include="Framework\D3DEnum.h" />
-    <ClInclude Include="Framework\D3DHeaders.h" />
-    <ClInclude Include="Framework\D3DInputLayout.h" />
-    <ClInclude Include="Framework\D3DLibs.h" />
-    <ClInclude Include="Framework\D3DRasterizer.h" />
-    <ClInclude Include="Framework\D3DShader.h" />
-    <ClInclude Include="Framework\D3DStencilState.h" />
-    <ClInclude Include="Framework\D3DTexture.h" />
+    <ClInclude Include="Framework\Graphics\D3DCore.h" />
+    <ClInclude Include="Framework\Graphics\D3DBuffer.h" />
+    <ClInclude Include="Framework\Graphics\D3DEnum.h" />
+    <ClInclude Include="Framework\Graphics\D3DHeaders.h" />
+    <ClInclude Include="Framework\Graphics\D3DInputLayout.h" />
+    <ClInclude Include="Framework\Graphics\D3DLibs.h" />
+    <ClInclude Include="Framework\Graphics\D3DRasterizer.h" />
+    <ClInclude Include="Framework\Graphics\D3DShader.h" />
+    <ClInclude Include="Framework\Graphics\D3DStencilState.h" />
+    <ClInclude Include="Framework\Graphics\D3DTexture.h" />
     <ClInclude Include="Framework\Debug.h" />
-    <ClInclude Include="Framework\D3DSampler.h" />
+    <ClInclude Include="Framework\Graphics\D3DSampler.h" />
     <ClInclude Include="Framework\DirectXUtil.h" />
     <ClInclude Include="Framework\Game.h" />
     <ClInclude Include="Game1.h" />
     <ClInclude Include="Framework\GameWindow.h" />
-    <ClInclude Include="Framework\Model.h" />
+    <ClInclude Include="Framework\Graphics\Model.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Framework\Pool.h" />
     <ClInclude Include="Framework\ResourceItem.h" />
@@ -128,21 +129,21 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <ClInclude Include="WindowTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Framework\D3DCore.cpp" />
-    <ClCompile Include="Framework\D3DBuffer.cpp" />
-    <ClCompile Include="Framework\D3DInputLayout.cpp" />
-    <ClCompile Include="Framework\D3DRasterizer.cpp" />
-    <ClCompile Include="Framework\D3DShader.cpp" />
-    <ClCompile Include="Framework\D3DStencilState.cpp" />
-    <ClCompile Include="Framework\D3DTexture.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DCore.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DBuffer.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DInputLayout.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DRasterizer.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DShader.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DStencilState.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DTexture.cpp" />
     <ClCompile Include="Framework\Debug.cpp" />
-    <ClCompile Include="Framework\D3DSampler.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DSampler.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Framework\GameWindow.cpp" />
     <ClCompile Include="Framework\Logger.cpp" />
-    <ClCompile Include="Framework\Model.cpp" />
-    <ClCompile Include="Framework\ModelLoader.cpp" />
+    <ClCompile Include="Framework\Graphics\Model.cpp" />
+    <ClCompile Include="Framework\Graphics\ModelLoader.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Framework\Program.cpp" />
     <ClCompile Include="Framework\Resource.cpp" />

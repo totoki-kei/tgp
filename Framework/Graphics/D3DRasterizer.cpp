@@ -1,6 +1,6 @@
 #include "D3DRasterizer.h"
 
-#include "DirectXUtil.h"
+#include "../DirectXUtil.h"
 
 
 D3DRasterizer::D3DRasterizer(D3DCore* core)
