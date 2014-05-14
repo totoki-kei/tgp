@@ -20,16 +20,16 @@
       <Filter>Framework\D11</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Logger.cpp">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Program.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Resource.cpp">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Utility.cpp">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Graphics\D3DBuffer.cpp">
       <Filter>Framework\D11\Direct3D</Filter>
@@ -56,15 +56,20 @@
       <Filter>Framework\D11\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Graphics\Model.cpp">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Graphics\ModelLoader.cpp">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Input\DIKeyboardListener.cpp">
-      <Filter>Framework\D11\XInput</Filter>
+      <Filter>Framework\D11\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\Input\DIMouseListener.cpp" />
+    <ClCompile Include="Framework\Input\DIDispatcher.cpp">
+      <Filter>Framework\D11\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Input\DIMouseListener.cpp">
+      <Filter>Framework\D11\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
@@ -78,7 +83,7 @@
       <Filter>App\Game1</Filter>
     </ClInclude>
     <ClInclude Include="Framework\BlockArray.h">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Debug.h">
       <Filter>Framework</Filter>
@@ -93,25 +98,25 @@
       <Filter>Framework\D11</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Logger.h">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Pool.h">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Program.h">
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Resource.h">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Framework\ResourceItem.h">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Task.h">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Utility.h">
-      <Filter>Utility</Filter>
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Framework\WinAPI.h">
       <Filter>Framework</Filter>
@@ -150,19 +155,24 @@
       <Filter>Framework\D11\Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Input\DIKeyboardListener.h">
-      <Filter>Framework\D11\XInput</Filter>
+      <Filter>Framework\D11\Input</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Graphics\Model.h">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </ClInclude>
-    <ClInclude Include="Framework\Input\DIMouseListener.h" />
+    <ClInclude Include="Framework\Input\DIDispatcher.h">
+      <Filter>Framework\D11\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Input\DIMouseListener.h">
+      <Filter>Framework\D11\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Input\DICommon.h">
+      <Filter>Framework\D11\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Framework">
       <UniqueIdentifier>{fc5384fd-6802-46c2-bf10-f7d5b6a585ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utility">
-      <UniqueIdentifier>{69eec3c7-d7f1-4921-a1d2-c6b2ffd88360}</UniqueIdentifier>
     </Filter>
     <Filter Include="App">
       <UniqueIdentifier>{ebce71eb-d8c5-44a8-b77e-4aad8f886e69}</UniqueIdentifier>
@@ -173,43 +183,46 @@
     <Filter Include="Framework\D11\Direct3D">
       <UniqueIdentifier>{5cdee213-2112-49eb-ba71-861e082454c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{249cddfe-2e58-4dd4-88ab-d4b0eafe49f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\Model">
-      <UniqueIdentifier>{66d9f34c-bce8-4154-8f64-2bb69a66cc79}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\Effector">
-      <UniqueIdentifier>{7c5df23f-80f2-43ca-a56e-85f31cd151b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Framework\D11\XInput">
-      <UniqueIdentifier>{e87c3751-e629-4447-9d23-e37405948e87}</UniqueIdentifier>
-    </Filter>
     <Filter Include="App\WindowTest">
       <UniqueIdentifier>{5eb4e367-c10d-443c-a293-ce804669c592}</UniqueIdentifier>
     </Filter>
     <Filter Include="App\Game1">
       <UniqueIdentifier>{64c06b93-4f86-419f-9f24-03dd3ac6c852}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Framework\D11\Input">
+      <UniqueIdentifier>{e87c3751-e629-4447-9d23-e37405948e87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Utility">
+      <UniqueIdentifier>{69eec3c7-d7f1-4921-a1d2-c6b2ffd88360}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D11\Direct3D\Shaders">
+      <UniqueIdentifier>{249cddfe-2e58-4dd4-88ab-d4b0eafe49f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D11\Direct3D\Shaders\Model">
+      <UniqueIdentifier>{66d9f34c-bce8-4154-8f64-2bb69a66cc79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D11\Direct3D\Shaders\Effector">
+      <UniqueIdentifier>{7c5df23f-80f2-43ca-a56e-85f31cd151b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Framework\HLSL\Model\GS_CreateEdge.hlsl">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\PostEffect\GS_ID2Quad.hlsl">
-      <Filter>Shaders\Effector</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\PostEffect\PS_TextureOnly.hlsl">
-      <Filter>Shaders\Effector</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\PostEffect\VS_ThroughID.hlsl">
-      <Filter>Shaders\Effector</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,25 +233,25 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\HLSL\Model\PL_Model.hlsli">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </None>
     <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli">
-      <Filter>Shaders\Effector</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </None>
     <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </None>
     <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </None>
     <None Include="Framework\HLSL\Model\CLS_NormalColor.hlsli">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </None>
     <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli">
-      <Filter>Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </None>
     <None Include="Framework\HLSL\Functions.hlsli">
-      <Filter>Shaders</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
