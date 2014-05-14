@@ -61,6 +61,9 @@
     <ClCompile Include="Framework\Graphics\ModelLoader.cpp">
       <Filter>Shaders\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Graphics\ImageLoader.cpp">
+      <Filter>Framework\D11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
@@ -150,6 +153,9 @@
     </ClInclude>
     <ClInclude Include="Framework\Graphics\Model.h">
       <Filter>Shaders\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\ImageLoader.h">
+      <Filter>Framework\D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

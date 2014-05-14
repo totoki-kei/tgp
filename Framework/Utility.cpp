@@ -26,3 +26,31 @@ BYTE* LoadFileToMemory(const TCHAR* filename, /* out */ int *size){
 	*size = srcSize;
 	return buffer;
 }
+
+
+size_t ConvertStringWidth(char *dst, int dstSize, const char *src){
+	strcpy_s(dst, dstSize, src);
+	return strlen(dst);
+}
+size_t ConvertStringWidth(char *dst, int dstSize, const wchar_t *src){
+	int bytes = WideCharToMultiByte(
+		CP_ACP,
+		0,
+		src, wcslen(src),
+		dst, dstSize,
+		nullptr, nullptr);
+	return bytes;
+}
+size_t ConvertStringWidth(wchar_t *dst, int dstSize, const char *src){
+	int words = MultiByteToWideChar(
+		CP_ACP,
+		0,
+		src, strlen(src),
+		dst, dstSize);
+
+	return words;
+}
+size_t ConvertStringWidth(wchar_t *dst, int dstSize, const wchar_t *src){
+	wcscpy_s(dst, dstSize, src);
+	return wcslen(dst);
+}

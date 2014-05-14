@@ -116,6 +116,7 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <ClInclude Include="Game1.h" />
     <ClInclude Include="Framework\GameWindow.h" />
     <ClInclude Include="Framework\Graphics\Model.h" />
+    <ClInclude Include="Framework\Graphics\ImageLoader.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Framework\Pool.h" />
     <ClInclude Include="Framework\ResourceItem.h" />
@@ -144,6 +145,7 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <ClCompile Include="Framework\Logger.cpp" />
     <ClCompile Include="Framework\Graphics\Model.cpp" />
     <ClCompile Include="Framework\Graphics\ModelLoader.cpp" />
+    <ClCompile Include="Framework\Graphics\ImageLoader.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Framework\Program.cpp" />
     <ClCompile Include="Framework\Resource.cpp" />
