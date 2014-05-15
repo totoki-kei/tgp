@@ -7,10 +7,9 @@ class ImageData
 
 	int width;
 	int height;
-	DXGI_FORMAT format;
 	BYTE* data;
 	
-	inline ImageData() : width{ 0 }, height{ 0 }, format{ DXGI_FORMAT_UNKNOWN }, data{ nullptr } { }
+	inline ImageData() : width{ 0 }, height{ 0 }, data{ nullptr } { }
 public:
 	inline ~ImageData() { delete[] data; }
 
@@ -18,7 +17,7 @@ public:
 
 	inline int GetWidth(){ return width; }
 	inline int GetHeight(){ return height; }
-	inline DXGI_FORMAT GetFormat(){ return format; }
+	inline DXGI_FORMAT GetFormat(){ return DXGI_FORMAT_R8G8B8A8_UNORM; }
 	inline BYTE* GetData(){ return data; }
 };
 
