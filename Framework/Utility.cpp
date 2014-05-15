@@ -36,7 +36,7 @@ size_t ConvertStringWidth(char *dst, int dstSize, const wchar_t *src){
 	int bytes = WideCharToMultiByte(
 		CP_ACP,
 		0,
-		src, wcslen(src),
+		src, -1,
 		dst, dstSize,
 		nullptr, nullptr);
 	return bytes;
@@ -45,7 +45,7 @@ size_t ConvertStringWidth(wchar_t *dst, int dstSize, const char *src){
 	int words = MultiByteToWideChar(
 		CP_ACP,
 		0,
-		src, strlen(src),
+		src, -1,
 		dst, dstSize);
 
 	return words;
