@@ -23,6 +23,6 @@ struct DIPoint{
 };
 
 struct DIMousePointHistory {
-	DWORD x, y;
+	int x, y;
 	DWORD timestamp;
 };

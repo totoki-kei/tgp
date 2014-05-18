@@ -24,7 +24,7 @@ public:
 	DIMouseListener(DIMouseListenType type, const DIRange& x, const DIRange& y);
 	~DIMouseListener();
 
-	void Update(DIMousePointHistory points[], HWND hWnd);
+	void Update(DIMousePointHistory points[]);
 
 	inline bool GetStatus() const { return stat; }
 	inline double GetLastValueX() const { return lastValueX; }
