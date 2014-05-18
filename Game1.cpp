@@ -4,12 +4,20 @@
 
 #include "Player.h"
 
+#include "Framework/Input/DIDispatcher.h"
+#include "Framework/Debug.h"
+
 Player *player;
 
 Game* GenerateGame() {
 	return Game1::GetInstance();
 
 }
+
+DIDispatcher* disp;
+std::weak_ptr<DIMouseListener> mpos;
+std::weak_ptr<DIMouseListener> mvel;
+std::weak_ptr<DIMouseListener> macc;
 
 Game1* gm;
 Game1* Game1::GetInstance(){
@@ -46,6 +54,13 @@ int Game1::Initialize(){
 	player = new Player();
 	player->Initialize(this->core);
 
+	disp = new DIDispatcher(&window);
+	window.AddResource(PtrToRes(disp));
+
+	mpos = disp->AddMouseListener(DIMouseListenType::Position, DIRange{ 0, 0 }, DIRange{ 0, 0 });
+	mvel = disp->AddMouseListener(DIMouseListenType::Velocity, DIRange{ 0, 0 }, DIRange{ 0, 0 });
+	macc = disp->AddMouseListener(DIMouseListenType::Acceleration, DIRange{ 0, 0 }, DIRange{ 0, 0 });
+
 	return 0;
 }
 
@@ -54,6 +69,28 @@ void Game1::Update(){
 	if (ret != 0) exitLoop = true;
 
 	updateTasks.Invoke(nullptr);
+
+	disp->Update();
+
+
+	double x, y, vx, vy, ax, ay;
+	{
+		auto mll = mpos.lock();
+		x = mll->GetLastValueX();
+		y = mll->GetLastValueY();
+	}
+	{
+		auto mll = mvel.lock();
+		vx = mll->GetLastValueX();
+		vy = mll->GetLastValueY();
+	}
+	{
+		auto mll = macc.lock();
+		ax = mll->GetLastValueX();
+		ay = mll->GetLastValueY();
+	}
+	DBG_OUT("x = %0.2f(%0.2f, %0.2f), y = %0.2f(%0.2f, %0.2f)\n", x, vx, ax, y, vy, ay);
+
 
 }
 void Game1::Draw(){
