@@ -54,6 +54,8 @@ ImageData* ImageData::Load(const TCHAR* filename){
 		for (int h = 0; h < bmpData.Height; h++){
 			BYTE* scan = scan0 + stride * h;
 			for (int w = 0; w < bmpData.Width; w++){
+				// ピクセルフォーマットの変換(ARGB -> RGBA)
+				// TODO 後でテストして変換方法が正しいか確認する
 				ARGB* argb = (ARGB*)scan;
 				dst->v = ((*argb << 8) & 0xFFFFFF00) | ((*argb >> 24) & 0x000000FF);
 
