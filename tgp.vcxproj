@@ -97,6 +97,9 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Framework\Input\DIHeader.h" />
+    <ClInclude Include="Framework\Input\DILibs.h" />
+    <ClInclude Include="Framework\Input\DIXInputListener.h" />
     <ClInclude Include="Framework\Input\DIDispatcher.h" />
     <ClInclude Include="Framework\Input\DICommon.h" />
     <ClInclude Include="Framework\Input\DIMouseListener.h" />
@@ -133,6 +136,7 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <ClInclude Include="WindowTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Framework\Input\DIXInputListener.cpp" />
     <ClCompile Include="Framework\Input\DIDispatcher.cpp" />
     <ClCompile Include="Framework\Input\DIMouseListener.cpp" />
     <ClCompile Include="Framework\Input\DIKeyboardListener.cpp" />

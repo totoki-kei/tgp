@@ -73,6 +73,9 @@
     <ClCompile Include="Framework\Graphics\ImageLoader.cpp">
       <Filter>Framework\D11</Filter>
     </ClCompile>
+    <ClCompile Include="Framework\Input\DIXInputListener.cpp">
+      <Filter>Framework\D11\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
@@ -174,6 +177,15 @@
     </ClInclude>
     <ClInclude Include="Framework\Graphics\ImageLoader.h">
       <Filter>Framework\D11</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Input\DIXInputListener.h">
+      <Filter>Framework\D11\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Input\DILibs.h">
+      <Filter>Framework\D11\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Input\DIHeader.h">
+      <Filter>Framework\D11\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
