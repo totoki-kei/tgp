@@ -17,7 +17,7 @@ public:
 
 	inline int GetWidth(){ return width; }
 	inline int GetHeight(){ return height; }
-	inline DXGI_FORMAT GetFormat(){ return DXGI_FORMAT_R8G8B8A8_UNORM; }
+	inline DXGI_FORMAT GetFormat(){ return DXGI_FORMAT_B8G8R8A8_UNORM; }
 	inline BYTE* GetData(){ return data; }
 };
 
