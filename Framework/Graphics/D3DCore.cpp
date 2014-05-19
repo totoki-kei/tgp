@@ -1,4 +1,5 @@
 #include "D3DCore.h"
+#include "D3DLibs.h"
 #include "../DirectXUtil.h"
 
 #include "../Debug.h"
@@ -47,7 +48,7 @@ bool D3DCore::Initialize(bool debugDevice) {
 
 	/*
 	 * TODO:
-	 *  デバイスタイプをハードウェアにするかWAPRにするか
+	 *  デバイスタイプをハードウェアにするかWARPにするか
 	 *  引数で区別できるようにする
 	 *  (可能であれば、自動推論もできるように)
 	 */

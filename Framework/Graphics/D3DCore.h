@@ -4,7 +4,6 @@ class D3DCore;
 
 // DXGIŠÖŒW‚Ì‚à‚Ì‚ªÄ’è‹`‚³‚ê‚é‚½‚ßAˆê•”Œx‚ğ–³Œø‚É
 #include "D3DHeaders.h"
-#include "D3DLibs.h"
 
 #include "../Resource.h"
 #include "../GameWindow.h"
