@@ -88,11 +88,11 @@ int draw(Game1::task_type& task, void*, void*){
 
 	if (n > 20){
 		n = 0;
-		auto newtask = Game1::GetInstance()->taskPool.Activate();
+		auto newtask = Game1::GetInstance()->taskPool.Get();
 		newtask->SetAction(draw_r, nullptr);
 		task.InsertNext(&*newtask);
-		task.MarkToRemove();
-		Game1::GetInstance()->taskPool.Deactivate(::task);
+		task.RemoveImmidiately();
+		//Game1::GetInstance()->taskPool.Deactivate(::task);
 		::task = newtask;
 	}
 	return 0;
@@ -111,11 +111,11 @@ int draw_r(Game1::task_type& task, void*, void*){
 
 	if (n > 20) {
 		n = 0;
-		auto newtask = Game1::GetInstance()->taskPool.Activate();
+		auto newtask = Game1::GetInstance()->taskPool.Get();
 		newtask->SetAction(draw, nullptr);
 		task.InsertNext(&*newtask);
-		task.MarkToRemove();
-		Game1::GetInstance()->taskPool.Deactivate(::task);
+		task.RemoveImmidiately();
+//		Game1::GetInstance()->taskPool.Deactivate(::task);
 		::task = newtask;
 	}
 	return 0;
@@ -125,7 +125,7 @@ int draw_r(Game1::task_type& task, void*, void*){
 void Player::Initialize(D3DCore * core){
 	InitializeModel(core);
 
-	task = Game1::GetInstance()->taskPool.Activate();
+	task = Game1::GetInstance()->taskPool.Get();
 	task->SetAction(draw, nullptr);
 	Game1::GetInstance()->drawTasks.InsertHead(&*task);
 }

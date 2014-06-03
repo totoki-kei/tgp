@@ -6,7 +6,7 @@
 
 using std::function;
 
-template < typename TRet = int, typename TParam = void*, typename TExtraParam = void*>
+template < typename TRet = int, typename TParam = void*, typename TRuntimeParam = void*>
 class Task {
 public:
 	class Container;
@@ -15,10 +15,10 @@ public:
 
 	typedef TRet ret_type;
 	typedef TParam param_type;
-	typedef TExtraParam exparam_type;
+	typedef TRuntimeParam rtparam_type;
 	typedef Task<TRet, TParam> task_type;
 	typedef Container container_type;
-	typedef function < ret_type(task_type&, param_type, exparam_type) > act_fn;
+	typedef function < ret_type(task_type&, param_type, rtparam_type) > act_fn;
 
 private:
 	act_fn action;
@@ -35,6 +35,7 @@ private:
 	int id;
 
 	bool toRemove;
+	bool removeImmidiately;
 public:
 	
 	template<class TAction>
@@ -48,7 +49,7 @@ public:
 		toRemove = false;
 	}
 
-	Task() : Task([](task_type&, param_type, exparam_type){ return (ret_type)0; }, (param_type)0){}
+	Task() : Task([](task_type&, param_type, rtparam_type){ return (ret_type)0; }, (param_type)0){}
 	
 	template<class TAction>
 	void SetAction(TAction act, TParam param)
@@ -72,11 +73,13 @@ public:
 		this->next = task->next->prev = task;
 	}
 
-	ret_type Invoke(exparam_type ext) {
+	ret_type Invoke(rtparam_type ext) {
 		return action(*this, param, ext);
 	}
 
-	void MarkToRemove(){ this->toRemove = true; }
+	void MarkToRemove(){ this->toRemove = true; this->removeImmidiately = false; }
+
+	void RemoveImmidiately(){ this->toRemove = true; this->removeImmidiately = true; }
 
 public:
 	class Container {
@@ -117,18 +120,38 @@ public:
 			task->prev = task->next = nullptr;
 		}
 
-		void Invoke(exparam_type ext) {
+		void Invoke(rtparam_type ext) {
+			task_type* last = nullptr;
 			for( task_type* t = root.next; t != &root; t = t->next){
+				if (last){
+					Remove(last);
+					last = nullptr;
+				}
+
 				task_type& tr = *t;
 				tr.Invoke(ext);
+
+				if (tr.toRemove && tr.removeImmidiately){
+					last = t;
+				}
 			}
 		}
 
 		template <typename Fn>
 		void ForEach(Fn f){
+			task_type* last = nullptr;
 			for (task_type* t = root.next; t != &root; t = t->next){
+				if (last){
+					Remove(last);
+					last = nullptr;
+				}
+
 				task_type& tr = *t;
 				f(ext);
+
+				if (tr.toRemove && tr.removeImmidiately){
+					last = t;
+				}
 			}
 		}
 

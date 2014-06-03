@@ -5,6 +5,8 @@
 #include "D3DShader.h"
 #include "../Resource.h"
 
+#include "ImageLoader.h"
+
 template <typename TextureT, typename ResourceT>
 class D3DTextureBase : public Resource
 {
@@ -20,16 +22,6 @@ public:
 	virtual ~D3DTextureBase(){
 		if (!isDisposed()) Dispose();
 	}
-
-	//bool isDisposed(){
-	//	return texture == nullptr;
-	//}
-
-	//void Dispose(){
-	//	texture->Release();
-	//	texture = nullptr;
-	//	Resource::Dispose();
-	//}
 
 	void Apply(Shaders::ShaderFlag targetShader, int index){
 		if (!srv) {
@@ -74,17 +66,29 @@ public:
 };
 
 
-class D3DTexture2D : public D3DTextureBase<D3DTexture2D, ID3D11Texture2D> {
+enum class D3DTextureUsage {
+	ShaderResource,
+	RenderTarget,
+	Both,
+};
 
+class D3DTexture2D : public D3DTextureBase<D3DTexture2D, ID3D11Texture2D> {
+protected:
+	void Initialize(int width, int height,
+		DXGI_FORMAT format, UINT bind = D3D11_BIND_SHADER_RESOURCE, UINT misc = 0U, const D3D11_SUBRESOURCE_DATA* data = nullptr);
 public:
 	typedef D3DTextureBase<D3DTexture2D, ID3D11Texture2D> base_t;
 
 	ID3D11RenderTargetView* rtv;
 	ID3D11DepthStencilView* dsv;
 
-	D3DTexture2D(D3DCore *core, ID3D11Texture2D* hnd);
 	D3DTexture2D(D3DCore *core, int width, int height,
 		DXGI_FORMAT format, UINT bind = D3D11_BIND_SHADER_RESOURCE, UINT misc = 0U);
+
+	D3DTexture2D(D3DCore *core, int width, int height,
+		DXGI_FORMAT format, D3DTextureUsage usage = D3DTextureUsage::ShaderResource, bool gdiCompatible = false);
+	D3DTexture2D(D3DCore *core, ImageData* image, D3DTextureUsage usage = D3DTextureUsage::ShaderResource, bool gdiCompatible = false);
+
 
 	void SetToRenderTarget();
 	void SetToDepthStencil();

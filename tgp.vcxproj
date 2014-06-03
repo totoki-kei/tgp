@@ -41,14 +41,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\lpng\lpng169;d:\lib\lpng\zlib-1.2.5;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Debug Library;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\boost_1_55_0;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\DXSDK\201206\Lib\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;D:\lib\lpng\lpng169;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;D:\lib\lpng\lpng169\projects\vstudio\Release Library;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\boost_1_55_0</IncludePath>
+    <LibraryPath>D:\DXSDK\201206\Lib\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

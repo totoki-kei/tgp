@@ -62,6 +62,7 @@ public:
 	private:
 		ListEntry *ent;
 		Item(ListEntry* e) : ent{ e } {
+			if (this->ent) this->ent->refcount++;
 		}
 
 	public:
@@ -76,6 +77,13 @@ public:
 			if (ent){
 				ent->Release();
 			}
+		}
+
+		Item& operator = (const Item& right){
+			if (ent) ent->Release();
+			this->ent = right.ent;
+			if (this->ent) this->ent->refcount++;
+			return *this;
 		}
 
 		operator bool(){

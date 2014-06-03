@@ -5,19 +5,26 @@
 class ImageData
 {
 
-	int width;
-	int height;
+	DWORD width;
+	DWORD height;
+	DWORD stride;
+	DXGI_FORMAT pixelFormat;
+	DWORD bytesPerPixel;
+	DWORD dataLength;
 	BYTE* data;
 	
-	inline ImageData() : width{ 0 }, height{ 0 }, data{ nullptr } { }
+	inline ImageData(DWORD w, DWORD h, DWORD str, DXGI_FORMAT fmt, DWORD pbytes);
 public:
 	inline ~ImageData() { delete[] data; }
 
 	static ImageData* Load(const TCHAR* filename);
 
-	inline int GetWidth(){ return width; }
-	inline int GetHeight(){ return height; }
-	inline DXGI_FORMAT GetFormat(){ return DXGI_FORMAT_B8G8R8A8_UNORM; }
+	inline DWORD GetWidth(){ return width; }
+	inline DWORD GetHeight(){ return height; }
+	inline DWORD GetStride(){ return stride; }
+	inline DXGI_FORMAT GetFormat(){ return pixelFormat; }
+	inline DWORD GetBytesPerPixel(){ return bytesPerPixel; }
+	inline DWORD GetDataSize(){ return dataLength; }
 	inline BYTE* GetData(){ return data; }
 };
 

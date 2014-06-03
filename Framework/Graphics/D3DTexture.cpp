@@ -1,7 +1,6 @@
 #include "D3DTexture.h"
 
-D3DTexture2D::D3DTexture2D(D3DCore *core, int width, int height, DXGI_FORMAT format, UINT bind, UINT misc)
-: base_t(core)
+void D3DTexture2D::Initialize(int width, int height, DXGI_FORMAT format, UINT bind, UINT misc, const D3D11_SUBRESOURCE_DATA* data)
 {
 	D3D11_TEXTURE2D_DESC desc;
 
@@ -27,7 +26,7 @@ D3DTexture2D::D3DTexture2D(D3DCore *core, int width, int height, DXGI_FORMAT for
 	desc.Usage = D3D11_USAGE_DEFAULT;
 
 	auto device = core->GetDevice();
-	auto hresult = device->CreateTexture2D(&desc, nullptr, &this->texture);
+	auto hresult = device->CreateTexture2D(&desc, data, &this->texture);
 
 	this->AddResource(HndToRes(texture));
 
@@ -59,6 +58,81 @@ D3DTexture2D::D3DTexture2D(D3DCore *core, int width, int height, DXGI_FORMAT for
 	}
 
 }
+
+D3DTexture2D::D3DTexture2D(D3DCore *core, int width, int height, DXGI_FORMAT format, UINT bind, UINT misc) : base_t(core)
+{
+	Initialize(width, height, format, bind, misc);
+}
+
+D3DTexture2D::D3DTexture2D(D3DCore *core, int width, int height,
+	DXGI_FORMAT format, D3DTextureUsage usage, bool gdiCompatible) : base_t{ core }{
+
+	UINT bind;
+	switch (usage){
+	case D3DTextureUsage::RenderTarget:
+		bind = D3D10_BIND_SHADER_RESOURCE;
+		break;
+	case D3DTextureUsage::ShaderResource:
+		bind = D3D11_BIND_SHADER_RESOURCE;
+		break;
+	case D3DTextureUsage::Both:
+		bind = D3D10_BIND_SHADER_RESOURCE | D3D11_BIND_SHADER_RESOURCE;
+		break;
+	}
+
+	UINT misc = 0U;
+	if (gdiCompatible){
+		if (format != DXGI_FORMAT_B8G8R8A8_UNORM && format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB){
+			// GDI_COMPATIBLE‚Ì—vŒ‚ð–ž‚½‚µ‚Ä‚¢‚È‚¢
+			DBG_OUT("Bad format for GdiCompatible option.");
+			return;
+		}
+
+		misc = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
+	}
+
+	Initialize(width, height, format, bind, misc);
+}
+
+D3DTexture2D::D3DTexture2D(D3DCore *core, ImageData* image, D3DTextureUsage usage, bool gdiCompatible) : base_t{ core }{
+	UINT bind;
+	int width = image->GetWidth();
+	int height = image->GetHeight();
+	DXGI_FORMAT format = image->GetFormat();
+
+	switch (usage){
+	case D3DTextureUsage::RenderTarget:
+		bind = D3D10_BIND_SHADER_RESOURCE;
+		break;
+	case D3DTextureUsage::ShaderResource:
+		bind = D3D11_BIND_SHADER_RESOURCE;
+		break;
+	case D3DTextureUsage::Both:
+		bind = D3D10_BIND_SHADER_RESOURCE | D3D11_BIND_SHADER_RESOURCE;
+		break;
+	}
+
+	UINT misc = 0U;
+	if (gdiCompatible){
+		if (format != DXGI_FORMAT_B8G8R8A8_UNORM && format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB){
+			// GDI_COMPATIBLE‚Ì—vŒ‚ð–ž‚½‚µ‚Ä‚¢‚È‚¢
+			DBG_OUT("Bad format for GdiCompatible option.");
+			return;
+		}
+
+
+		misc = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
+	}
+
+	D3D11_SUBRESOURCE_DATA subres;
+	subres.pSysMem = image->GetData();
+	subres.SysMemPitch = image->GetStride();
+	subres.SysMemSlicePitch = 0;
+
+	Initialize(width, height, format, bind, misc, &subres);
+
+}
+
 
 void D3DTexture2D::SetToRenderTarget(){
 	auto context = core->GetDeviceContext();

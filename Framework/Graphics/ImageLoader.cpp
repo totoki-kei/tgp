@@ -12,6 +12,17 @@ using Gdiplus::BitmapData;
 using Gdiplus::ColorPalette;
 using Gdiplus::ARGB;
 
+ImageData::ImageData(DWORD w, DWORD h, DWORD str, DXGI_FORMAT fmt, DWORD pbytes){
+	this->width = w;
+	this->height = h;
+	this->stride = str;
+	this->pixelFormat = fmt;
+	this->bytesPerPixel = pbytes;
+
+	this->dataLength = bytesPerPixel * stride * height;
+	this->data = new BYTE[dataLength];
+}
+
 
 ImageData* ImageData::Load(const TCHAR* filename){
 	ULONG_PTR token;
@@ -32,20 +43,13 @@ ImageData* ImageData::Load(const TCHAR* filename){
 	int width = bmp->GetWidth();
 	int height = bmp->GetHeight();
 	auto format = bmp->GetPixelFormat();
-	ColorPalette* paletteArray = nullptr;
-	if (Gdiplus::IsIndexedPixelFormat(format)){
-		int paletteSize = bmp->GetPaletteSize();
-		paletteArray = (ColorPalette*)malloc(sizeof (Gdiplus::ColorPalette)+sizeof(ARGB)* (paletteSize - 1));
-		bmp->GetPalette(paletteArray, paletteSize);
-	}
 
 	BitmapData bmpData;
 	bmp->LockBits(nullptr, 0, PixelFormat32bppARGB, &bmpData); // 全要素8ビットの形式で読む
 	
+	auto ret = new ImageData(width, height, width * sizeof(ARGB), DXGI_FORMAT_B8G8R8A8_UNORM, sizeof(ARGB));
 
-	
-
-	XMBYTE4 *data = new XMBYTE4[sizeof(XMBYTE4) * bmpData.Width * bmpData.Height];
+	XMBYTE4 *data = (XMBYTE4*)ret->data;
 
 	{
 		XMBYTE4 *dst = data;
@@ -62,14 +66,9 @@ ImageData* ImageData::Load(const TCHAR* filename){
 	bmp->UnlockBits(&bmpData);
 
 
-	auto ret = new ImageData();
-	ret->width = width;
-	ret->height = height;
-	ret->data = (BYTE*)data;
 
 
 	TERMINATE:
-	if (paletteArray) free(paletteArray);
 	delete bmp;
 	Gdiplus::GdiplusShutdown(token);
 
