@@ -230,17 +230,14 @@
     <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
       <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
     </FxCompile>
-    <FxCompile Include="Framework\HLSL\PostEffect\GS_ID2Quad.hlsl">
-      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
-    </FxCompile>
     <FxCompile Include="Framework\HLSL\PostEffect\PS_TextureOnly.hlsl">
-      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
-    </FxCompile>
-    <FxCompile Include="Framework\HLSL\PostEffect\VS_ThroughID.hlsl">
       <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
       <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\PostEffect\VS_2DTransform.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -252,9 +249,6 @@
   <ItemGroup>
     <None Include="Framework\HLSL\Model\PL_Model.hlsli">
       <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
-    </None>
-    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </None>
     <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli">
       <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
@@ -270,6 +264,9 @@
     </None>
     <None Include="Framework\HLSL\Functions.hlsli">
       <Filter>Framework\D11\Direct3D\Shaders</Filter>
+    </None>
+    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli">
+      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

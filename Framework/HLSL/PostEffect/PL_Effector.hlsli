@@ -1,10 +1,13 @@
-Texture2D Texture;
-Texture2D PatternMap;
+#if !defined(HLSL_PL_EFFECTOR)
+#define HLSL_PL_EFFECTOR
 
-SamplerState Sampler;
 
 struct VS_IN {
 	uint id : SV_VertexID;
+	float4 pos : POSITION; // xyzw;
+	float4 uvwh : UVWH; // texture left, top, width, height
+
+
 };
 
 struct VS_OUT {
@@ -23,3 +26,5 @@ typedef GS_OUT PS_IN;
 struct PS_OUT {
 	float4 color : SV_Target;
 };
+
+#endif // HLSL_PL_EFFECTOR

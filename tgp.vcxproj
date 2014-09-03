@@ -175,9 +175,9 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DisableOptimizations>
     </FxCompile>
-    <FxCompile Include="Framework\HLSL\PostEffect\GS_ID2Quad.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+    <FxCompile Include="Framework\HLSL\PostEffect\VS_2DTransform.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
     </FxCompile>
     <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -193,10 +193,6 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="Framework\HLSL\PostEffect\VS_ThroughID.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-    </FxCompile>
     <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -208,6 +204,7 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileOutput>
     </FxCompile>
     <None Include="Framework\HLSL\Functions.hlsli" />
+    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tgp.rc" />
@@ -217,7 +214,6 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli" />
-    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli" />
     <None Include="Framework\HLSL\Model\PL_Model.hlsli" />
     <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli" />
   </ItemGroup>
