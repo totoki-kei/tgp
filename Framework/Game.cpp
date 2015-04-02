@@ -1,7 +1,13 @@
 #include "Game.h"
 #include "Debug.h"
 
-Game::Game(void){ exitLoop = false; ticks = -1; }
+#include <thread>
+
+Game::Game(void)
+	: exitLoop{ false },
+	ticks{ -1 }, 
+	updatedFlag{ false }, 
+	asyncDraw{ true } {}
 
 Game::~Game(void){}
 
@@ -9,20 +15,57 @@ Game::~Game(void){}
 int Game::Run(void){
 	exitLoop = false;
 	ticks = 0;
-	frameskip = 0;
 
-	while( !exitLoop ) {
-		Update();
-		
-		if( frameskip ){
-			frameskip--;
+	if (asyncDraw) {
+
+		std::thread drawThread{ [&]() {
+			while (!exitLoop) {
+				try {
+					if (this->updatedFlag) {
+						updatedFlag = false;
+						Draw();
+					}
+				}
+				catch (...) {
+					LOG_ERR("draw exception\n", );
+				}
+			}
+		} };
+
+		while (!exitLoop) {
+			try {
+				Update();
+				updatedFlag = true;
+			}
+			catch (...) {
+				LOG_ERR("update exception\n", );
+			}
+
+			ticks++;
 		}
-		else {
-			Draw();
-		}
-		
-		ticks++;
+
+		drawThread.join();
 	}
-	
+	else {
+		while (!exitLoop) {
+			try {
+				Update();
+			}
+			catch (...) {
+				LOG_ERR("update exception\n", );
+			}
+
+			ticks++;
+
+			try {
+				Draw();
+			}
+			catch (...) {
+				LOG_ERR("draw exception\n", );
+			}
+		}
+	}
+
+
 	return 0;
 }

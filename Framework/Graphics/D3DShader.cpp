@@ -11,7 +11,7 @@ namespace Shaders {
 		auto device = core->GetDevice();
 		auto result = device->CreateVertexShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
-			DBG_OUT("Failed to create shader.");
+			LOG_ERR("Failed to create shader.");
 			this->shader = nullptr;
 			return;
 		}
@@ -40,7 +40,7 @@ namespace Shaders {
 
 	void VertexShader::Apply(const ClassInstanceList& clsinst){
 		auto context = core->GetDeviceContext();
-		context->VSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+		context->VSSetShader(this->shader, clsinst.PtrArray, (UINT)clsinst.Count);
 	}
 
 
@@ -49,7 +49,7 @@ namespace Shaders {
 		auto device = core->GetDevice();
 		auto result = device->CreatePixelShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
-			DBG_OUT("Failed to create shader.");
+			LOG_ERR("Failed to create shader.");
 			this->shader = nullptr;
 			return;
 		}
@@ -78,7 +78,7 @@ namespace Shaders {
 
 	void PixelShader::Apply(const ClassInstanceList& clsinst){
 		auto context = core->GetDeviceContext();
-		context->PSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+		context->PSSetShader(this->shader, clsinst.PtrArray, (UINT)clsinst.Count);
 	}
 
 
@@ -89,7 +89,7 @@ namespace Shaders {
 		auto device = core->GetDevice();
 		auto result = device->CreateGeometryShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
-			DBG_OUT("Failed to create shader.");
+			LOG_ERR("Failed to create shader.");
 			this->shader = nullptr;
 			return;
 		}
@@ -118,7 +118,7 @@ namespace Shaders {
 
 	void GeometryShader::Apply(const ClassInstanceList& clsinst){
 		auto context = core->GetDeviceContext();
-		context->GSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+		context->GSSetShader(this->shader, clsinst.PtrArray, (UINT)clsinst.Count);
 	}
 
 
@@ -128,7 +128,7 @@ namespace Shaders {
 		auto device = core->GetDevice();
 		auto result = device->CreateComputeShader(data, dataSize, linkage ? linkage->$Linkage : nullptr, &this->shader);
 		IF_NG(result){
-			DBG_OUT("Failed to create shader.");
+			LOG_ERR("Failed to create shader.");
 			this->shader = nullptr;
 			return;
 		}
@@ -159,7 +159,7 @@ namespace Shaders {
 
 	void ComputeShader::Apply(const ClassInstanceList& clsinst){
 		auto context = core->GetDeviceContext();
-		context->CSSetShader(this->shader, clsinst.PtrArray, clsinst.Count);
+		context->CSSetShader(this->shader, clsinst.PtrArray, (UINT)clsinst.Count);
 	}
 
 	void Unapply(D3DCore* core, ShaderFlag targetShader){

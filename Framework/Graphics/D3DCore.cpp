@@ -4,6 +4,8 @@
 
 #include "../Debug.h"
 
+#include <dwmapi.h>
+
 D3DCore::D3DCore(GameWindow* wnd)
 {
 	this->wnd = wnd;
@@ -18,7 +20,7 @@ D3DCore::~D3DCore(void)
 	if (!isDisposed()) Dispose();
 }
 
-bool D3DCore::Initialize(bool debugDevice) {
+bool D3DCore::Initialize(bool fullscreen, bool debugDevice) {
 	HRESULT hr;
 
 	// スワップチェインの設定
@@ -28,10 +30,31 @@ bool D3DCore::Initialize(bool debugDevice) {
 	scd.BufferDesc.Height = wnd->GetHeight();
 	scd.BufferDesc.Width = wnd->GetWidth();
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	scd.BufferDesc.RefreshRate.Numerator = 60;
-	scd.BufferDesc.RefreshRate.Denominator = 1;
-	scd.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
-	scd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	{
+		// 一番近いディスプレイモードを検索
+		IDXGIFactory* dxgiFactory = 0;
+		IDXGIAdapter* dxgiAdapter = 0;
+		IDXGIOutput* dxgiOutput = 0;
+
+		// ファクトリを取得
+		CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&dxgiFactory);
+
+		// アダプタを取得
+		dxgiFactory->EnumAdapters(0, &dxgiAdapter);
+
+		// 
+		dxgiAdapter->EnumOutputs(0, &dxgiOutput);
+
+		DXGI_MODE_DESC closest;
+		HRESULT mode_hr = dxgiOutput->FindClosestMatchingMode(&scd.BufferDesc, &closest, nullptr);
+		IF_OK(mode_hr) {
+			scd.BufferDesc = closest;
+		}
+
+		if (dxgiOutput) dxgiOutput->Release();
+		if (dxgiAdapter) dxgiAdapter->Release();
+		if (dxgiFactory) dxgiFactory->Release();
+	}
 
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	scd.OutputWindow = wnd->GetWindowHandle();
@@ -41,10 +64,12 @@ bool D3DCore::Initialize(bool debugDevice) {
 
 	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	scd.Windowed = TRUE;
+	scd.Windowed = fullscreen ? FALSE : TRUE;
 
-	//D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_10_1 };
-	D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_11_0 };
+
+
+	D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_10_1 };
+	//D3D_FEATURE_LEVEL flevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
 	/*
 	 * TODO:
@@ -54,11 +79,10 @@ bool D3DCore::Initialize(bool debugDevice) {
 	 */
 
 	// デバイスとスワップチェインの作成
-	// TODO: とりあえず開発中はWAPRデバイスで行く
 	IF_NG2(D3D11CreateDeviceAndSwapChain(
 		NULL,
-		// D3D_DRIVER_TYPE_WARP,
-		D3D_DRIVER_TYPE_HARDWARE,
+		D3D_DRIVER_TYPE_WARP,
+		// D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
 		debugDevice ? D3D11_CREATE_DEVICE_DEBUG : 0,
 		nullptr,
@@ -78,6 +102,20 @@ bool D3DCore::Initialize(bool debugDevice) {
 	NameToResource(device, "MainDevice");
 	auto dev = HndToRes(device);
 	AddResource(dev);
+
+	// デバッグ インターフェースの取得
+	if (debugDevice) {
+		device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3ddbg));
+		dev->AddResource(std::make_shared< ResourceItem<ID3D11Debug*>>(d3ddbg, [](ID3D11Debug* d) {
+			d->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+			d->Release();
+			d = nullptr;
+		}));
+	}
+	else {
+		d3ddbg = nullptr;
+	}
+
 
 	NameToResource(cxt, "MainDeviceContext");
 	dev->AddResource(HndToRes(cxt));
@@ -152,30 +190,60 @@ bool D3DCore::Initialize(bool debugDevice) {
 	viewport.MaxDepth = 1;
 	cxt->RSSetViewports(1, &viewport);
 
+	// ブレンドステート(通常)
+	// DirectX11のデフォルト値を使用する
+	bsNormal = nullptr;
 
-	// ブレンドステート
+	// ブレンドステート(アルファ)
 	D3D11_BLEND_DESC bd;
 	bd.AlphaToCoverageEnable = false;
 	bd.IndependentBlendEnable = false;
 	{
 		auto tg = &bd.RenderTarget[0];
 		tg->BlendEnable = true;
+		
 		tg->BlendOp = D3D11_BLEND_OP_ADD;
 		tg->SrcBlend = D3D11_BLEND_SRC_ALPHA;
 		tg->DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
 		tg->BlendOpAlpha = D3D11_BLEND_OP_ADD;
 		tg->SrcBlendAlpha = D3D11_BLEND_ONE;
-		tg->DestBlendAlpha = D3D11_BLEND_ZERO;
+		tg->DestBlendAlpha = D3D11_BLEND_ONE;
+		
+		tg->RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	}
+	IF_NG2(device->CreateBlendState(&bd, &this->bsAlpha), hr){
+		return false;
+	}
+	NameToResource(bsAlpha, "AlphaBlendState");
+	dev->AddResource(HndToRes(bsAlpha));
+
+	// ブレンドステート(加算合成)
+	bd.AlphaToCoverageEnable = false;
+	bd.IndependentBlendEnable = false;
+	{
+		auto tg = &bd.RenderTarget[0];
+		tg->BlendEnable = true;
+
+		tg->BlendOp = D3D11_BLEND_OP_ADD;
+		tg->SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		tg->DestBlend = D3D11_BLEND_ONE;
+
+		tg->BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		tg->SrcBlendAlpha = D3D11_BLEND_ONE;
+		tg->DestBlendAlpha = D3D11_BLEND_ONE;
 
 		tg->RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	}
-	IF_NG2(device->CreateBlendState(&bd, &this->bs), hr){
+	IF_NG2(device->CreateBlendState(&bd, &this->bsAdd), hr) {
 		return false;
 	}
-	NameToResource(bs, "DefaultBlendState");
-	dev->AddResource(HndToRes(bs));
-	float zero[4] = { 0, 0, 0, 0 };
-	cxt->OMSetBlendState(bs, zero, 0xffffffff);
+	NameToResource(bsAdd, "AdditiveBlendState");
+	dev->AddResource(HndToRes(bsAdd));
+
+	// 初期ブレンドステートの設定
+	// 初期値はアルファブレンド
+	SetBlendMode(D3DBlendMode::Alpha);
 
 
 	// 画面消去をするときの色
@@ -254,8 +322,12 @@ void D3DCore::Draw(int vertexCount, int offset){
 	cxt->Draw(vertexCount, offset);
 }
 
-void D3DCore::DrawIndexed(int indexCount, int vertexOffset, int indexOffset){
+void D3DCore::DrawIndexed(int indexCount, int vertexOffset, int indexOffset) {
 	cxt->DrawIndexed(indexCount, indexOffset, vertexOffset);
+}
+
+void D3DCore::DrawIndexed(int indexCount, int vertexOffset, int indexOffset, int instanceCount) {
+	cxt->DrawIndexedInstanced(indexCount, instanceCount, indexOffset, vertexOffset, 0);
 }
 
 void D3DCore::SetVSyncWait(int wait){ this->vsyncWait = wait; }
@@ -281,5 +353,83 @@ void D3DCore::GetDefaultViewport(D3D11_VIEWPORT* viewport){
 	*viewport = this->viewport;
 }
 
+void D3DCore::SetBlendMode(D3DBlendMode mode) {
+	float zero[4] = { 0, 0, 0, 0 };
+	switch (mode) {
+		case D3DBlendMode::Add:
+			cxt->OMSetBlendState(bsAdd, zero, 0xffffffff);
+			break;
+		case D3DBlendMode::Alpha:
+			cxt->OMSetBlendState(bsAlpha, zero, 0xffffffff);
+			break;
+		default:
+			cxt->OMSetBlendState(nullptr, zero, 0xffffffff);
+			break;
+	}
+}
 
 
+DWORD D3DCore::GetScreenWidth(){
+	return wnd->GetWidth();
+}
+
+DWORD D3DCore::GetScreenHeight(){
+	return wnd->GetHeight();
+}
+
+double D3DCore::GetRefreshRate() {
+	BOOL fullscreen;
+	swapChain->GetFullscreenState(&fullscreen, nullptr);
+
+	if (fullscreen) {
+		DXGI_SWAP_CHAIN_DESC scd;
+		swapChain->GetDesc(&scd);
+		if (scd.BufferDesc.RefreshRate.Denominator == 0) {
+			return -1;
+		}
+		else {
+			return (double)scd.BufferDesc.RefreshRate.Numerator / scd.BufferDesc.RefreshRate.Denominator;
+		}
+	}
+	else {
+		DWM_TIMING_INFO timingInfo = { 0 };
+		timingInfo.cbSize = sizeof(DWM_TIMING_INFO);
+		HWND hwnd = 0;
+
+		/*
+		** MSDNによれば、DwmGetComositionTimingInfoの第一引数(HWND)は
+		** 「Windows8.1からはNULLを指定しないとE_INVALIDARGが起きるよ」とある。
+		** ( http://msdn.microsoft.com/en-us/library/windows/desktop/aa969514%28v=vs.85%29.aspx )
+		**
+		** ただ、Windows Vista Professionalでも、ここをNULLにしないと動作しない、という報告もある。
+		** ( http://rarara.cafe.coocan.jp/cgi-bin/lng/vc/vclng.cgi?print+201001/10010013.txt )
+		**
+		** 今回は、OSに限らず必ずNULL(0)を指定するようにする。
+		** 今後、もしそれで問題が出るようだったら、以下のコメント部分にあるようなOSバージョン判定を行い
+		** 適切な値を設定するように修正すること。
+		*/
+
+		//{
+		//	OSVERSIONINFOEX ver;
+		//	DWORDLONG dwlConditionMask = 0;
+		//	ZeroMemory(&ver, sizeof(OSVERSIONINFOEX));
+		//	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+		//	ver.dwMajorVersion = 6;
+		//	ver.dwMinorVersion = 3;
+		//	VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION, VER_LESS);
+		//	VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION, VER_LESS);
+		//	if (VerifyVersionInfo(&ver, VER_MAJORVERSION | VER_MINORVERSION, dwlConditionMask)) {
+		//		// windows 8.1 未満
+		//		hwnd = wnd->GetWindowHandle();
+		//	}
+		//}
+
+		switch (HRESULT hr = DwmGetCompositionTimingInfo(hwnd, &timingInfo)) {
+			case S_OK:
+				return timingInfo.rateRefresh.uiNumerator / (double)timingInfo.rateRefresh.uiDenominator;
+			default:
+				LOG_ERR("DwmGetCompositionTimingInfo failed (returns 0x%08X)\n", hr);
+				return -1;
+		}
+	}
+}

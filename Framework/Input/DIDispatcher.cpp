@@ -69,6 +69,7 @@ void DIDispatcher::Update(){
 	}
 
 	if (kbdListener.size() > 0){
+		// キーボード情報の取得
 		GetKeyboardState(keyboards);
 
 		for (auto& k : kbdListener){

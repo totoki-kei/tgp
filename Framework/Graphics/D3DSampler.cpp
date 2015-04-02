@@ -15,6 +15,7 @@ D3DSampler::D3DSampler(D3DCore *core, D3D11_SAMPLER_DESC* desc)
 : core(core)
 {
 	core->GetDevice()->CreateSamplerState(desc, &sampler);
+	this->AddResource(HndToRes(sampler));
 }
 
 void D3DSampler::GetDefaultSamplerDesc(D3D11_SAMPLER_DESC* desc){
@@ -57,7 +58,7 @@ void D3DSampler::Apply(Shaders::ShaderFlag targetShader, int index) {
 		ctx->GSSetSamplers(index, 1, &this->sampler);
 	}
 	if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Compute)){
-		ctx->PSSetSamplers(index, 1, &this->sampler);
+		ctx->CSSetSamplers(index, 1, &this->sampler);
 	}
 }
 

@@ -25,7 +25,7 @@ public:
 
 	void Apply(Shaders::ShaderFlag targetShader, int index){
 		if (!srv) {
-			DBG_OUT("shader resour view is null.");
+			LOG_DBG("shader resour view is null.");
 			return;
 		}
 
@@ -40,7 +40,7 @@ public:
 			ctx->GSSetShaderResources(index, 1, &this->srv);
 		}
 		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Compute)){
-			ctx->PSSetShaderResources(index, 1, &this->srv);
+			ctx->CSSetShaderResources(index, 1, &this->srv);
 		}
 	}
 
@@ -76,6 +76,15 @@ class D3DTexture2D : public D3DTextureBase<D3DTexture2D, ID3D11Texture2D> {
 protected:
 	void Initialize(int width, int height,
 		DXGI_FORMAT format, UINT bind = D3D11_BIND_SHADER_RESOURCE, UINT misc = 0U, const D3D11_SUBRESOURCE_DATA* data = nullptr);
+
+	void SetupDefaultDescription(
+		D3D11_TEXTURE2D_DESC &desc,
+		int width, int height,
+		DXGI_FORMAT format, UINT bind, UINT misc);
+
+	virtual void SetupDescription(D3D11_TEXTURE2D_DESC&);
+
+	int width, height;
 public:
 	typedef D3DTextureBase<D3DTexture2D, ID3D11Texture2D> base_t;
 
@@ -99,5 +108,7 @@ public:
 
 	void DrawAsDc(std::function<void(const HDC, RECT**)> fn);
 
+	int GetWidth();
+	int GetHeight();
 };
 

@@ -2,6 +2,9 @@
 
 #include <stdexcept>
 
+#include <array>
+
+
 template <typename T, int Size>
 class Pool {
 
@@ -9,163 +12,136 @@ public:
 	typedef Pool<T, Size> Self;
 	typedef T Value;
 
-	struct ListEntry {
-		Pool* pool;
-		int refcount;
-		ListEntry* prev;
-		ListEntry* next;
-		Value e;
+private:
+	std::array<Value, Size> values;
+	std::array<unsigned int, Size> refcounts;
 
-		ListEntry() : pool{ nullptr }, e{}, prev{ nullptr }, next{ nullptr }, refcount{ 0 }{}
+	int nextIndex;
 
-		void Release(){
-			auto ent = this;
-			ent->refcount--;
-			if (ent->refcount) return;
+	template <typename... InitArgs>
+	void addref(int index, InitArgs&&... f){
+		auto& r = refcounts[index];
+		if (r == 0){
+			new (&values[index]) Value(std::forward<InitArgs>(f)...);
+		}
+		r++;
+	}
 
-			if (ent < pool->entries || pool->entries + Size <= ent)
-				throw std::out_of_range("ent is out of range.");
 
-			ListEntry * target = nullptr;
-
-			// find from active, and pop
-			if (ent == pool->activeHead){
-				target = pool->activeHead;
-				if ((pool->activeHead = target->next) != nullptr)
-					target->next->prev = nullptr;
-			}
-			else {
-				for (ListEntry* p = pool->activeHead; p != nullptr; p = p->next){
-					if (ent == p){
-						target = p;
-						if (target->prev)
-							target->prev->next = target->next;
-						if (target->next)
-							target->next->prev = target->prev;
-
-						break;
-					}
-				}
-			}
-			if (target) {
-				// push to stock
-				if ((target->next = pool->stockHead) != nullptr)
-					target->next->prev = target;
-				target->prev = nullptr;
-				pool->stockHead = target;
+	void delref(int index){
+		auto& r = refcounts[index];
+		if (r > 0){
+			r--;
+			if (r == 0){
+				values[index].Value::~Value();
 			}
 		}
 	};
 
+public:
 	class Item {
-		friend class Self;
-	private:
-		ListEntry *ent;
-		Item(ListEntry* e) : ent{ e } {
-			if (this->ent) this->ent->refcount++;
+		friend class Pool;
+
+		Self* pool;
+		int index;
+
+		void resetref(){
+			if (pool) {
+				pool->delref(index);
+			}
+			pool = nullptr;
+			index = -1;
 		}
 
-	public:
-		Item() : ent{ nullptr } { }
-
-		Item(const Item& i){
-			this->ent = i.ent;
-			if(this->ent) this->ent->refcount++;
-		}
-
-		~Item() {
-			if (ent){
-				ent->Release();
+		template <typename... InitArgs>
+		void setref(Self* p, int i, InitArgs&&... f){
+			if (pool) {
+				pool->delref(index);
+			}
+			pool = p;
+			index = i;
+			if (pool){
+				pool->addref(i, std::forward<InitArgs>(f)...);
 			}
 		}
+		// Poolとインデックスとコンストラクタ引数から構築するコンストラクタ
+		template <typename... InitArgs>
+		Item(Self* p, int i, InitArgs&&... f)
+			: pool{ nullptr }, index{ -1 }
+		{
+			setref(p, i, std::forward<InitArgs>(f)...);
+		}
 
-		Item& operator = (const Item& right){
-			if (ent) ent->Release();
-			this->ent = right.ent;
-			if (this->ent) this->ent->refcount++;
+
+	public:
+		// デフォルトコンストラクタ
+		Item() 
+			: pool{ nullptr }, index{ -1 }
+		{
+		}
+
+		// コピーコンストラクタ
+		Item(const Item& i) 
+			: pool{ nullptr }, index{ -1 }
+		{
+			*this = h;
+		}
+
+		// ムーブコンストラクタ
+		Item(Item&& i) 
+			: pool{ i.pool }, index{ i.index }
+		{
+			i.pool = nullptr;
+			i.index = -1;
+		}
+
+		~Item(){
+			resetref();
+		}
+
+		Value* operator ->() const {
+			return &pool->values[index];
+		}
+		T& operator *() const {
+			return pool->values[index];
+		}
+		explicit operator bool() const {
+			return pool && (index >= 0);
+		}
+		Item& operator =(const Item& right){
+			setref(right.pool, right.index);			
+			return *this;
+		}
+		Item& operator =(Item&& right){
+			this->pool = right.pool;
+			this->index = right.index;
+			right.pool = nullptr;
+			right.index = -1;
 			return *this;
 		}
 
-		operator bool(){
-			return ent != nullptr;
-		}
-
-		Value* operator ->() {
-			return &ent->e;
-		}
-
-		Value& operator *(){
-			return ent->e;
-		}
 	};
 
-	enum {
-		PoolSize = Size,
-	};
+	Pool() : nextIndex{ 0 }{
+		refcounts.fill(0);
+	}
 
+	template <typename... InitArgs>
+	Item Get(InitArgs&&... f){
+		for (int i = 0; i < Size; i++){
+			if (refcounts[nextIndex] == 0){
+				int index = nextIndex;
+				nextIndex++;
+				if (nextIndex == Size) nextIndex = 0;
 
-private:
-	ListEntry entries[Size];
-	ListEntry *activeHead;
-	ListEntry *stockHead;
-
-public:
-
-	Pool() {
-		entries[0].next = &entries[1];
-		entries[0].pool = this;
-		for (int i = 1; i < Size - 1; i++){
-			entries[i].next = &entries[i + 1];
-			entries[i].prev = &entries[i - 1];
-			entries[i].pool = this;
+				// RVOによる最適化を期待する...
+				return Item{ this, index, std::forward<InitArgs>(f)... };
+			}
+			nextIndex++;
+			if (nextIndex == Size) nextIndex = 0;
 		}
-		entries[Size - 1].prev = &entries[Size - 2];
-		entries[Size - 1].pool = this;
-
-		activeHead = nullptr;
-		stockHead = &entries[0];
+		return Item{};
 	}
 
-	template <typename InitFn>
-	Item Get(InitFn &activator){
-
-		// find entry
-		ListEntry* target = stockHead;
-		if (!target) return Item(nullptr);
-
-		// pop from stock
-		stockHead = target->next;
-
-		// push to active
-		target->prev = nullptr;
-		if ((target->next = activeHead) != nullptr)
-			target->next->prev = target;
-		activeHead = target;
-
-		// activate
-		activator(target->e);
-		return Item(target);
-	}
-
-	Item Get(const T& t){
-		return Get([&t](Value& v){v = t; });
-	}
-
-	Item Get(){
-		return Get([](Value&){});
-	}
-
-	template <typename Fn>
-	void Enumerate(Fn& f){
-		ListEntry *ent = activeHead;
-		if (!ent) return;
-
-		do {
-			f(ent->e);
-		} while (ent = ent->next)
-	}
 
 };
-
-
-

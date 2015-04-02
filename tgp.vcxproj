@@ -5,9 +5,17 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -24,11 +32,22 @@
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -36,19 +55,35 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\boost_1_55_0;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)tgp_lib;C:\lib\csskiplist\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)tgp_lib;C:\lib\csskiplist\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ExecutablePath>D:\DXSDK\201206\Utilities\bin\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\DXSDK\201206\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;D:\lib\boost_1_55_0</IncludePath>
-    <LibraryPath>D:\DXSDK\201206\Lib\x86;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)tgp_lib;C:\lib\csskiplist\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(OutDir);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)tgp_lib;C:\lib\csskiplist\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -57,18 +92,46 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <WarningLevel>Level2</WarningLevel>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;Dwmapi.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ShaderModel>5.0</ShaderModel>
+      <ShaderModel>4.0</ShaderModel>
       <AdditionalOptions>/Cc</AdditionalOptions>
     </FxCompile>
     <PostBuildEvent>
-      <Command>copy /Y $(OutputPath)*.cso $(SolutionDir)Application\.
-copy /Y $(TargetPath) $(SolutionDir)Application\.
+      <Command>xcopy $(SolutionDir)Content $(OutputPath)Content\ /e /y
+copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <WarningLevel>Level2</WarningLevel>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;Dwmapi.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <FxCompile>
+      <ShaderModel>4.0</ShaderModel>
+      <AdditionalOptions>/Cc</AdditionalOptions>
+    </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)Content $(OutputPath)Content\ /e /y
+copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -79,27 +142,69 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;Dwmapi.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
-      <ShaderModel>5.0</ShaderModel>
+      <ShaderModel>4.0</ShaderModel>
     </FxCompile>
     <PostBuildEvent>
-      <Command>copy /Y $(OutputPath)*.cso $(SolutionDir)Application\.
-copy /Y $(TargetPath) $(SolutionDir)Application\.
+      <Command>xcopy $(SolutionDir)Content $(OutputPath)Content\ /e /y
+copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalDependencies>winmm.lib;Dwmapi.lib;DXGI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <FxCompile>
+      <ShaderModel>4.0</ShaderModel>
+    </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)Content $(OutputPath)Content\ /e /y
+copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CSRNG.h" />
+    <ClInclude Include="Framework\Audio\DACore.h" />
+    <ClInclude Include="Framework\Audio\DAUtility.h" />
+    <ClInclude Include="Framework\Audio\DAVoice.h" />
+    <ClInclude Include="Framework\Audio\DAVoiceCallback.h" />
+    <ClInclude Include="Framework\Audio\SoundData.h" />
+    <ClInclude Include="Framework\Graphics\BrightPassEffector.h" />
+    <ClInclude Include="Framework\Graphics\D3DBloomEffect.h" />
+    <ClInclude Include="Framework\Graphics\D3DConstantBuffer.h" />
+    <ClInclude Include="Framework\Graphics\D3DIndexBuffer.h" />
+    <ClInclude Include="Framework\Graphics\D3DShaderResourceBuffer.h" />
+    <ClInclude Include="Framework\Graphics\D3DVertexBuffer.h" />
+    <ClInclude Include="Framework\Graphics\MatrixTranslator.h" />
+    <ClInclude Include="Framework\Graphics\Translator.h" />
     <ClInclude Include="Framework\Input\DIHeader.h" />
     <ClInclude Include="Framework\Input\DILibs.h" />
-    <ClInclude Include="Framework\Input\DIXInputListener.h" />
+    <ClInclude Include="Framework\Input\DIJoypad.h" />
     <ClInclude Include="Framework\Input\DIDispatcher.h" />
     <ClInclude Include="Framework\Input\DICommon.h" />
     <ClInclude Include="Framework\Input\DIMouseListener.h" />
@@ -119,24 +224,37 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <ClInclude Include="Framework\Graphics\D3DSampler.h" />
     <ClInclude Include="Framework\DirectXUtil.h" />
     <ClInclude Include="Framework\Game.h" />
+    <ClInclude Include="Framework\Lambs.hpp" />
+    <ClInclude Include="Framework\Scene.h" />
     <ClInclude Include="Game1.h" />
     <ClInclude Include="Framework\GameWindow.h" />
     <ClInclude Include="Framework\Graphics\Model.h" />
     <ClInclude Include="Framework\Graphics\ImageLoader.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Framework\Pool.h" />
     <ClInclude Include="Framework\ResourceItem.h" />
     <ClInclude Include="Framework\Utility.h" />
     <ClInclude Include="Framework\Logger.h" />
     <ClInclude Include="Framework\Program.h" />
     <ClInclude Include="Framework\Resource.h" />
+    <ClInclude Include="Framework\Graphics\GaussianEffector.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="Framework\Task.h" />
     <ClInclude Include="Framework\WinAPI.h" />
-    <ClInclude Include="WindowTest.h" />
+    <ClInclude Include="Framework\Graphics\Sprite.h" />
+    <ClInclude Include="Framework\Graphics\Effector.h" />
+    <ClInclude Include="Framework\Graphics\SpriteString.h" />
+    <ClInclude Include="Framework\Audio\WavLoader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Framework\Input\DIXInputListener.cpp" />
+    <ClCompile Include="Framework\Audio\DACore.cpp" />
+    <ClCompile Include="Framework\Audio\DAVoice.cpp" />
+    <ClCompile Include="Framework\Audio\SoundData.cpp" />
+    <ClCompile Include="Framework\Graphics\BrightPassEffector.cpp" />
+    <ClCompile Include="Framework\Graphics\D3DBloomEffect.cpp" />
+    <ClCompile Include="Framework\Graphics\MatrixTranslator.cpp" />
+    <ClCompile Include="Framework\Graphics\Translator.cpp" />
+    <ClCompile Include="Framework\Input\DIJoypad.cpp" />
     <ClCompile Include="Framework\Input\DIDispatcher.cpp" />
     <ClCompile Include="Framework\Input\DIMouseListener.cpp" />
     <ClCompile Include="Framework\Input\DIKeyboardListener.cpp" />
@@ -150,76 +268,180 @@ copy /Y $(TargetPath) $(SolutionDir)Application\.
     <ClCompile Include="Framework\Debug.cpp" />
     <ClCompile Include="Framework\Graphics\D3DSampler.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
+    <ClCompile Include="Framework\Scene.cpp" />
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Framework\GameWindow.cpp" />
     <ClCompile Include="Framework\Logger.cpp" />
     <ClCompile Include="Framework\Graphics\Model.cpp" />
     <ClCompile Include="Framework\Graphics\ModelLoader.cpp" />
     <ClCompile Include="Framework\Graphics\ImageLoader.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Framework\Program.cpp" />
     <ClCompile Include="Framework\Resource.cpp" />
     <ClCompile Include="Framework\Utility.cpp" />
-    <ClCompile Include="WindowTest.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="Framework\Graphics\Sprite.cpp" />
+    <ClCompile Include="Framework\Graphics\Effector.cpp" />
+    <ClCompile Include="Framework\Graphics\SpriteString.cpp" />
+    <ClCompile Include="Framework\Graphics\GaussianEffector.cpp" />
+    <ClCompile Include="Framework\Audio\WavLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Framework\HLSL\Model\GS_CreateEdge.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\GS_WideLine.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
     </FxCompile>
-    <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\PS_LightedColor.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DisableOptimizations>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
     </FxCompile>
-    <FxCompile Include="Framework\HLSL\PostEffect\VS_2DTransform.hlsl">
+    <FxCompile Include="Framework\HLSL\Model\PS_UnlightedColor.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_BrightPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\VS_2DTransform.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
+    <FxCompile Include="Framework\HLSL\Model\VS_TransformSingle.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Model\GS_FlatShading.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_Font.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <FileType>Document</FileType>
-    </None>
-    <None Include="Framework\HLSL\Model\CLS_NormalColor.hlsli">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_TextureOnly.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <FileType>Document</FileType>
-    </None>
-    <FxCompile Include="Framework\HLSL\PostEffect\PS_TextureOnly.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </VariableName>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </HeaderFileOutput>
-      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bytecode_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </HeaderFileOutput>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </VariableName>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </VariableName>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </HeaderFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
     </FxCompile>
-    <None Include="Framework\HLSL\Functions.hlsli" />
-    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli" />
+    <FxCompile Include="Framework\HLSL\Sprite\PS_GaussianH.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_GaussianV.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\VS_3DTransform.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <None Include="Framework\HLSL\Model\Functions.hlsli" />
+    <None Include="Framework\HLSL\Sprite\PL_Effector.hlsli" />
+    <None Include="Framework\HLSL\Sprite\GaussianEffect.hlsli" />
+    <None Include="Framework\HLSL\Sprite\PL_Sprite.hlsli" />
+    <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tgp.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Content\Image\font.png">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+    </Image>
+    <Image Include="Content\Image\font_large.png" />
+    <Image Include="Content\Image\test.png">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+    </Image>
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli" />
     <None Include="Framework\HLSL\Model\PL_Model.hlsli" />
-    <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Application\testmodel.txt">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+    <Text Include="Content\Model\r01.txt" />
+    <Text Include="Content\Model\r02.txt" />
+    <Text Include="Content\Model\r03.txt" />
+    <Text Include="Content\Model\r04.txt" />
+    <Text Include="Content\Model\r05.txt" />
+    <Text Include="Content\Model\testmodel.txt">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Content\Model\s01.txt">
+      <FileType>Document</FileType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

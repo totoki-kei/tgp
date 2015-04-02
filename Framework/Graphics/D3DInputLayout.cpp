@@ -1,9 +1,9 @@
 #include "D3DInputLayout.h"
 
 
-D3DInputLayout::D3DInputLayout(D3DCore *core, D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, Shaders::VertexShader *vs, int passIndex) : core(core)
+D3DInputLayout::D3DInputLayout(D3DCore *core, const D3D11_INPUT_ELEMENT_DESC *elements, UINT elementsNum, Shaders::VertexShader *vs) : core(core)
 {
-	int shaderBytecodeLength;
+	SIZE_T shaderBytecodeLength;
 	const BYTE* shaderBytecode = vs->GetBytecode(&shaderBytecodeLength);
 
 	core->GetDevice()->CreateInputLayout(

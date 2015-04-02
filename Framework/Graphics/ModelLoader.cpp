@@ -1,13 +1,16 @@
-#include "Model.h"
+﻿#include "Model.h"
 #include <stdio.h>
 
+#include <array>
 #include <map>
+#include <set>
 #include <string>
 #include <functional>
 
 #pragma region Load Function
 namespace Models {
 	using std::map;
+	using std::set;
 	using std::string;
 	using std::function;
 
@@ -17,13 +20,278 @@ namespace Models {
 	const double M_1_PI = 0.318309886183790671538;
 	const double M_2_PI = 0.636619772367581343076;
 
+	namespace {
+		struct Line {
+			union {
+				struct {
+					int a, b;
+				};
+				int idx[2];
+			};
+
+			Line(int a_, int b_){
+				a = a_;
+				b = b_;
+			}
+
+			bool operator ==(const Line& l) const {
+				return (a == l.a && b == l.b) || (a == l.b && b == l.a);
+			}
+			bool operator !=(const Line& l) const {
+				return !(*this == l);
+			}
+
+			static void CreateIndices(vector<Line>& lines, vector<D3DIndexBuffer<>::index_t>& indices) {
+				for (auto& it_a = lines.begin(); it_a != lines.end(); it_a++) {
+					const auto& line = *it_a;
+
+					bool isDupLine = false;
+					for (auto& it_b = lines.begin(); it_b != it_a; it_b++) {
+						const auto& line2 = *it_b;
+						if (line == line2) {
+							isDupLine = true;
+							break;
+						}
+					}
+					if (isDupLine) {
+						continue;
+					}
+
+					indices.push_back(line.a);
+					indices.push_back(line.b);
+				}
+			}
+		};
+
+		struct Triangle {
+			union {
+				struct {
+					int a, b, c;
+				};
+				int idx[3];
+			};
+
+			Triangle(int a_, int b_, int c_){
+				a = a_;
+				b = b_;
+				c = c_;
+			}
+
+			// 指定したインデックスがこの三角形の頂点として使用されているかチェックする。
+			// 使用されていた場合、何番目の頂点かを0～2で返す。
+			// 使用されていない場合は-1を返す。
+			int Contains(int vertexIndex) {
+				if (a == vertexIndex) return 0;
+				else if (b == vertexIndex) return 1;
+				else if (c == vertexIndex) return 2;
+				else return -1;
+			}
+
+			bool operator <(const Triangle& t) {
+				const Triangle& a = *this;
+				const Triangle& b = t;
+				int ai, bi;
+
+				if (a.a < a.b && a.a < a.c)	ai = 0;
+				else if (a.b < a.a && a.b < a.c) ai = 1;
+				else if (a.c < a.a && a.c < a.b) ai = 2;
+
+				if (b.a < b.b && b.a < b.c)	bi = 0;
+				else if (b.b < b.a && b.b < b.c) bi = 1;
+				else if (b.c < b.a && b.c < b.b) bi = 2;
+
+
+				int ra = a.idx[(ai + 0) % 3] - b.idx[(bi + 0) % 3];
+				if (ra < 0) return true;
+				else if (ra > 0) return false;
+				else {
+					int rb = a.idx[(ai + 1) % 3] - b.idx[(bi + 1) % 3];
+					if (rb < 0) return true;
+					else if (rb > 0) return false;
+					else {
+						int rc = a.idx[(ai + 2) % 3] - b.idx[(bi + 2) % 3];
+						if (rc < 0) return true;
+						else return false;
+					}
+				}
+			}
+
+			// 同じ三角形である場合は真を返す。表裏を区別する。
+			// (operator ==ではなぜか動いてくれなかったのでメンバ関数として実装する)
+			bool IsSame(const Triangle& t) {
+				const Triangle& a = *this;
+				const Triangle& b = t;
+				int ai, bi;
+
+				if (a.a < a.b && a.a < a.c)	ai = 0;
+				else if (a.b < a.a && a.b < a.c) ai = 1;
+				else if (a.c < a.a && a.c < a.b) ai = 2;
+
+				if (b.a < b.b && b.a < b.c)	bi = 0;
+				else if (b.b < b.a && b.b < b.c) bi = 1;
+				else if (b.c < b.a && b.c < b.b) bi = 2;
+
+
+				return a.idx[(ai + 0) % 3] == b.idx[(bi + 0) % 3]
+					&& a.idx[(ai + 1) % 3] == b.idx[(bi + 1) % 3]
+					&& a.idx[(ai + 2) % 3] == b.idx[(bi + 2) % 3];
+			}
+
+
+			// 別の三角形と照らし合わせ、この三角形の隣接頂点が含まれていた場合はその隣接頂点を返す。
+			// 含まれていなかった場合は-1を返す。
+			// 引数 adjNo に有効なポインタが設定されていた場合は、そのアドレスに
+			// 何番目の頂点の対となる隣接頂点かを格納する。
+			// 例： this{ 0, 1, 2 } , t{ 1, 0, 3 }の場合
+			// +----------------------------------+ 
+			// | aa = false ab = true  ac = false | ax = true
+			// | ba = true  bb = false bc = false | bx = true
+			// | ca = false cb = false cc = false | cx =[false]
+			// +----------------------------------+
+			//   xa = true  xb = true  xc =[false]
+			// これより、this[2] -> 2, t[2] -> 3 が共有されていない頂点とわかるので
+			// 戻り値は (t[2] ->) 3 , adjNoには 2 が格納される。
+			int GetAdjacency(const Triangle& t, int* adjNo = nullptr) const{
+				bool aa = a == t.a;
+				bool ab = a == t.b;
+				bool ac = a == t.c;
+				bool ba = b == t.a;
+				bool bb = b == t.b;
+				bool bc = b == t.c;
+				bool ca = c == t.a;
+				bool cb = c == t.b;
+				bool cc = c == t.c;
+
+				bool ax = aa || ab || ac;
+				bool bx = ba || bb || bc;
+				bool cx = ca || cb || cc;
+
+				bool xa = aa || ba || ca;
+				bool xb = ab || bb || cb;
+				bool xc = ac || bc || cc;
+
+				if (!ax && bx && cx) { if (adjNo) *adjNo = 0; }
+				else if (ax && !bx && cx) { if (adjNo) *adjNo = 1; }
+				else if (ax && bx && !cx) { if (adjNo) *adjNo = 2; }
+				else { return -1; }
+
+				if (!xa && xb && xc) { return t.a; }
+				else if (xa && !xb && xc) { return t.b; }
+				else if (xa && xb && !xc) { return t.c; }
+				else return -1;
+			}
+
+			// 三角形の辺を得る
+			template<typename Collection>
+			void MakeLine(Collection& lines){
+				lines.insert(Line{ a, b });
+				lines.insert(Line{ b, c });
+				lines.insert(Line{ c, a });
+			}
+
+
+			// 隣接情報付き三角形のインデックスを生成
+			static void CreateFaceIndicesWithAdj(vector<Triangle> &triangles, vector<D3DIndexBuffer<>::index_t> &faceIndices) {
+				for (const auto& tri : triangles){
+					int adj[3] = { -1, -1, -1 };
+					for (const auto& tri2 : triangles){
+						int adjNo = -1;
+						int adjIdx = tri.GetAdjacency(tri2, &adjNo);
+						if (adjNo != -1 && adj[adjNo] == -1) {
+							adj[adjNo] = adjIdx;
+						}
+					}
+					if (adj[0] == -1) adj[0] = tri.a;
+					if (adj[1] == -1) adj[1] = tri.b;
+					if (adj[2] == -1) adj[2] = tri.c;
+
+					faceIndices.push_back(tri.a);
+					faceIndices.push_back(adj[2]);
+					faceIndices.push_back(tri.b);
+					faceIndices.push_back(adj[0]);
+					faceIndices.push_back(tri.c);
+					faceIndices.push_back(adj[1]);
+
+				}
+			}
+			// 三角形のインデックスを生成
+			static void CreateFaceIndices(vector<Triangle> &triangles, vector<D3DIndexBuffer<>::index_t> &faceIndices) {
+				for (auto& it_a = triangles.begin(); it_a != triangles.end(); it_a++) {
+
+					bool isDupTriangle = false;
+					for (auto& it_b = triangles.begin(); it_b != it_a; it_b++) {
+						if (it_a->IsSame(*it_b)) {
+							isDupTriangle = true;
+							break;
+						}
+					}
+					if (isDupTriangle) {
+						continue;
+					}
+
+					faceIndices.push_back(it_a->a);
+					faceIndices.push_back(it_a->b);
+					faceIndices.push_back(it_a->c);
+
+				}
+			}
+
+			// 頂点位置を参照しながら、この三角形の法線を計算する。
+			// 戻り値XMVECTORのうち、先頭3要素のみ有効な値になる。
+			XMVECTOR CalculateNormal(vector<Vertex>& vertices) const {
+				XMFLOAT4 pa = vertices[a].position;
+				XMFLOAT4 pb = vertices[b].position;
+				XMFLOAT4 pc = vertices[c].position;
+
+				XMVECTOR va = XMVectorSet( pa.x, pa.y, pa.z, pa.w );
+				XMVECTOR vb = XMVectorSet( pb.x, pb.y, pb.z, pb.w );
+				XMVECTOR vc = XMVectorSet( pc.x, pc.y, pc.z, pc.w );
+
+				return XMVector3Normalize(XMVector3Cross(XMVectorSubtract(vb, va), XMVectorSubtract(vc, va)));
+
+			}
+
+			// 全三角形の法線を計算し、頂点情報に付与する。
+			// 各頂点に付与される法線は、その頂点が含まれている三角形の法線の平均ベクトルになる。
+			static void CalculateNormal(vector<Vertex>& vertices, vector<Triangle>& triangles) {
+				// 作業用配列を作成する(16バイト境界で確保)
+				XMVECTOR* normalVector = (XMVECTOR*)_aligned_malloc(sizeof( XMVECTOR) * vertices.size(), 16);
+				memset(normalVector, 0, sizeof(XMVECTOR) * vertices.size());
+
+				for (auto& tri  : triangles) {
+					auto normal = tri.CalculateNormal(vertices);
+
+					normalVector[tri.a] = XMVectorAdd(normalVector[tri.a], normal);
+					normalVector[tri.b] = XMVectorAdd(normalVector[tri.b], normal);
+					normalVector[tri.c] = XMVectorAdd(normalVector[tri.c], normal);
+				}
+
+
+				for (unsigned i = 0; i < vertices.size(); i++) {
+					auto nn = XMVector3Normalize(normalVector[i]);
+					vertices[i].normal = XMFLOAT3{ nn.m128_f32 };
+				}
+
+				_aligned_free(normalVector);
+			}
+
+			Triangle Reverse() {
+				return Triangle{ c, b, a };
+			}
+
+		};
+
+
+
+	}
+
+
 	class ModelLoader {
-		Vertex vtemplate{ XMFLOAT4(0, 0, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT4(0, 0, 0, 0) };
-		vector<shared_ptr<ModelSubset>> subsets;
-		vector<ModelSubset::IndexBuffer::index_t> indices;
-		ColoringType sscolor;
-		SubsetParameter ssparam;
+		Vertex vtemplate{ XMFLOAT4(0, 0, 0, 1), XMFLOAT4(1, 1, 1, 1), XMFLOAT3(0, 0, 0) };
+		Vertex::ExtraInfo vtemplate_extra{ 0 };
+
 		vector<Vertex> vertices;
+		vector<Vertex::ExtraInfo> vertices_extra;
 
 		int lineNo;
 		int totalLines;
@@ -66,10 +334,21 @@ namespace Models {
 			bool s_ok;
 
 		public:
-			Value() :d{ 0 }, s{}, s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
-			Value(double num) :d{ num }, s{}, s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
-			Value(string& str) :d{ 0 }, s{ str }, s_ok{ true }, d_ok{ false }, type{ VAL_STR }{}
-			Value(const Value& v) :d{ v.d }, s{ v.s }, s_ok{ v.s_ok }, d_ok{ v.d_ok }, type{ v.type }{}
+			Value()               :d{ 0 },   s{},      s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
+			Value(const double num)     :d{ num }, s{},      s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
+
+			// 以下の問題に対するワークアラウンド
+			// https://connect.microsoft.com/VisualStudio/feedback/details/917150/compiler-error-c2797-on-code-that-previously-worked
+			//Value(string& str)    :d{ 0 },   s{ str }, s_ok{ true }, d_ok{ false }, type{ VAL_STR }{}
+			Value(const string& str) :d{ 0 }, s{}, s_ok{ true }, d_ok{ false }, type{ VAL_STR } {
+				s = str;
+			}
+			Value(string&& str) :d{ 0 }, s{}, s_ok{ true }, d_ok{ false }, type{ VAL_STR } {
+				s = std::move(str);
+			}
+
+			//Value(const Value& v) :d{ v.d }, s{ v.s }, s_ok{ v.s_ok }, d_ok{ v.d_ok }, type{ v.type }{}
+			Value(const Value& v) :d{ v.d }, s{}, s_ok{ v.s_ok }, d_ok{ v.d_ok }, type{ v.type }{ s = v.s; }
 
 			inline void SetDouble(double n){ d = n; d_ok = true; s_ok = false; type = VAL_NUM; }
 			inline double GetDouble() {
@@ -107,12 +386,12 @@ namespace Models {
 			inline void SetType(Type t){
 				if (this->type == t) return;
 				if (t == VAL_NUM){
-					// num�֕ϊ�
+					// numへ変換
 					this->GetDouble();
 					this->type = t;
 				}
 				else if (t == VAL_STR){
-					// string�֕ϊ�
+					// stringへ変換
 					this->GetString();
 					this->type = t;
 				}
@@ -127,7 +406,7 @@ namespace Models {
 		vector<Value> evalStack;
 
 
-		int ReadParam(char* buffer, size_t bufferSize, char* &p) {
+		size_t ReadParam(char* buffer, size_t bufferSize, char* &p) {
 			char* start = p;
 			while (iswspace(*start) && *start != '/' && *start != '\0') start++;
 
@@ -143,7 +422,7 @@ namespace Models {
 			char* end = slash;
 			while (iswspace(*(end - 1)) && (end - 1) != p) end--;
 
-			int count = 0;
+			size_t count = 0;
 			for (auto rp = start; rp != end; rp++){
 				if (count >= bufferSize - 1) break;
 
@@ -156,7 +435,7 @@ namespace Models {
 			return count;
 		}
 		template<int Length>
-		inline int ReadParam(char(&buffer)[Length], char* &p){
+		inline size_t ReadParam(char(&buffer)[Length], char* &p){
 			return ReadParam(buffer, Length, p);
 		}
 
@@ -172,7 +451,7 @@ namespace Models {
 			for (int i = 0; i < Count; i++){
 				n = GetValue(sp, &ep);
 				if (sp == ep) return i;
-				*fp++ = n;
+				*fp++ = (float)n;
 				sp = ep;
 			}
 
@@ -180,24 +459,39 @@ namespace Models {
 
 		}
 
-		Vertex ReadVertex(char* p){
+		Vertex ReadVertex(char* p, int* midx){
 			Vertex& tpl = vtemplate;
 			// v/<position>/<color>/<emit>
 			Vertex v = tpl;
 
-			// �ʒu���̓ǂݎ��
+			// 位置情報の読み取り
 			ReadNums(p, v.position);
 
-			// �F���P�̓ǂݎ��
+			// 色情報の読み取り
 			ReadNums(p, v.color);
 
-			// �F���Q�̓ǂݎ��
-			ReadNums(p, v.emit);
+			// マルチマテリアルが有効だった場合はそれも読む
+			if (midx) ReadInteger(p, midx);
 
 			return v;
 		}
 
-		int ReadMultipleInteger(char* p, int** outptr){
+		bool ReadInteger(char* p, int* outptr) {
+			if (!p) return false;
+
+			char* s = p;
+			char* e = nullptr;
+
+			int i = (int)GetValue(s, &e);
+			if (e == s) return false;
+			if (i < 0 || 4 <= i) i = 0;
+
+			*outptr = i;
+
+			return true;
+		}
+
+		size_t ReadMultipleInteger(char* p, int** outptr){
 			vector<int> is;
 			char* s = p;
 			char* e = nullptr;
@@ -218,82 +512,105 @@ namespace Models {
 			return is.size();
 		}
 
-		void ReadSubsetParam(char* p, ColoringType* color, SubsetParameter* param){
-			// g/[c|e|l]/<basecolor>/<AlphaBalance>
+		struct Option {
+			bool auto_mirror;
+			bool multi_material;
 
-			char str[32];
+			Option()
+				: auto_mirror{ false }
+				, multi_material{ false } { /* nop */ }
 
-			ReadParam(str, p);
-			switch (tolower(str[0])){
-			case 'c':
-				*color = ColoringType::COLORING_NORMAL;
-				break;
-			case 'e':
-				*color = ColoringType::COLORING_EMIT;
-				break;
-			case 'l':
-			default:
-				*color = ColoringType::COLORING_LIGHTED;
-				break;
+		} option;
+
+		void ReadOption(char *p) {
+			while (iswspace(*p)) p++;
+
+			if (_strnicmp(p, "auto_mirror", strlen("auto_mirror")) == 0) {
+				option.auto_mirror = true;
+				return;
 			}
-
-			ReadNums(p, param->BaseColor);
-			ReadNums(p, param->AlphaBalance);
+			if (_strnicmp(p, "multi_material", strlen("multi_material")) == 0) {
+				option.multi_material = true;
+				if (!vertices.empty()) {
+					vertices_extra.resize(vertices.size(), Vertex::ExtraInfo{ 0 });
+				}
+				return;
+			}
 
 		}
 
-		void ReadIndicesFan(char* p, vector<ModelSubset::IndexBuffer::index_t> &vec, int currentCount){
-			// t/<indices...>
+
+		void ReadIndicesFan(char* p, vector<Triangle>& triangleList, vector<Line>& lineList, size_t currentCount, bool triangleEnabled, bool lineEnabled) {
+			// f/<indices...>
 
 			int* indices;
-			int count;
 
-			count = ReadMultipleInteger(p, &indices);
-			if (count < 3) {
-				// �s�����Ă��� -> �����v�b�V�����Ȃ�
+			auto count = ReadMultipleInteger(p, &indices);
+			if (count < 2) {
+				// 不足している -> 何もプッシュしない
 				delete[] indices;
 				return;
 			}
 
-			int root = indices[0] < 0 ? currentCount + indices[0] : indices[0];
-			int first = indices[1] < 0 ? currentCount + indices[1] : indices[1];
-			for (int i = 2; i < count; i++){
-				int second = indices[i] < 0 ? currentCount + indices[i] : indices[i];
+			int root = indices[0] < 0 ? (int)currentCount + indices[0] : indices[0];
+			int first = indices[1] < 0 ? (int)currentCount + indices[1] : indices[1];
+			if (lineEnabled) lineList.push_back(Line{ root, first });
+			for (size_t i = 2; i < count; i++) {
+				int second = indices[i] < 0 ? (int)currentCount + indices[i] : indices[i];
 
-				vec.push_back(root);
-				vec.push_back(first);
-				vec.push_back(second);
+				if (triangleEnabled) triangleList.push_back(Triangle{ root, first, second });
+				if (lineEnabled) lineList.push_back(Line{ first, second });
 
 				first = second;
 			}
+			if (count >= 3) {
+				// 三角形が一つ以上発生していた場合は最後を閉じる
+				if (lineEnabled) lineList.push_back(Line{ first, root });
+			}
 			delete[] indices;
 		}
-		void ReadIndicesList(char* p, vector<ModelSubset::IndexBuffer::index_t> &vec, int currentCount){
-			// t/<indices...>
+		void ReadIndicesList(char* p, vector<Triangle>& triangleList, vector<Line>& lineList, size_t currentCount, bool triangleEnabled, bool lineEnabled) {
+			// F/<indices...>
 
 			int* indices;
-			int count;
-
-			count = ReadMultipleInteger(p, &indices);
-			if (count < 3) {
-				// �s�����Ă��� -> �����v�b�V�����Ȃ�
+			auto count = ReadMultipleInteger(p, &indices);
+			if (count < 2) {
+				// 不足している -> 何もプッシュしない
 				delete[] indices;
 				return;
 			}
 
-			int first = indices[0] < 0 ? currentCount + indices[0] : indices[0];
-			int second = indices[1] < 0 ? currentCount + indices[1] : indices[1];
-			for (int i = 2; i < count; i++){
-				int third = indices[i] < 0 ? currentCount + indices[i] : indices[i];
+			int first = indices[0] < 0 ? (int)currentCount + indices[0] : indices[0];
+			int second = indices[1] < 0 ? (int)currentCount + indices[1] : indices[1];
+			if (lineEnabled) lineList.push_back(Line{ first, second });
+			for (size_t i = 2; i < count; i++){
+				int third = indices[i] < 0 ? (int)currentCount + indices[i] : indices[i];
 
-				vec.push_back(first);
-				vec.push_back(second);
-				vec.push_back(third);
+				if(triangleEnabled) triangleList.push_back(Triangle{ first, second, third });
+				if(lineEnabled) lineList.push_back(Line{ first, third });
 
 				first = second;
 				second = third;
 			}
+			if (count >= 3) {
+				// 三角形が一つ以上発生していた場合は最後を閉じる
+				if (lineEnabled) lineList.push_back(Line{ first, second });
+			}
 			delete[] indices;
+		}
+
+		void ReadInstParam(char* p, InstanceData& inst) {
+			float indexf;
+			float4 data;
+
+			ReadNums(p, indexf);
+			ReadNums(p, data);
+
+			int index = static_cast<int>(indexf);
+			if (index < 0 || 4 <= index) return;
+
+			CopyMemory(&inst.Params[index], &data, sizeof(InstanceData::ParamSet));
+
 		}
 
 		map<string, function<EvalRet(vector<Value>&)> > funcMap;
@@ -302,11 +619,11 @@ namespace Models {
 
 			auto it = variables.find(s);
 			if (it != variables.end()){
-				// �������̂Œl��Ԃ�
+				// 見つけたので値を返す
 				return it->second;
 			}
 			else {
-				// ������Ȃ�����
+				// 見つからなかった
 				const char* p = s.c_str();
 				char* q = nullptr;
 				return strtod(p, &q);
@@ -319,7 +636,7 @@ namespace Models {
 			ret = strtod(s, sp);
 
 			if (s == *sp){
-				// �ϐ��Ƃ��ēǂݎ�������
+				// 変数として読み取りを試す
 				while (isspace(*s)) s++;
 				if (*s == '\0') return 0;
 
@@ -330,12 +647,12 @@ namespace Models {
 
 				auto it = variables.find(ss);
 				if (it != variables.end()){
-					// �������̂Œl��Ԃ�
+					// 見つけたので値を返す
 					if (sp) *sp = ep;
 					return it->second;
 				}
 				else {
-					// ������Ȃ�����
+					// 見つからなかった
 					return 0;
 				}
 			}
@@ -440,7 +757,7 @@ namespace Models {
 
 
 			funcMap.insert({ { "vcount" }, [this](SV& sv){
-				sv.push_back(vertices.size());
+				sv.push_back((double)vertices.size());
 				return EvalRet::Continue;
 			} });
 			funcMap.insert({ { "line" }, [this](SV& sv){
@@ -514,10 +831,10 @@ namespace Models {
 		EvalRet Evaluate(char* &p){
 			if (funcMap.empty()) InitFuncMap();
 
-			// �t�|�[�����h�L�@�ň���
+			// 逆ポーランド記法で扱う
 			char token[32];
 
-			// �ŏ��̃g�[�N����'*'�Ȃ̂œǂݔ�΂�
+			// 最初のトークンは'*'なので読み飛ばす
 			ReadParam(token, p);
 
 			while (ReadParam(token, p)){
@@ -525,12 +842,12 @@ namespace Models {
 
 				auto fn = funcMap.find(tokenStr);
 				if (fn != funcMap.end()) {
-					// ���߂ƃ}�b�`����
+					// 命令とマッチした
 					EvalRet ret = fn->second(evalStack);
 					if (ret != EvalRet::Continue) return ret;
 				}
 				else {
-					// �v�b�V��
+					// プッシュ
 					evalStack.push_back(tokenStr);
 				}
 			}
@@ -539,31 +856,48 @@ namespace Models {
 		}
 	public:
 
+		bool solid, edge;
+		ModelLoader(bool s, bool e) : solid{ s }, edge{ e } {}
+
 		Model* Load(const TCHAR* filename) {
-			DBG_OUT("Model load start : %s\n", filename);
-			FILE* fp = _tfopen(filename, _T("rt"));
-			if (!fp) return nullptr;
+			LOG_DBG("Model load start : %s\n", filename);
+			FILE* fp = nullptr;
+			int err = _tfopen_s(&fp, filename, _T("rt"));
+			if (err != 0) return nullptr;
 
 			char line[256] = { 0 };
 
-			char* p = nullptr;
-
-			// �t�@�C�����e�̋z���o��
+			// ファイル内容の吸い出し
 			lineNo = 1;
 			while (fgets(line, 256, fp)) {
 				lineCache.insert(std::pair<int, string>(lineNo++, string(line)));
 			}
 			totalLines = lineNo - 1;
 
+			vector<Triangle> triangleList;
+			vector<Line> lineList;
+
+			InstanceData* defaultInstData = nullptr;
+
 			for (lineNo = 1; 0 < lineNo && lineNo <= totalLines; lineNo++) {
 				strcpy_s(line, lineCache.at(lineNo).c_str());
 				char* p = line;
 
-				// �R�����g���󔒍s�ł������ꍇ�̓X�L�b�v
+				// 先頭がBOMだった場合は強制的に読み飛ばす
+				/*
+					p[0]	0xef '・'
+					p[1]	0xbb 'ｻ'
+					p[2]	0xbf 'ｿ'	
+				*/
+				if ((unsigned char)p[0] == 0xef && (unsigned char)p[1] == 0xbb && (unsigned char)p[2] == 0xbf) {
+					p += 3;
+				}
+
+				// コメントか空白行であった場合はスキップ
 				while (iswspace(*p)) p++;
 				if (*p == '#' || *p == '\0') continue;
 
-				// �擪�̕������A�X�^���X�N�������ꍇ�̓X�N���v�g�s�Ƃ��ĕ]������
+				// 先頭の文字がアスタリスクだった場合はスクリプト行として評価する
 				if (*p == '*') {
 					EvalRet ret = Evaluate(p);
 					if (ret == EvalRet::Exit){
@@ -572,79 +906,101 @@ namespace Models {
 					continue;
 				}
 
-				// �ŏ��̃p�����[�^(���ߎ��)��ǂ�
+				// 最初のパラメータ(命令種別)を読む
 				char op[4];
 				ReadParam(op, p);
 				switch (op[0]){
 				case 'V':
-					// ���_�e���v���[�g
-					vtemplate = ReadVertex(p);
+					// 頂点テンプレート
+					vtemplate = ReadVertex(p, option.multi_material ? reinterpret_cast<int*>(&vtemplate_extra.paramIndex) : nullptr);
 					break;
 				case 'v':
-					// ���_
-					vertices.push_back(ReadVertex(p));
-					break;
-				case 'g':
-					// �O���[�v�J�n
-					if (indices.size() > 0){
-						// �O�̃O���[�v�����݂����炻�̕����T�u�Z�b�g�Ƃ��Ċm��
-						auto data = indices.data();
-						subsets.push_back(shared_ptr<ModelSubset>(new ModelSubset(
-							indices.size(),
-							data,
-							&ssparam,
-							false,
-							sscolor)));
-
-						DBG_OUT("subset : %d indices\n", indices.size());
-						indices.clear();
+					// 頂点
+				{
+					if (option.multi_material) {
+						int midx = static_cast<int>(vtemplate_extra.paramIndex);
+						vertices.push_back(ReadVertex(p, &midx));
+						vertices_extra.push_back(Vertex::ExtraInfo{ midx });
 					}
-					ReadSubsetParam(p, &sscolor, &ssparam);
+					else {
+						vertices.push_back(ReadVertex(p, nullptr));
+					}
+
+				}
 					break;
 				case 'f':
-					// �O�p�`(TriangleFan)
-					ReadIndicesFan(p, indices, vertices.size());
+					// 面(TriangleFan)
+					ReadIndicesFan(p, triangleList, lineList, vertices.size(), true, true);
 					break;
 				case 'F':
-					// �O�p�`(TriangleList)
-					ReadIndicesList(p, indices, vertices.size());
+					// 面(TriangleList)
+					ReadIndicesList(p, triangleList, lineList, vertices.size(), true, true);
+					break;
+				case 't':
+					// 面(TriangleFan) - Solidのみ
+					ReadIndicesFan(p, triangleList, lineList, vertices.size(), true, false);
+					break;
+				case 'T':
+					// 面(TriangleList) - Solidのみ
+					ReadIndicesList(p, triangleList, lineList, vertices.size(), true, false);
+					break;
+				//case 'l':
+				//	// 面(TriangleFan) - Edgeのみ
+				//	ReadIndicesFan(p, triangleList, lineList, vertices.size(), false, true);
+				//	break;
+				//case 'L':
+				//	// 面(TriangleList) - Edgeのみ
+				//	ReadIndicesList(p, triangleList, lineList, vertices.size(), false, true);
+				//	break;
+				case 'p':
+				case 'P':
+					if (!defaultInstData) defaultInstData = new InstanceData{};
+					ReadInstParam(p, *defaultInstData);
+				case '@':
+					// オプション設定
+					ReadOption(p);
 					break;
 				}
 			}
 
-			// ���[�v�I����
-			if (indices.size() > 0){
-				// �O�̃O���[�v�����݂����炻�̕����T�u�Z�b�g�Ƃ��Ċm��
-				auto data = indices.data();
-				subsets.push_back(shared_ptr<ModelSubset>(new ModelSubset(
-					indices.size(),
-					data,
-					&ssparam,
-					false,
-					sscolor)));
 
-				DBG_OUT("subset : %d indices\n", indices.size());
-				indices.clear();
+			LOG_DBG("Total %d vertices, %d triangles, %d lines loaded.\n", vertices.size(), triangleList.size(), lineList.size());
+
+			vector<D3DIndexBuffer<>::index_t> triangleIndices, lineIndices;
+
+			Triangle::CalculateNormal(vertices, triangleList);
+			Triangle::CreateFaceIndices(triangleList, triangleIndices);
+			if (option.auto_mirror) {
+				vector<D3DIndexBuffer<>::index_t> newIndices;
+				newIndices.reserve(triangleIndices.size() * 2);
+
+				for (auto it = triangleIndices.rbegin(); it != triangleIndices.rend(); it++) {
+					newIndices.push_back(*it);
+				}
+				for (auto it = triangleIndices.begin(); it != triangleIndices.end(); it++) {
+					newIndices.push_back(*it);
+				}
+
+				triangleIndices = std::move(newIndices);
 			}
+			Line::CreateIndices(lineList, lineIndices);
 
-			DBG_OUT("Total %d vertices, %d subsets loaded.\n", vertices.size(), subsets.size());
 
-			auto vp = vertices.data();
-			Model* m = new Model(vp, vertices.size());
-			for (auto s : subsets){
-				m->AddSubset(s);
-			}
+			Model* m = new Model(
+				vertices.data(), vertices.size(), vertices_extra.empty() ? nullptr : vertices_extra.data(),
+				solid ? triangleIndices.data() : nullptr, triangleIndices.size(),
+				edge ? lineIndices.data() : nullptr, lineIndices.size(), defaultInstData);
 
 			fclose(fp);
 
-			DBG_OUT("Model load finished : %s (model : #%d[%p])\n", filename, m->GetResourceID(), m);
+			LOG_DBG("Model load finished : %s (model : #%d[%p])\n", filename, m->GetResourceID(), m);
 
 			return m;
 		}
 	};
 
-	Model* Model::Load(const TCHAR* filename) {
-		ModelLoader loader;
+	Model* Model::Load(const TCHAR* filename, bool solid, bool edge) {
+		ModelLoader loader{ solid, edge };
 		auto ret = loader.Load(filename);
 		return ret;
 	}

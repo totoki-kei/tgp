@@ -21,18 +21,24 @@ class D3DCore : public Resource
 	ID3D11DepthStencilView* dsv;
 	ID3D11DepthStencilState* dss;
 
-	ID3D11BlendState* bs;
+	ID3D11BlendState* bsNormal;
+	ID3D11BlendState* bsAlpha;
+	ID3D11BlendState* bsAdd;
+
 	D3D11_VIEWPORT viewport;
 
 	GameWindow* wnd;
 
 	float clearColor[4];
 	int vsyncWait;
+
+	ID3D11Debug * d3ddbg;
+
 public:
 	D3DCore(GameWindow* wnd);
 	~D3DCore(void);
 
-	bool Initialize(bool debugDevice = false);
+	bool Initialize(bool fullscreen = false, bool debugDevice = false);
 
 	bool isDisposed();
 	void Dispose();
@@ -54,6 +60,7 @@ public:
 
 	void Draw(int vertexCount, int offset);
 	void DrawIndexed(int indexCount, int vertexOffset, int indexOffset);
+	void DrawIndexed(int indexCount, int vertexOffset, int indexOffset, int instanceCount);
 
 	void SetVSyncWait(int wait);
 	int GetVSyncWait();
@@ -66,5 +73,11 @@ public:
 
 	void SetDefaultViewport();
 	void GetDefaultViewport(D3D11_VIEWPORT* viewport);
+
+	void SetBlendMode(D3DBlendMode mode);
+
+	DWORD GetScreenWidth();
+	DWORD GetScreenHeight();
+	double GetRefreshRate();
 };
 

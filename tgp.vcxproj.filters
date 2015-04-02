@@ -1,13 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="WindowTest.cpp">
-      <Filter>App\WindowTest</Filter>
-    </ClCompile>
     <ClCompile Include="Game1.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
     <ClCompile Include="Framework\Debug.cpp">
@@ -73,19 +67,55 @@
     <ClCompile Include="Framework\Graphics\ImageLoader.cpp">
       <Filter>Framework\D11</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\Input\DIXInputListener.cpp">
+    <ClCompile Include="Framework\Input\DIJoypad.cpp">
       <Filter>Framework\D11\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\Sprite.cpp">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\Effector.cpp">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\SpriteString.cpp">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Scene.cpp">
+      <Filter>Framework\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\GaussianEffector.cpp">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Audio\WavLoader.cpp">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Audio\SoundData.cpp">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Audio\DAVoice.cpp">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Audio\DACore.cpp">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\D3DBloomEffect.cpp">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\BrightPassEffector.cpp">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\MatrixTranslator.cpp">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Graphics\Translator.cpp">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
-    <ClInclude Include="WindowTest.h">
-      <Filter>App\WindowTest</Filter>
-    </ClInclude>
     <ClInclude Include="Game1.h">
-      <Filter>App\Game1</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
       <Filter>App\Game1</Filter>
     </ClInclude>
     <ClInclude Include="Framework\BlockArray.h">
@@ -178,14 +208,78 @@
     <ClInclude Include="Framework\Graphics\ImageLoader.h">
       <Filter>Framework\D11</Filter>
     </ClInclude>
-    <ClInclude Include="Framework\Input\DIXInputListener.h">
-      <Filter>Framework\D11\Input</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\Input\DILibs.h">
       <Filter>Framework\D11\Input</Filter>
     </ClInclude>
     <ClInclude Include="Framework\Input\DIHeader.h">
       <Filter>Framework\D11\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Input\DIJoypad.h">
+      <Filter>Framework\D11\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\Sprite.h">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\Effector.h">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\SpriteString.h">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Scene.h">
+      <Filter>Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="CSRNG.h" />
+    <ClInclude Include="Framework\Graphics\GaussianEffector.h">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DConstantBuffer.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DIndexBuffer.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DShaderResourceBuffer.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DVertexBuffer.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Audio\WavLoader.h">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Audio\SoundData.h">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Audio\DAVoice.h">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Audio\DACore.h">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\D3DBloomEffect.h">
+      <Filter>Framework\D11\Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\BrightPassEffector.h">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\MatrixTranslator.h">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Graphics\Translator.h">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Audio\DAUtility.h">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Audio\DAVoiceCallback.h">
+      <Filter>Framework\D11\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Lambs.hpp">
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -200,9 +294,6 @@
     </Filter>
     <Filter Include="Framework\D11\Direct3D">
       <UniqueIdentifier>{5cdee213-2112-49eb-ba71-861e082454c3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="App\WindowTest">
-      <UniqueIdentifier>{5eb4e367-c10d-443c-a293-ce804669c592}</UniqueIdentifier>
     </Filter>
     <Filter Include="App\Game1">
       <UniqueIdentifier>{64c06b93-4f86-419f-9f24-03dd3ac6c852}</UniqueIdentifier>
@@ -219,25 +310,61 @@
     <Filter Include="Framework\D11\Direct3D\Shaders\Model">
       <UniqueIdentifier>{66d9f34c-bce8-4154-8f64-2bb69a66cc79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\D11\Direct3D\Shaders\Effector">
+    <Filter Include="Framework\D11\Direct3D\Shaders\Sprite">
       <UniqueIdentifier>{7c5df23f-80f2-43ca-a56e-85f31cd151b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{05b1ec15-96d6-4d92-a242-1ab842ae3708}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D11\Audio">
+      <UniqueIdentifier>{2287ff3f-df0f-4bbf-9cbe-8e632bc40400}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D11\Direct3D\Shaders\Sprite\HLSL">
+      <UniqueIdentifier>{7a65a8be-8006-4df8-b5a2-b654a72be28f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\D11\Direct3D\Shaders\Model\HLSL">
+      <UniqueIdentifier>{347fa6e7-75c3-4671-9161-0b257e02d170}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Framework\HLSL\Model\GS_CreateEdge.hlsl">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_BrightPass.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_Font.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_GaussianH.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_GaussianV.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\PS_TextureOnly.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\VS_2DTransform.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Sprite\VS_3DTransform.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Model\GS_FlatShading.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Model\GS_WideLine.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Model\PS_LightedColor.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="Framework\HLSL\Model\PS_UnlightedColor.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
     </FxCompile>
     <FxCompile Include="Framework\HLSL\Model\VS_Transform.hlsl">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
     </FxCompile>
-    <FxCompile Include="Framework\HLSL\PostEffect\PS_TextureOnly.hlsl">
-      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
-    </FxCompile>
-    <FxCompile Include="Framework\HLSL\Model\PS_OutputColor.hlsl">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
-    </FxCompile>
-    <FxCompile Include="Framework\HLSL\PostEffect\VS_2DTransform.hlsl">
-      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
+    <FxCompile Include="Framework\HLSL\Model\VS_TransformSingle.hlsl">
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,31 +372,55 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
+    <Image Include="Content\Image\font.png">
+      <Filter>Content</Filter>
+    </Image>
+    <Image Include="Content\Image\test.png">
+      <Filter>Content</Filter>
+    </Image>
+    <Image Include="Content\Image\font_large.png">
+      <Filter>Content</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Readme.md" />
+    <None Include="Framework\HLSL\Sprite\GaussianEffect.hlsli">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </None>
+    <None Include="Framework\HLSL\Sprite\PL_Effector.hlsli">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </None>
+    <None Include="Framework\HLSL\Sprite\PL_Sprite.hlsli">
+      <Filter>Framework\D11\Direct3D\Shaders\Sprite\HLSL</Filter>
+    </None>
+    <None Include="Framework\HLSL\Model\Functions.hlsli">
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
+    </None>
     <None Include="Framework\HLSL\Model\PL_Model.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
-    </None>
-    <None Include="Framework\HLSL\Model\IF_PixelColor.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
-    </None>
-    <None Include="Framework\HLSL\Model\CLS_EmitColor.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
-    </None>
-    <None Include="Framework\HLSL\Model\CLS_NormalColor.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
-    </None>
-    <None Include="Framework\HLSL\Model\CLS_LightedColor.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders\Model</Filter>
-    </None>
-    <None Include="Framework\HLSL\Functions.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders</Filter>
-    </None>
-    <None Include="Framework\HLSL\PostEffect\PL_Effector.hlsli">
-      <Filter>Framework\D11\Direct3D\Shaders\Effector</Filter>
+      <Filter>Framework\D11\Direct3D\Shaders\Model\HLSL</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Application\testmodel.txt" />
+    <Text Include="Content\Model\testmodel.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="Content\Model\r03.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="Content\Model\r01.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="Content\Model\r02.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="Content\Model\r04.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="Content\Model\r05.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="Content\Model\s01.txt">
+      <Filter>Content</Filter>
+    </Text>
   </ItemGroup>
 </Project>

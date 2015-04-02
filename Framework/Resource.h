@@ -4,13 +4,14 @@
 
 #include <memory>
 #include <vector>
+#include <set>
 #include <functional>
 
 #include "Debug.h"
 #include "WinAPI.h"
 
 #ifdef RSC_DBG
-#define RSC_DBG_OUT DBG_OUT
+#define RSC_DBG_OUT LOG_DBG
 #else
 #define RSC_DBG_OUT __noop
 #endif
@@ -45,7 +46,7 @@ class Resource{
 	*/
 
 protected:
-	typedef std::vector< std::shared_ptr<Resource> > children_type;
+	typedef std::set< std::shared_ptr<Resource> > children_type;
 	// 登録されているリソース
 	children_type* children;
 
@@ -59,6 +60,7 @@ public:
 
 	// 登録されているリソースから削除する
 	bool RemoveResource(std::shared_ptr<Resource>, bool all = false, bool recursive = false);
+	bool RemoveResource(Resource*, bool all = false, bool recursive = false);
 
 	// このリソースのリソースIDを得る
 	unsigned int GetResourceID() const;

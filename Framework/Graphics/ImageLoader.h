@@ -13,9 +13,9 @@ class ImageData
 	DWORD dataLength;
 	BYTE* data;
 	
-	inline ImageData(DWORD w, DWORD h, DWORD str, DXGI_FORMAT fmt, DWORD pbytes);
+	ImageData(DWORD w, DWORD h, DWORD str, DXGI_FORMAT fmt, DWORD pbytes);
 public:
-	inline ~ImageData() { delete[] data; }
+	~ImageData();
 
 	static ImageData* Load(const TCHAR* filename);
 

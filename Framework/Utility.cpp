@@ -1,5 +1,58 @@
-
 #include "Utility.h"
+
+#include <new>
+#include <stdexcept>
+#include <mbstring.h>
+
+size_t ConvertStringWidth(char *dst, size_t dstSize, const char *src) {
+	_mbscpy_s((unsigned char*)dst, dstSize, (const unsigned char*)src);
+	return _mbstrlen(dst);
+}
+size_t ConvertStringWidth(char *dst, size_t dstSize, const wchar_t *src) {
+	int bytes = WideCharToMultiByte(
+		CP_ACP,
+		0,
+		src, -1,
+		dst, (int)dstSize,
+		nullptr, nullptr);
+	return bytes;
+}
+size_t ConvertStringWidth(wchar_t *dst, size_t dstSize, const char *src) {
+	int words = MultiByteToWideChar(
+		CP_ACP,
+		0,
+		src, -1,
+		dst, (int)dstSize);
+
+	return words;
+}
+size_t ConvertStringWidth(wchar_t *dst, size_t dstSize, const wchar_t *src) {
+	wcscpy_s(dst, dstSize, src);
+	return wcslen(dst);
+}
+
+size_t GetWideCharStringLength(const char* txt) {
+	return (size_t)MultiByteToWideChar(
+		CP_ACP,
+		0,
+		txt, -1,
+		nullptr, -1);
+}
+size_t GetWideCharStringLength(const wchar_t* txt) {
+	return wcslen(txt);
+}
+size_t GetMultibyteStirngLength(const char* txt) {
+	return _mbstrlen(txt);
+}
+size_t GetMultibyteStirngLength(const wchar_t* txt) {
+	return (size_t)WideCharToMultiByte(
+		CP_ACP,
+		0,
+		txt, -1,
+		nullptr, -1,
+		nullptr, nullptr);
+}
+
 
 BYTE* LoadFileToMemory(const TCHAR* filename, /* out */ int *size){
 	auto hnd = CreateFile(filename, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
@@ -27,30 +80,21 @@ BYTE* LoadFileToMemory(const TCHAR* filename, /* out */ int *size){
 	return buffer;
 }
 
+using DirectX::XMVECTOR;
 
-size_t ConvertStringWidth(char *dst, int dstSize, const char *src){
-	strcpy_s(dst, dstSize, src);
-	return strlen(dst);
-}
-size_t ConvertStringWidth(char *dst, int dstSize, const wchar_t *src){
-	int bytes = WideCharToMultiByte(
-		CP_ACP,
-		0,
-		src, -1,
-		dst, dstSize,
-		nullptr, nullptr);
-	return bytes;
-}
-size_t ConvertStringWidth(wchar_t *dst, int dstSize, const char *src){
-	int words = MultiByteToWideChar(
-		CP_ACP,
-		0,
-		src, -1,
-		dst, dstSize);
+float CalcDistanceLineToPoint(const XMVECTOR& a, const XMVECTOR& b, const XMVECTOR &p) {
+	using namespace DirectX;
 
-	return words;
-}
-size_t ConvertStringWidth(wchar_t *dst, int dstSize, const wchar_t *src){
-	wcscpy_s(dst, dstSize, src);
-	return wcslen(dst);
+	if (XMVectorGetX(XMVector2Dot(XMVectorSubtract(b, a), XMVectorSubtract(p, a))) < 0) {
+		// ì_aÇÃÇ»Ç∑äpÇ™ì›äp(ì‡êœÇ™ïâ) -> aÇ∆pÇÃãóó£ÇégÇ§
+		return XMVectorGetX(XMVector2Length(XMVectorSubtract(a, p)));
+	}
+	else if (XMVectorGetX(XMVector2Dot(XMVectorSubtract(a, b), XMVectorSubtract(p, b))) < 0) {
+		// ì_bÇÃÇ»Ç∑äpÇ™ì›äp(ì‡êœÇ™ïâ) -> bÇ∆pÇÃãóó£ÇégÇ§
+		return XMVectorGetX(XMVector2Length(XMVectorSubtract(b, p)));
+	}
+	else {
+		// ì_Ç∆íºê¸ÇÃãóó£ÇégÇ§
+		return XMVectorGetX(XMVector2LinePointDistance(a, b, p));
+	}
 }

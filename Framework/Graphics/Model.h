@@ -1,115 +1,170 @@
 #pragma once
 
 #include "D3DCore.h"
-#include "D3DBuffer.h"
+#include "D3DVertexBuffer.h"
+#include "D3DIndexBuffer.h"
+#include "D3DConstantBuffer.h"
+#include "D3DShaderResourceBuffer.h"
 #include "D3DInputLayout.h"
 #include "D3DRasterizer.h"
 
 #include <vector>
+#include <list>
 #include <memory>
 
 namespace Models{
+	enum MaxConstans {
+		InstanceCount = 8192,
+		MaterialCount = 32,
+		PointLightCount = 16,
+	};
+
 	struct Vertex;
+	union PointLightData;
+	struct InstanceData;
+	struct MaterialData;
 	struct SceneParameter;
-	struct ObjectParameter;
-	struct SubsetParameter;
+	struct InstanceSetParameter;
 	class ModelSubset;
 	class Model;
 }
 
 namespace Models {
-using std::vector;
-using std::shared_ptr;
+	using std::vector;
+	using std::shared_ptr;
 
+	// ポイントライト構造体
+	SHADERDATA union PointLightData {
+		struct {
+			// 点光源のワールド座標
+			float3 Position;
+			// 点光源の最大到達距離
+			float Distance;
+			// 点光源の色(Alphaは強さ)
+			float4 LightColor;
+		};
+		float rawvalue[3 + 1 + 4];
+	};
+
+	// インスタンス情報構造体
+	SHADERDATA struct InstanceData {
+		// ワールド行列
+		SHADERDATA matrix World;
+		// マテリアルセットの番号
+		SHADERDATA struct ParamSet {
+			float Index;
+			float Blend;
+			float LineWidth;
+			float Alpha;
+
+			ParamSet() = default;
+		} Params[4];
+
+#pragma warning(push)
+#pragma warning(disable:4351)
+		inline InstanceData() : Params{} {
+			World = XMMatrixIdentity();
+		}
+#pragma warning(pop)
+	};
+
+
+	// マテリアル情報構造体
+	SHADERDATA struct MaterialData {
+		// 色
+		float4 Color;
+		//// 色割合(0以下の場合は未使用とみなす)
+		//float Blend;
+		//// 線の幅
+		//float LineWidth;
+
+		MaterialData(float4 color) : Color{ color } {}
+	};
+
+	// 頂点構造
 	struct Vertex {
-		XMFLOAT4 position;
-		XMFLOAT4 color;
-		XMFLOAT4 emit;
+		float4 position;
+		float4 color;
+		float3 normal;
 
-		static D3D11_INPUT_ELEMENT_DESC* GetInputElementDesc();
+		struct ExtraInfo {
+			uint32_t paramIndex;
+
+			ExtraInfo() : paramIndex{ 0 } {};
+
+			template <typename IntT>
+			ExtraInfo(const IntT idx) : paramIndex{ idx } {}
+		};
+
+		static const D3D11_INPUT_ELEMENT_DESC* GetInputElementDesc();
 		static int GetInputElementDescCount();
 
-		Vertex(const XMFLOAT4& pos, const XMFLOAT4& color, const XMFLOAT4& emit);
+		Vertex(const XMFLOAT4& pos_, const XMFLOAT4& color_, const XMFLOAT3& normal_);
 		Vertex();
 
 		typedef D3DVertexBuffer<Vertex> buffer_t;
+		typedef D3DVertexBuffer<ExtraInfo> buffer_extra_t;
 	};
 
 
-	struct SceneParameter {
-		XMMATRIX View;
-		XMMATRIX Projection;
-		XMFLOAT4 LightDirection;
-		XMFLOAT4 LightColor;
+	// シーン固有の定数
+	struct SceneParameter{
+		SHADERDATA matrix View;
+		SHADERDATA matrix Projection;
+		SHADERDATA float4 AmbientColor;
+		SHADERDATA float3 LightDirection;
+		SHADERDATA float4 LightColor;
+
+		SHADERDATA PointLightData PointLights[PointLightCount];
 	};
 
-	__declspec(align(16))
-	struct ObjectParameter {
-		XMMATRIX World;
+	//// モデル単位の定数
+	//struct InstanceSetParameter{
+	//	SHADERDATA InstanceData Instance[InstanceCount];
+	//};
+
+	//// InstanceIDとInstance番号の対応表
+	//SHADERDATA struct InstanceMapParameter {
+	//	uint4 IDMap[InstanceCount];
+	//};
+
+	// マテリアル
+	struct MaterialSetParameter {
+		SHADERDATA MaterialData Materials[MaterialCount];
 	};
-
-	__declspec(align(16))
-	struct SubsetParameter{
-		XMFLOAT4 BaseColor;
-		XMFLOAT4 AlphaBalance;
-	};
-
-	enum ColoringType {
-		COLORING_NORMAL,
-		COLORING_EMIT,
-		COLORING_LIGHTED,
-	};
-
-	class ModelSubset {
-	public:
-		typedef D3DIndexBuffer<> IndexBuffer;
-		typedef D3DConstantBuffer<SubsetParameter> ConstantBuffer;
-	private:
-		D3DIndexBuffer<> indexBuffer;
-		D3DConstantBuffer<SubsetParameter> subsetParam;
-		bool isWireframe;
-		ColoringType coloringType;
-
-	public:
-		ModelSubset(const int indexCount, const D3DIndexBuffer<>::index_t *indices, const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL);
-
-		template<int Length>
-		ModelSubset(D3DIndexBuffer<>::index_t(&indices)[Length], const SubsetParameter* param = nullptr, bool isWireframe = false, ColoringType type = COLORING_NORMAL)
-		: ModelSubset(Length, indices, param, isWireframe, type) {	}
-
-		~ModelSubset();
-
-		inline bool GetWireframeMode(){ return isWireframe; }
-		inline void SetWireframeMode(bool w){ isWireframe = w; }
-		inline ColoringType GetColoringType(){ return coloringType; }
-		inline void SetColoringType(ColoringType c){ coloringType = c; }
-		
-		inline void UpdateParameter(const SubsetParameter* p){ subsetParam.Update(p); }
-
-		__declspec(property(get = GetWireframeMode, put = SetWireframeMode))
-			bool $WireframeMode;
-
-		__declspec(property(get = GetColoringType, put = SetColoringType))
-			ColoringType $ColoringType;
-		
-		void Draw(Model* m);
-	};
-
-
 
 
 	class Model : public Resource
 	{
-		friend class ModelSubset;
 
 	private:
 		Vertex::buffer_t* vertexBuffer;
-		int vertexCount;
+		Vertex::buffer_extra_t* vertexExtraBuffer;
 
-		vector< shared_ptr<ModelSubset> > subsets;
+		D3DIndexBuffer<> *solidIndexBuffer;
+		D3DIndexBuffer<> *edgeIndexBuffer;
+
+		//D3DBuffer::Mapper<InstanceSetParameter> mInstanceSet;
+		//D3DConstantBuffer<InstanceSetParameter> *cbInstanceSet;
+		//std::vector<D3DConstantBuffer<InstanceSetParameter> *> cbInstanceSetFree;
+		//std::vector<D3DConstantBuffer<InstanceSetParameter> *> cbInstanceSetOccupied;
+		D3DBuffer::Mapper<InstanceData> mInstanceBuffer;
+		D3DShaderResourceBuffer<InstanceData, InstanceCount> *sbInstanceBuffer;
+
+		std::unique_ptr<InstanceData> defaultInstanceParams;
+
+		D3DBuffer::Mapper<MaterialSetParameter> mMaterialSet;
+		D3DConstantBuffer<MaterialSetParameter> *cbMaterialSet;
+
+		int materialCount;
+		int instanceCount;
+		int pointLightCount;
+
+		bool solidEnabled, edgeEnabled;
+		bool edgeWidthEnabled;
+		//D3DShaderResourceBuffer<float, InstanceCount>* idMap;
 		
-
-		static void NameToModelResource(const char* modelType, Model* m);
+		static void NameToModelResource(Model* m);
 
 		static D3DCore* core;
 		static D3DInputLayout *inputLayout;
@@ -117,39 +172,62 @@ using std::shared_ptr;
 		static D3DRasterizer *rasterizer;
 
 		static Shaders::VertexShader *vsTransform;
-		static Shaders::GeometryShader *gsEdge;
+		static Shaders::VertexShader *vsTransformSingle;
+		static Shaders::GeometryShader *gsLine;
+		static Shaders::GeometryShader *gsFlat;
 		static Shaders::PixelShader *psColoring;
+		static Shaders::PixelShader *psNoLight;
 
-		static Shaders::ClassLinkage *classLinkage;
-		static Shaders::ClassInstance *instNormalColor;
-		static Shaders::ClassInstance *instEmitColor;
-		static Shaders::ClassInstance *instLightedColor;
-
+		static D3DBuffer::Mapper<SceneParameter> mScene;
 		static D3DConstantBuffer<SceneParameter> *cbScene;
-		static D3DConstantBuffer<ObjectParameter> *cbObject;
-//		static D3DConstantBuffer<SubsetParameter> *cbSubset;
-
 
 	public:
-		static Model* Load(const TCHAR* file);
+		static Model* Load(const TCHAR* file, bool solid = true, bool edge = true);
 		static void InitializeSharedResource(D3DCore* core);
-		static void ApplyEffect(ColoringType colortype);
-		static inline void UpdateSceneParams(SceneParameter* sce){
-			cbScene->Update(sce);
+		static void ApplyEffect();
+		static void ApplyEffect_NoInstancing();
+
+		static inline SceneParameter& GetSceneParam() {
+			if (!mScene) mScene.Map(cbScene);
+			return *mScene;
 		}
 
-		Model(Vertex* vertices, int vertexCount);
+
+		//inline void UpdateObjectParams(){
+		//	cbInstanceSet->Update(&instanceSet);
+		//}
+		//inline void UpdateMaterialParams(){
+		//	cbMaterial->Update(&material);
+		//}
+
+		Model(Vertex* vertices, size_t vertexCount, Vertex::ExtraInfo* extra,
+			  D3DIndexBuffer<>::index_t* solidIndices, size_t solidIndicesCount,
+			  D3DIndexBuffer<>::index_t* edgeIndices, size_t edgeIndicesCount,
+			  InstanceData* defaultInstanceData);
 		~Model();
 
-		void Draw();
-		void DrawSubset(int subsetIndex);
 
-		inline void AddSubset(shared_ptr<ModelSubset> s){
-			subsets.push_back(s);
+		void Draw(const InstanceData& instData);
+		InstanceData& ReserveDraw();
+		void Flush();
+		void Flush(bool solid, bool edge);
+
+		void SetMaterial(int index, MaterialData& mat);
+		
+		void SetFlushMode(bool solid, bool edge) {
+			this->solidEnabled = solid;
+			this->edgeEnabled = edge;
+		}
+		void GetFlushMode(bool* outSolid, bool* outEdge) {
+			if (outSolid)*outSolid = solidEnabled;
+			if (outEdge) *outEdge = edgeEnabled;
 		}
 
-		inline void UpdateObjectParams(ObjectParameter* obj){
-			cbObject->Update(obj);
+		void SetEdgeWidthEnableFlag(bool enabled) {
+			this->edgeWidthEnabled = enabled;
+		}
+		bool GetEdgeWidthEnableFlag() {
+			return this->edgeWidthEnabled;
 		}
 	};
 
