@@ -8,6 +8,7 @@ class D3DBuffer;
 #include "../Resource.h"
 #include "../DirectXUtil.h"
 
+#include <functional>
 
 class D3DBuffer :	public Resource {
 
@@ -15,6 +16,9 @@ protected:
 
 	D3DCore* core;
 	ID3D11Buffer *buffer;
+	bool canCpuAccess;
+	bool mapped;
+	std::function<void(void)> unmapCallback;
 
 	D3DBuffer(D3DCore*);
 public:
@@ -24,158 +28,133 @@ public:
 	void Dispose();
 
 	ID3D11Buffer* GetRawBuffer() const;
+	D3DCore* GetCore() const;
+
+	template <typename T>
+	class Mapper {
+		typedef Mapper<T> MapperType;
+
+		friend class D3DBuffer;
+		D3DBuffer* buffer;
+		T* ptr;
+
+	public:
+
+		// バッファのMapを呼び、ポインタを自身に格納する
+		// すでに何らかのバッファをマップ済みであった場合はUnmapされる
+		void Map(D3DBuffer* b) {
+			if (!b->canCpuAccess) return;
+			Unmap();
+
+			if (b->mapped) {
+				// 二重にマップは無理
+				return;
+			}
+
+			b->mapped = true;
+			b->unmapCallback = [this]() { this->Unmap(); };
+
+			D3D11_MAPPED_SUBRESOURCE msr;
+
+			auto ctx = b->GetCore()->GetDeviceContext();
+			auto hresult = ctx->Map(
+				b->buffer,
+				0,
+				D3D11_MAP_WRITE_DISCARD,
+				0,
+				&msr);
+
+			IF_NG(hresult) {
+				// マップ失敗
+				b->mapped = false;
+				return;
+			}
+
+			this->buffer = b;
+			this->ptr = reinterpret_cast<T*>(msr.pData);
+		}
+
+		// マッピングを解除し、バッファへの参照を外す。
+		void Unmap() {
+			if (buffer && ptr) {
+				auto ctx = buffer->GetCore()->GetDeviceContext();
+				ctx->Unmap(buffer->GetRawBuffer(), 0);
+				buffer->mapped = false;
+				buffer = nullptr;
+				ptr = nullptr;
+			}
+		}
+
+		// デフォルトコンストラクタ：無効なインスタンスを生成
+		Mapper()
+			: buffer{ nullptr }
+			, ptr{ nullptr } {}
+
+		// コピーコンストラクタ：使用不可
+		Mapper(const MapperType&) = delete;
+
+		// ムーブコンストラクタ：参照内容を移動
+		Mapper(MapperType&& m)
+			: buffer{ m.buffer }
+			, ptr{ m.ptr } 
+		{
+			m.buffer = nullptr;
+			m.ptr = nullptr;
+			buffer->unmapCallback = [this]() { this->Unmap(); };
+		}
+
+		// バッファからインスタンスを構成するコンストラクタ
+		Mapper(D3DBuffer* b)
+			: buffer{ nullptr }
+			, ptr{ nullptr } 
+		{
+			Map(b);
+		}
+
+		MapperType& operator = (MapperType&& m) {
+			Unmap();
+			this->buffer = m.buffer;
+			this->ptr = m.ptr;
+			m.buffer = nullptr;
+			m.ptr = nullptr;
+		}
+		
+		~Mapper() {
+			Unmap();
+		}
+
+		D3DBuffer* GetBuffer() const { return buffer; }
+		T* GetPtr() const { return ptr; }
+
+		__declspec(property(get = GetBuffer))
+			D3DBuffer* $Buffer;
+		__declspec(property(get = GetPtr))
+			T* $Pointer;
+
+
+		const T& operator *() const { return *ptr; }
+		T& operator *() { return *ptr; }
+		const T* operator ->() const { return ptr; }
+		T* operator ->() { return ptr; }
+		operator bool() const { return buffer && ptr; }
+
+		template <typename IndexT>
+		T& operator [](IndexT idx) { return ptr[idx]; }
+		template <typename IndexT>
+		const T& operator [](IndexT idx) const { return ptr[idx]; }
+	};
+
+	template <typename T = void>
+	Mapper<T> Map() {
+		return Mapper<T>{ this };
+	}
 
 protected:
-	void InitializeBuffer(const void* bufferData, int bufferSize, UINT usage, bool readonly = true);
-	void UpdateBuffer(const void* bufferData, int bufferSize);
-
-};
-
-//// ここから用途別に特殊化されたバッファ
-
-template <typename T>
-class D3DVertexBuffer : public D3DBuffer {
-	int length;
+	void InitializeBuffer(const void* bufferData, size_t bufferSize, UINT usage, bool cpuAccessable = false);
+	void UpdateBuffer(const void* bufferData, size_t bufferSize);
+	void UpdateBuffer(const void* bufferData, size_t offset, size_t bufferSize);
 public:
-	enum {
-		Stride = sizeof(T),
-	};
-	typedef T vertex_t;
-
-	D3DVertexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
-		this->length = length;
-		InitializeBuffer(nullptr, Stride * length, D3D11_BIND_VERTEX_BUFFER, false);
-	}
-
-	D3DVertexBuffer(D3DCore *core, const T* data, int length, bool readonly = true) : D3DBuffer(core) {
-		this->length = length;
-		InitializeBuffer(data, Stride * length, D3D11_BIND_VERTEX_BUFFER, readonly);
-	}
-
-	template<int Length>
-	D3DVertexBuffer(D3DCore* core, T(&data)[Length], bool readonly = true) : D3DBuffer(core) {
-		this->length = Length;
-		InitializeBuffer(data, Stride * length, D3D11_BIND_VERTEX_BUFFER, readonly);
-	}
 
 
-	void Update(const T* b){
-		UpdateBuffer(b, Stride * length);
-	}
-
-	void Apply(){
-		UINT stride[] = { Stride };
-		UINT offset[] = { 0 };
-		core->GetDeviceContext()->IASetVertexBuffers(0, 1, &buffer, stride, offset);
-	}
-
-	static void Unapply(){
-		UINT stride[] = { Stride };
-		UINT offset[] = { 0 };
-		core->GetDeviceContext()->IASetVertexBuffers(0, 0, nullptr, stride, offset);
-	}
-
-	int GetLength() { return length; }
 };
 
-template <typename IndexT = unsigned short, int Format = DXGI_FORMAT::DXGI_FORMAT_R16_UINT>
-class D3DIndexBuffer : public D3DBuffer {
-	int length;
-public:
-	typedef IndexT index_t;
-
-	D3DIndexBuffer(D3DCore *core, int length) : D3DBuffer(core) {
-		this->length = length;
-		InitializeBuffer(nullptr, sizeof(IndexT) * length, D3D11_BIND_INDEX_BUFFER, false);
-	}
-
-	D3DIndexBuffer(D3DCore *core, const IndexT* data, int length, bool readonly = true) : D3DBuffer(core) {
-		this->length = length;
-		InitializeBuffer(data, sizeof(IndexT)* length, D3D11_BIND_INDEX_BUFFER, readonly);
-	}
-
-	template<int Length>
-	D3DIndexBuffer(D3DCore* core, IndexT(&data)[Length], bool readonly = true) : D3DBuffer(core) {
-		this->length = Length;
-		InitializeBuffer(data, sizeof(IndexT)* length, D3D11_BIND_INDEX_BUFFER, readonly);
-	}
-
-
-	void Update(const IndexT* b){
-		UpdateBuffer(b, sizeof(IndexT)* length);
-	}
-
-	void Apply(){
-		auto ctx = core->GetDeviceContext();
-		ctx->IASetIndexBuffer(buffer, (DXGI_FORMAT)Format, 0);
-	}
-
-	void Unapply(){
-		auto ctx = core->GetDeviceContext();
-		ctx->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-	}
-
-	static void Unapply(D3DCore *core){
-		auto ctx = core->GetDeviceContext();
-		ctx->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-	}
-
-
-	int GetLength() { return length; }
-};
-
-template <typename T>
-class D3DConstantBuffer : public D3DBuffer {
-	friend class D3DEffect;
-	//T data;
-
-public:
-	typedef T data_t;
-
-	D3DConstantBuffer(D3DCore *core) : D3DBuffer(core) {
-		InitializeBuffer(nullptr, sizeof(T), D3D11_BIND_CONSTANT_BUFFER, false);
-	}
-	D3DConstantBuffer(const D3DConstantBuffer<T>& deletedConstractor) = delete;
-
-
-	void Update(const T* b){
-		UpdateBuffer(b, sizeof(T));
-	}
-
-	void Apply(Shaders::ShaderFlag targetShader, int index) {
-		auto ctx = core->GetDeviceContext();
-
-		if (Shaders::CheckFlag(targetShader , Shaders::ShaderFlag::Vertex) ){
-			ctx->VSSetConstantBuffers(index, 1, &this->buffer);
-		}
-		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Pixel)){
-			ctx->PSSetConstantBuffers(index, 1, &this->buffer);
-		}
-		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Geometry)){
-			ctx->GSSetConstantBuffers(index, 1, &this->buffer);
-		}
-		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Compute)){
-			ctx->PSSetConstantBuffers(index, 1, &this->buffer);
-		}
-	}
-
-	static void Unapply(D3DCore *core, Shaders::ShaderFlag targetShader, int index) {
-		auto ctx = core->GetDeviceContext();
-
-		ID3D11Buffer* nullbuffer[] = { nullptr };
-
-		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Vertex)){
-			ctx->VSSetConstantBuffers(index, 1, nullbuffer);
-		}
-		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Pixel)){
-			ctx->PSSetConstantBuffers(index, 1, nullbuffer);
-		}
-		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Geometry)){
-			ctx->GSSetConstantBuffers(index, 1, nullbuffer);
-		}
-		if (Shaders::CheckFlag(targetShader, Shaders::ShaderFlag::Compute)){
-			ctx->PSSetConstantBuffers(index, 1, nullbuffer);
-		}
-	}
-
-};

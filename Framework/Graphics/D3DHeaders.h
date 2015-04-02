@@ -7,6 +7,7 @@
 #include <DXGI.h>
 //#include <D3DX11.h>
 #include <DxErr.h>
+#include <dxgidebug.h>
 #pragma warning(pop)
 
 #include <DirectXMath.h> // DirectXMath本体、floatのベクトルと行列

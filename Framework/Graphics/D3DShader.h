@@ -1,5 +1,11 @@
 #pragma once
 
+#define SHADERDATA __declspec(align(16))
+
+#include <DirectXMath.h>
+
+#include "../DirectXUtil.h"
+
 namespace Shaders {
 	class VertexShader;
 	class PixelShader;
@@ -19,11 +25,11 @@ namespace Shaders {
 		Render = Vertex | Geometry | Pixel,
 		All = Vertex | Geometry | Pixel | Compute,
 	};
+
 }
 
 #include "../Resource.h"
 #include "D3DCore.h"
-#include "D3DBuffer.h"
 
 #include "../Utility.h"
 
@@ -48,7 +54,7 @@ namespace Shaders {
 	public:
 		inline shader_t* GetShader() const { return shader; }
 		inline D3DCore* GetCore() const { return core; }
-		inline const BYTE* GetBytecode(int* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
+		inline const BYTE* GetBytecode(SIZE_T* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
 
 		// Resource class member override
 		bool isDisposed();
@@ -72,7 +78,7 @@ namespace Shaders {
 	public:
 		inline shader_t* GetShader() const { return shader; }
 		inline D3DCore* GetCore() const { return core; }
-		inline const BYTE* GetBytecode(int* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
+		inline const BYTE* GetBytecode(SIZE_T* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
 
 		// Resource class member override
 		bool isDisposed();
@@ -96,7 +102,7 @@ namespace Shaders {
 	public:
 		inline shader_t* GetShader() const { return shader; }
 		inline D3DCore* GetCore() const { return core; }
-		inline const BYTE* GetBytecode(int* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
+		inline const BYTE* GetBytecode(SIZE_T* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
 
 		// Resource class member override
 		bool isDisposed();
@@ -120,7 +126,7 @@ namespace Shaders {
 	public:
 		inline shader_t* GetShader() const { return shader; }
 		inline D3DCore* GetCore() const { return core; }
-		inline const BYTE* GetBytecode(int* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
+		inline const BYTE* GetBytecode(SIZE_T* outSize) const { outSize ? (*outSize = bytecodeSize) : 0; return bytecode; }
 
 		// Resource class member override
 		bool isDisposed();
@@ -130,6 +136,9 @@ namespace Shaders {
 
 	template <typename ShaderT>
 	ShaderT* Load(D3DCore* core, const TCHAR* filename, ClassLinkage* linkage = nullptr) {
+		// ƒtƒ@ƒCƒ‹–¼‚ªnullptr‚ÌŽž‚Ínullptr‚ð•Ô‚·
+		if (!filename) return nullptr;
+
 		int size = -1;
 		BYTE* data = LoadFileToMemory(filename, &size);
 		if (!data) {
@@ -193,7 +202,7 @@ namespace Shaders {
 
 	class ClassInstanceList {
 	public:
-		int Count;
+		size_t Count;
 		ID3D11ClassInstance** PtrArray;
 
 		inline ClassInstanceList(std::initializer_list<ClassInstance*> clsinstList) : Count(0), PtrArray(nullptr) {

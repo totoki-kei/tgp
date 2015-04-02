@@ -6,7 +6,7 @@
 TCHAR GameWindow::WndClassName[] = TEXT("TGP_D11_GAMEWND");
 std::map<UINT, msgfn_t > GameWindow::msgmap;
 
-int WINAPI GameWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+LRESULT WINAPI GameWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	if (msg == WM_DESTROY){
 		PostQuitMessage(0);
 	}

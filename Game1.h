@@ -1,16 +1,17 @@
-#pragma once
+﻿#pragma once
 
 #include "Framework/Game.h"
 #include "Framework/GameWindow.h"
 #include "Framework/Graphics/D3DCore.h"
 
 #include "Framework/Graphics/D3DShader.h"
-#include "Framework/Graphics/D3DBuffer.h"
 
 #include "Framework/Task.h"
 #include "Framework/Pool.h"
 
 #include "Framework/Graphics/Model.h"
+
+#include <boost/any.hpp>
 
 class Game1;
 
@@ -19,8 +20,11 @@ class Game1;
 class Game1 : public Game
 {
 public:
-	typedef Task<int, void*, void*> task_type;
-	typedef Pool<task_type, 4096> pool_type;
+	typedef int task_ret;
+	typedef boost::any task_param;
+	typedef void* task_runtime_param;
+	typedef TaskList<float> task_list;
+
 private:
 	GameWindow window;
 	D3DCore* core;
@@ -29,9 +33,8 @@ private:
 	int windowHeight;
 
 public:
-	pool_type taskPool;
-	task_type::container_type updateTasks;
-	task_type::container_type drawTasks;
+	task_list updateTasks;
+	task_list drawTasks;
 	
 	static Game1* GetInstance();
 
@@ -46,6 +49,9 @@ public:
 	inline int GetWindowWidth(){ return windowWidth; }
 	inline int GetWindowHeight(){ return windowHeight; }
 	inline HWND GetWindowHandle(){ return window.GetWindowHandle(); }
+
+	float GetRand();
+	float GetRand(float, float);
 
 private:
 	void InitializeD3DCore();

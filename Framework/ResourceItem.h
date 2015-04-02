@@ -1,6 +1,8 @@
 #pragma once
 #include "Resource.h"
 
+#include <type_traits>
+
 template<typename T>
 class ResourceItem : public Resource {
 	T item;
@@ -16,9 +18,9 @@ public:
 		disposer(dispose_fn),
 		disposed(false) {
 #ifdef UNICODE
-		RSC_DBG_OUT("ResourceItem #%d as %S(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+		RSC_DBG_OUT("0x%08X ResourceItem #%d as %S(size = %d)\n", this, this->ResourceId, typeid(T).name(), sizeof(T));
 #else
-		RSC_DBG_OUT("ResourceItem #%d as %s(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+		RSC_DBG_OUT("0x%08X ResourceItem #%d as %s(size = %d)\n", this, this->ResourceId, typeid(T).name(), sizeof(T));
 #endif
 	}
 
@@ -27,9 +29,9 @@ public:
 		disposer([](T& i){ delete i; i = nullptr; }),
 		disposed(false) {
 #ifdef UNICODE
-		RSC_DBG_OUT("ResourceItem #%d as %S(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+		RSC_DBG_OUT("0x%08X ResourceItem #%d as %S(size = %d)\n", this, this->ResourceId, typeid(T).name(), sizeof(T));
 #else
-		RSC_DBG_OUT("ResourceItem #%d as %s(size = %d)\n", this->ResourceId, typeid(T).name(), sizeof(T));
+		RSC_DBG_OUT("0x%08X ResourceItem #%d as %s(size = %d)\n", this, this->ResourceId, typeid(T).name(), sizeof(T));
 #endif
 	}
 
@@ -50,10 +52,25 @@ public:
 			RSC_DBG_OUT("ResourceItem #%d is already disposed.\n", this->ResourceId);
 		}
 	}
+
+	template <typename Fn>
+	void SetDisposer(Fn f) {
+		disposer = f;
+	}
+
+	std::function<void(T&)> GetDisposer() { return disposer; }
 };
 
+namespace $ {
+	template <typename T, bool Bool = std::is_base_of<Resource, T>::value>
+	struct is_not_resource_type { typedef int sig; };
+
+	template <typename T>
+	struct is_not_resource_type<T, true> {};
+}
+
 template <typename T>
-inline std::shared_ptr< ResourceItem<T*> > PtrToRes(T* p){
+inline std::shared_ptr<Resource> PtrToRes(T* p, typename $::is_not_resource_type<T>::sig unused = 0) {
 	auto res = new ResourceItem<T*>(p);
 #ifdef UNICODE
 	RSC_DBG_OUT("Pointer %p of type %S -> Resource #%d.\n", p, typeid(T).name(), res->GetResourceID());
@@ -61,4 +78,15 @@ inline std::shared_ptr< ResourceItem<T*> > PtrToRes(T* p){
 	RSC_DBG_OUT("Pointer %p of type %s -> Resource #%d.\n", p, typeid(T).name(), res->GetResourceID());
 #endif
 	return std::shared_ptr< ResourceItem<T*> >(res);
+}
+
+
+// PtrToRes‚ÌAResourceŒ^‚É‘Î‚·‚é“Áê‰»
+inline std::shared_ptr<Resource> PtrToRes(Resource* p){
+#ifdef UNICODE
+	RSC_DBG_OUT("Pointer %p of type %S -> Resource #%d.\n", p, typeid(p).name(), p->GetResourceID());
+#else
+	RSC_DBG_OUT("Pointer %p of type %s -> Resource #%d.\n", p, typeid(p).name(), p->GetResourceID());
+#endif
+	return std::shared_ptr< Resource >(p);
 }

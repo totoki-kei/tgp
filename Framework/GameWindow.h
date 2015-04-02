@@ -47,7 +47,7 @@ protected:
 
 public:
 
-	static int WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
+	static LRESULT WINAPI WndProc(HWND, UINT, WPARAM, LPARAM);
 
 	GameWindow(long width, long height);
 	GameWindow(long width, long height, HCURSOR cursor, HICON icon);

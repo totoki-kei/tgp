@@ -1,11 +1,14 @@
 #pragma once
 
+#include <atomic>
+
 class Game
 {
 protected:
 	bool exitLoop;
 	int ticks;
-	int frameskip;
+	bool updatedFlag;
+	bool asyncDraw;
 
 public:
 	Game();

@@ -21,5 +21,9 @@ public:
 
 	void Apply(Shaders::ShaderFlag targetShader, int index);
 	void Unapply(Shaders::ShaderFlag targetShader, int index);
+
+	ID3D11SamplerState* GetRawSampler() {
+		return sampler;
+	}
 };
 

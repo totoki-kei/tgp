@@ -216,3 +216,5 @@ pip-log.txt
 *.lem
 *.cso
 *.exe
+/BuildProcessTemplates
+/log.txt

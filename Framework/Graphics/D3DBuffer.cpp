@@ -1,9 +1,8 @@
 #include "D3DBuffer.h"
 #include "../DirectXUtil.h"
 
-D3DBuffer::D3DBuffer(D3DCore* core) : core(core) {
+D3DBuffer::D3DBuffer(D3DCore* core) : core(core), mapped{ false } {
 	buffer = nullptr;
-	//	mapped = std::weak_ptr<D3DBuffer::BufferData>();
 }
 
 D3DBuffer::~D3DBuffer(){
@@ -15,22 +14,30 @@ bool D3DBuffer::isDisposed(){
 }
 
 void D3DBuffer::Dispose(){
+	if (mapped) {
+		unmapCallback();
+	}
 	buffer->Release();
 	buffer = nullptr;
 	Resource::Dispose();
 }
 
-void D3DBuffer::InitializeBuffer(const void* bufferData, int bufferSize, UINT usage, bool readonly) {
+void D3DBuffer::InitializeBuffer(const void* bufferData, size_t bufferSize, UINT usage, bool cpuAccessable) {
 	// すでに存在する場合は削除
-	if (buffer) buffer->Release();
+	if (buffer) {
+		if (mapped) {
+			unmapCallback();
+		}
+		buffer->Release();
+	}
 
 	D3D11_BUFFER_DESC desc;
 
 	desc.BindFlags = usage;
-	desc.ByteWidth = bufferSize;
-	desc.CPUAccessFlags = (readonly ? 0 : (D3D11_CPU_ACCESS_WRITE));
+	desc.ByteWidth = (UINT)bufferSize;
+	desc.CPUAccessFlags = (cpuAccessable ? (D3D11_CPU_ACCESS_WRITE) : 0);
 	desc.MiscFlags = 0;
-	desc.Usage = (readonly ? D3D11_USAGE_DEFAULT : D3D11_USAGE_DYNAMIC);
+	desc.Usage = (cpuAccessable ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT);
 
 	HRESULT result;
 	if (bufferData) {
@@ -44,31 +51,59 @@ void D3DBuffer::InitializeBuffer(const void* bufferData, int bufferSize, UINT us
 		result = core->GetDevice()->CreateBuffer(&desc, nullptr, &buffer);
 	}
 	IF_NG(result){
-		DBG_OUT("failed to create buffer hresult = %X, args(%p, %d, %u, %d)", result, bufferData, bufferSize, usage, readonly);
+		LOG_DBG("failed to create buffer hresult = %X, args(%p, %d, %u, %d)", result, bufferData, bufferSize, usage, cpuAccessable);
+	}
+
+	this->canCpuAccess = cpuAccessable;
+}
+
+void D3DBuffer::UpdateBuffer(const void* bufferData, size_t bufferSize) {
+	if (canCpuAccess) {
+		UpdateBuffer(bufferData, 0, bufferSize);
+	}
+	else {
+		auto ctx = core->GetDeviceContext();
+		ctx->UpdateSubresource(buffer, 0, nullptr, bufferData, 0, 0);
 	}
 }
 
-void D3DBuffer::UpdateBuffer(const void* bufferData, int bufferSize){
-	void* data = nullptr;
+void D3DBuffer::UpdateBuffer(const void* bufferData, size_t offset, size_t bufferSize) {
+	BYTE* data = nullptr;
 
-	D3D11_MAPPED_SUBRESOURCE msr;
+	if (canCpuAccess) {
+		D3D11_MAPPED_SUBRESOURCE msr;
 
-	auto ctx = core->GetDeviceContext();
-	auto hresult = ctx->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
+		auto ctx = core->GetDeviceContext();
+		auto hresult = ctx->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 
-	IF_NG(hresult) {
-		// マップ失敗
-		return;
+		IF_NG(hresult) {
+			// マップ失敗
+			return;
+		}
+		data = ((BYTE*)msr.pData) + offset;
+		CopyMemory(data, bufferData, bufferSize);
+		//buffer->Unmap();
+		ctx->Unmap(buffer, 0);
 	}
-	data = msr.pData;
-	CopyMemory(data, bufferData, bufferSize);
-	//buffer->Unmap();
-	ctx->Unmap(buffer, 0);
-
+	else {
+		auto ctx = core->GetDeviceContext();
+		D3D11_BOX region = { 0U };
+		region.left = (UINT)offset;
+		region.right = (UINT)(offset + bufferSize);
+		region.top = 0;
+		region.bottom = 1;
+		region.front = 0;
+		region.back = 1;
+		ctx->UpdateSubresource(buffer, 0, &region, bufferData, 0, 0);
+	}
 }
 
 
 ID3D11Buffer* D3DBuffer::GetRawBuffer() const {
 	return buffer;
+}
+
+D3DCore* D3DBuffer::GetCore() const {
+	return core;
 }
 
