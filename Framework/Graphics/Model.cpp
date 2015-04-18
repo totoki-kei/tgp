@@ -133,7 +133,7 @@ namespace Models {
 		this->cbMaterialSet = new D3DConstantBuffer<MaterialSetParameter>(core);
 		this->AddResource(PtrToRes(cbMaterialSet));
 
-		this->solidEnabled = this->edgeEnabled = this->edgeWidthEnabled = true;
+		this->solidEnabled = this->edgeEnabled = this->edgeWidthEnabled = this->flatShading = true;
 
 #ifdef _DEBUG
 		NameToModelResource(this);
@@ -218,7 +218,12 @@ namespace Models {
 			core->DrawIndexed((int)edgeIndexBuffer->GetLength(), 0, 0, instanceCount);
 		}
 		if (solid && solidIndexBuffer) {
-			gsFlat->Apply();
+			if (flatShading) {
+				gsFlat->Apply();
+			}
+			else {
+				Shaders::Unapply(gsFlat->GetCore(), Shaders::ShaderFlag::Geometry);
+			}
 			psColoring->Apply();
 			solidIndexBuffer->Apply();
 			core->SetPrimitiveTopology(D3DPrimitiveTopology::TriangleList);
