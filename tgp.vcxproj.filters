@@ -281,6 +281,9 @@
     <ClInclude Include="Framework\Lambs.hpp">
       <Filter>Framework\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Coroutine.h">
+      <Filter>Framework\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Framework">

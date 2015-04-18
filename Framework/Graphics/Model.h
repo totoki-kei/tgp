@@ -162,6 +162,7 @@ namespace Models {
 
 		bool solidEnabled, edgeEnabled;
 		bool edgeWidthEnabled;
+		bool flatShading;
 		//D3DShaderResourceBuffer<float, InstanceCount>* idMap;
 		
 		static void NameToModelResource(Model* m);
@@ -228,6 +229,13 @@ namespace Models {
 		}
 		bool GetEdgeWidthEnableFlag() {
 			return this->edgeWidthEnabled;
+		}
+
+		void SetFlatShadingFlag(bool enabled) {
+			this->flatShading = enabled;
+		}
+		bool GetFlatShadingFlag() {
+			return this->flatShading;
 		}
 	};
 
