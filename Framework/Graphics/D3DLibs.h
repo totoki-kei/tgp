@@ -1,6 +1,6 @@
 #pragma once
 
-// DirectX10‚Ìƒ‰ƒCƒuƒ‰ƒŠŠÖŒW
+// DirectX10ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªé–¢ä¿‚
 
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "d3d11.lib")
