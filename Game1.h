@@ -33,8 +33,6 @@ private:
 	int windowHeight;
 
 public:
-	task_list updateTasks;
-	task_list drawTasks;
 	
 	static Game1* GetInstance();
 

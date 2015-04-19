@@ -6,7 +6,7 @@ class GameObject;
 
 #include "Framework/Task.h"
 
-class GameObject : public Game1::task_list::Key {
+class GameObject {
 public:
 	float vx, vy, vz;
 	float x, y, z;
@@ -20,12 +20,13 @@ public:
 	float alpha;
 
 	bool enabled;
-	std::list<GameObject>::iterator thisiter;
 	GameObject();
 	GameObject(bool);
 
-	TaskResult Update();
-	TaskResult Draw();
+	bool Update();
+	bool Draw();
+
+	bool FlushModel();
 
 	virtual ~GameObject();
 };

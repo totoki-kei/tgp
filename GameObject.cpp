@@ -6,7 +6,6 @@ namespace {
 	Models::Model *model;
 	Game1* game;
 
-	Game1::task_list::Key *flushKey;
 	int n;
 }
 
@@ -16,10 +15,6 @@ GameObject::GameObject() {}
 
 GameObject::GameObject(bool) {
 	if(!game) game = Game1::GetInstance();
-	if (!flushKey) {
-		flushKey = new Game1::task_list::Key();
-		game->drawTasks.Add(flushKey, FlushModel, 1);
-	}
 	if (!model) {
 		model = Models::Model::Load(_T("Content\\Model\\testmodel.txt"), true, true);
 		
@@ -57,8 +52,6 @@ GameObject::GameObject(bool) {
 	vt = game->GetRand(-1, 1) / 128.0f;
 	x = y = z = this->t = this->p = 0.0f;
 
-	game->updateTasks.Add(this, &GameObject::Update, 0);
-	game->drawTasks.Add(this, &GameObject::Draw, 0);
 
 	reflectCount = 0;
 	enabled = true;
@@ -75,19 +68,17 @@ GameObject::GameObject(bool) {
 GameObject::~GameObject() {
 	n--;
 	if (n == 0) {
-		delete flushKey;
-		flushKey = nullptr;
 		delete model;
 		model = nullptr;
 	}
 }
 
-TaskResult FlushModel() {
-	model->Flush();
-	return TR_KEEP;
+bool GameObject::FlushModel() {
+	if (n && model) model->Flush();
+	return true;
 }
 
-TaskResult GameObject::Draw() {
+bool GameObject::Draw() {
 	auto& param = model->ReserveDraw();
 	param.World = XMMatrixScaling(5, 5, 5) * XMMatrixRotationX(this->p) * XMMatrixRotationY(this->t) * XMMatrixTranslation(x, y, z);
 	param.Params[0].Index = (float)mat;
@@ -96,20 +87,18 @@ TaskResult GameObject::Draw() {
 	param.Params[0].Alpha = alpha;
 
 
-	return enabled ? TR_KEEP : TR_DELETE;
+	return enabled;
 }
 
-extern std::list<GameObject> objs;
-extern bool objReflect;
-TaskResult GameObject::Update() {
+bool GameObject::Update() {
 	float dx = vx;
 	float dy = vy;
 	float dz = vz;
 
 	bool vanish = false;
 
-	auto judge = [&]() { objReflect = true; return game->GetRand(0, 200) < reflectCount++; };
-	//auto judge = [&]() {return false; };
+	//auto judge = [&]() { objReflect = true; return game->GetRand(0, 200) < reflectCount++; };
+	auto judge = [&]() {return false; };
 
 	while (dx != 0) {
 		x += dx;
@@ -170,10 +159,8 @@ TaskResult GameObject::Update() {
 	this->t += vt;
 
 	if (vanish) enabled = false;
-	auto ret = enabled ? TR_KEEP : TR_DELETE;
 
-	if (vanish)objs.erase(thisiter);
-	return ret;
+	return enabled;
 }
 
 
