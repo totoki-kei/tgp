@@ -188,6 +188,7 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Coroutine.h" />
     <ClInclude Include="CSRNG.h" />
     <ClInclude Include="Framework\Audio\DACore.h" />
     <ClInclude Include="Framework\Audio\DAUtility.h" />

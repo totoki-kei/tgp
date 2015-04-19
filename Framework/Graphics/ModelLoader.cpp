@@ -80,14 +80,14 @@ namespace Models {
 			// 指定したインデックスがこの三角形の頂点として使用されているかチェックする。
 			// 使用されていた場合、何番目の頂点かを0～2で返す。
 			// 使用されていない場合は-1を返す。
-			int Contains(int vertexIndex) {
+			int Contains(int vertexIndex) const {
 				if (a == vertexIndex) return 0;
 				else if (b == vertexIndex) return 1;
 				else if (c == vertexIndex) return 2;
 				else return -1;
 			}
 
-			bool operator <(const Triangle& t) {
+			bool operator <(const Triangle& t) const {
 				const Triangle& a = *this;
 				const Triangle& b = t;
 				int ai, bi;
@@ -118,7 +118,7 @@ namespace Models {
 
 			// 同じ三角形である場合は真を返す。表裏を区別する。
 			// (operator ==ではなぜか動いてくれなかったのでメンバ関数として実装する)
-			bool IsSame(const Triangle& t) {
+			bool IsSame(const Triangle& t) const {
 				const Triangle& a = *this;
 				const Triangle& b = t;
 				int ai, bi;
@@ -151,7 +151,7 @@ namespace Models {
 			//   xa = true  xb = true  xc =[false]
 			// これより、this[2] -> 2, t[2] -> 3 が共有されていない頂点とわかるので
 			// 戻り値は (t[2] ->) 3 , adjNoには 2 が格納される。
-			int GetAdjacency(const Triangle& t, int* adjNo = nullptr) const{
+			int GetAdjacency(const Triangle& t, int* adjNo = nullptr) const {
 				bool aa = a == t.a;
 				bool ab = a == t.b;
 				bool ac = a == t.c;
@@ -183,7 +183,7 @@ namespace Models {
 
 			// 三角形の辺を得る
 			template<typename Collection>
-			void MakeLine(Collection& lines){
+			void MakeLine(Collection& lines) const {
 				lines.insert(Line{ a, b });
 				lines.insert(Line{ b, c });
 				lines.insert(Line{ c, a });
@@ -334,21 +334,13 @@ namespace Models {
 			bool s_ok;
 
 		public:
-			Value()               :d{ 0 },   s{},      s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
-			Value(const double num)     :d{ num }, s{},      s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
+			Value() :d{ 0 }, s{}, s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
+			Value(const double num) :d{ num }, s{}, s_ok{ false }, d_ok{ true }, type{ VAL_NUM }{}
 
-			// 以下の問題に対するワークアラウンド
-			// https://connect.microsoft.com/VisualStudio/feedback/details/917150/compiler-error-c2797-on-code-that-previously-worked
-			//Value(string& str)    :d{ 0 },   s{ str }, s_ok{ true }, d_ok{ false }, type{ VAL_STR }{}
-			Value(const string& str) :d{ 0 }, s{}, s_ok{ true }, d_ok{ false }, type{ VAL_STR } {
-				s = str;
-			}
-			Value(string&& str) :d{ 0 }, s{}, s_ok{ true }, d_ok{ false }, type{ VAL_STR } {
-				s = std::move(str);
-			}
+			Value(const string& str) :d{ 0 }, s(str), s_ok{ true }, d_ok{ false }, type{ VAL_STR } { }
+			Value(string&& str) :d{ 0 }, s(std::move(str)), s_ok{ true }, d_ok{ false }, type{ VAL_STR } { }
 
-			//Value(const Value& v) :d{ v.d }, s{ v.s }, s_ok{ v.s_ok }, d_ok{ v.d_ok }, type{ v.type }{}
-			Value(const Value& v) :d{ v.d }, s{}, s_ok{ v.s_ok }, d_ok{ v.d_ok }, type{ v.type }{ s = v.s; }
+			Value(const Value& v) :d{ v.d }, s(v.s), s_ok{ v.s_ok }, d_ok{ v.d_ok }, type{ v.type }{ }
 
 			inline void SetDouble(double n){ d = n; d_ok = true; s_ok = false; type = VAL_NUM; }
 			inline double GetDouble() {
@@ -491,7 +483,7 @@ namespace Models {
 			return true;
 		}
 
-		size_t ReadMultipleInteger(char* p, int** outptr){
+		size_t ReadMultipleInteger(char* p, std::unique_ptr<int[]> &outarray){
 			vector<int> is;
 			char* s = p;
 			char* e = nullptr;
@@ -503,8 +495,8 @@ namespace Models {
 				s = e;
 			}
 
-			*outptr = new int[is.size()];
-			int* ap = *outptr;
+			outarray.reset(new int[is.size()]);
+			int* ap = outarray.get() + 0;
 			for (int i : is){
 				*ap++ = i;
 			}
@@ -518,7 +510,7 @@ namespace Models {
 
 			Option()
 				: auto_mirror{ false }
-				, multi_material{ false } { /* nop */ }
+				, multi_material{ false } { }
 
 		} option;
 
@@ -543,12 +535,11 @@ namespace Models {
 		void ReadIndicesFan(char* p, vector<Triangle>& triangleList, vector<Line>& lineList, size_t currentCount, bool triangleEnabled, bool lineEnabled) {
 			// f/<indices...>
 
-			int* indices;
+			std::unique_ptr<int[]> indices;
 
-			auto count = ReadMultipleInteger(p, &indices);
+			auto count = ReadMultipleInteger(p, indices);
 			if (count < 2) {
 				// 不足している -> 何もプッシュしない
-				delete[] indices;
 				return;
 			}
 
@@ -567,16 +558,14 @@ namespace Models {
 				// 三角形が一つ以上発生していた場合は最後を閉じる
 				if (lineEnabled) lineList.push_back(Line{ first, root });
 			}
-			delete[] indices;
 		}
 		void ReadIndicesList(char* p, vector<Triangle>& triangleList, vector<Line>& lineList, size_t currentCount, bool triangleEnabled, bool lineEnabled) {
 			// F/<indices...>
 
-			int* indices;
-			auto count = ReadMultipleInteger(p, &indices);
+			std::unique_ptr<int[]> indices;
+			auto count = ReadMultipleInteger(p, indices);
 			if (count < 2) {
 				// 不足している -> 何もプッシュしない
-				delete[] indices;
 				return;
 			}
 
@@ -596,7 +585,6 @@ namespace Models {
 				// 三角形が一つ以上発生していた場合は最後を閉じる
 				if (lineEnabled) lineList.push_back(Line{ first, second });
 			}
-			delete[] indices;
 		}
 
 		void ReadInstParam(char* p, InstanceData& inst) {
