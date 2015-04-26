@@ -47,13 +47,13 @@ namespace {
 
 	DIJoypad* joypad;
 
-	D3DTexture2D* texture;
-	Sprite::Sprite* sprite;
+	//D3DTexture2D* texture;
+	//Sprite::Sprite* sprite;
 	Sprite::SpriteString* spriteString;
 
 	D3DBloomEffect* bloom;
 
-	D3DSampler* samplerForGauss;
+	//D3DSampler* samplerForGauss;
 
 	boost::timer timer;
 	double updateElapsed;
@@ -91,7 +91,6 @@ Game1::Game1() : windowWidth(800), windowHeight(600), window(800, 600) {
 Game1::~Game1() {
 	objs.clear();
 	//delete player;
-	delete texture;
 }
 
 int Game1::Initialize() {
@@ -124,31 +123,19 @@ int Game1::Initialize() {
 	mvel = dspch->AddMouseListener(DIMouseListenType::Velocity, DIRange{ 0, 0 }, DIRange{ 0, 0 });
 	macc = dspch->AddMouseListener(DIMouseListenType::Acceleration, DIRange{ 0, 0 }, DIRange{ 0, 0 });
 
-	auto image = ImageData::Load(_T("Content\\Image\\test.png"));
-	texture = new D3DTexture2D(core, image);
-	delete image;
 
 	Sprite::Sprite::InitializeSharedResource(core);
 
-	sprite = new Sprite::Sprite(texture);
-	window.AddResource(PtrToRes(sprite));
 
 	spriteString = new Sprite::SpriteString(core, _T("Content\\Image\\font.png"));
 	spriteString->SetColor(XMFLOAT4{ 1, 1, 1, 1 }, XMFLOAT4{ 0, 0, 0, 1 });
+	spriteString->SetAutoFlush(true);
 	window.AddResource(PtrToRes(spriteString));
 	//spriteString->SetSize(32, 64);
 
 	bloom = new D3DBloomEffect(core, window.GetWidth(), window.GetHeight());
 	window.AddResource(PtrToRes(bloom));
 
-	D3D11_SAMPLER_DESC smpdesc;
-	D3DSampler::GetDefaultSamplerDesc(&smpdesc);
-	smpdesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
-	smpdesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
-	smpdesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
-	samplerForGauss = new D3DSampler(core, &smpdesc);
-	window.AddResource(PtrToRes(samplerForGauss));
-	NameToResource(samplerForGauss->GetRawSampler(), "SamplerForGauss");
 
 	joypad = new DIJoypad(0);
 	window.AddResource(PtrToRes(joypad));
@@ -279,27 +266,6 @@ void Game1::Draw() {
 		drawTasks.Invoke();
 	});
 
-
-	sprite->SetTexture(texture);
-	sprite->SetSampler(nullptr);
-	sprite->SetEffector(nullptr);
-	float th = (float)texture->GetHeight();
-	float tw = (float)texture->GetWidth();
-	float sh = (float)core->GetScreenHeight();
-	float sw = (float)core->GetScreenWidth();
-	sprite->DrawQuad(
-		XMFLOAT4{ 0, 0, 0, 1 },
-		XMFLOAT4{ 0, th, 0, 1 },
-		XMFLOAT4{ tw, 0, 0, 1 },
-		XMFLOAT4{ tw, th, 0, 1 }
-	);
-	sprite->DrawQuad(
-		XMFLOAT4{ sw - tw, sh - th, 0, 1 },
-		XMFLOAT4{ sw - tw, sh, 0, 1 },
-		XMFLOAT4{ sw, sh - th, 0, 1 },
-		XMFLOAT4{ sw, sh, 0, 1 }
-	);
-	sprite->Flush();
 
 	char buff[256];
 	sprintf_s(buff, "instance : %d\nelapsed : %.3f", objs.size(), updateElapsed);
