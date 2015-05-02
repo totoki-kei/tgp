@@ -188,8 +188,12 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="ClassicGameScene.h" />
     <ClInclude Include="Coroutine.h" />
     <ClInclude Include="CSRNG.h" />
+    <ClInclude Include="CubeField.h" />
     <ClInclude Include="Framework\Audio\DACore.h" />
     <ClInclude Include="Framework\Audio\DAUtility.h" />
     <ClInclude Include="Framework\Audio\DAVoice.h" />
@@ -227,7 +231,6 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClInclude Include="Framework\Game.h" />
     <ClInclude Include="Framework\Lambs.hpp" />
     <ClInclude Include="Framework\Scene.h" />
-    <ClInclude Include="Game1.h" />
     <ClInclude Include="Framework\GameWindow.h" />
     <ClInclude Include="Framework\Graphics\Model.h" />
     <ClInclude Include="Framework\Graphics\ImageLoader.h" />
@@ -238,6 +241,13 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClInclude Include="Framework\Program.h" />
     <ClInclude Include="Framework\Resource.h" />
     <ClInclude Include="Framework\Graphics\GaussianEffector.h" />
+    <ClInclude Include="GameImpl.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="Misc.h" />
+    <ClInclude Include="ModelBank.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="Framework\Task.h" />
     <ClInclude Include="Framework\WinAPI.h" />
@@ -245,8 +255,13 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClInclude Include="Framework\Graphics\Effector.h" />
     <ClInclude Include="Framework\Graphics\SpriteString.h" />
     <ClInclude Include="Framework\Audio\WavLoader.h" />
+    <ClInclude Include="Session.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ClassicGameScene.cpp" />
+    <ClCompile Include="CubeField.cpp" />
     <ClCompile Include="Framework\Audio\DACore.cpp" />
     <ClCompile Include="Framework\Audio\DAVoice.cpp" />
     <ClCompile Include="Framework\Audio\SoundData.cpp" />
@@ -269,7 +284,6 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClCompile Include="Framework\Graphics\D3DSampler.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
     <ClCompile Include="Framework\Scene.cpp" />
-    <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Framework\GameWindow.cpp" />
     <ClCompile Include="Framework\Logger.cpp" />
     <ClCompile Include="Framework\Graphics\Model.cpp" />
@@ -283,6 +297,14 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClCompile Include="Framework\Graphics\SpriteString.cpp" />
     <ClCompile Include="Framework\Graphics\GaussianEffector.cpp" />
     <ClCompile Include="Framework\Audio\WavLoader.cpp" />
+    <ClCompile Include="GameImpl.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Item.cpp" />
+    <ClCompile Include="Misc.cpp" />
+    <ClCompile Include="ModelBank.cpp" />
+    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Framework\HLSL\Model\GS_WideLine.hlsl">
@@ -403,45 +425,16 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ResourceCompile Include="tgp.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Content\Image\font.png">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-    </Image>
-    <Image Include="Content\Image\font_large.png" />
-    <Image Include="Content\Image\test.png">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-    </Image>
+    <Image Include="Content\Image\font_system.png" />
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Framework\HLSL\Model\PL_Model.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Content\Model\r01.txt" />
-    <Text Include="Content\Model\r02.txt" />
-    <Text Include="Content\Model\r03.txt" />
-    <Text Include="Content\Model\r04.txt" />
-    <Text Include="Content\Model\r05.txt" />
-    <Text Include="Content\Model\testmodel.txt">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Content\Model\s01.txt">
-      <FileType>Document</FileType>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-    </Text>
+    <Text Include="Content\Model\bullet.txt" />
+    <Text Include="Content\Model\cube.txt" />
+    <Text Include="Content\Model\Player.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

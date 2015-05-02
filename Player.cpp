@@ -1,202 +1,224 @@
-ï»¿#include "Player.h"
-
-#include "Framework/Graphics/Model.h"
-#include "Framework/Input/DIJoypad.h"
-#include "Game1.h"
-
-#include "Framework/Graphics/SpriteString.h"
-
-using namespace Models;
-using std::shared_ptr;
-using std::unique_ptr;
+#include "Player.h"
+#include "Misc.h"
+#include "Item.h"
+#include "Bullet.h"
+#include "Particle.h"
 
 namespace {
-	D3DCore* core;
+	const float Speed = 1 / 64.0f;
+	const float PlayerSize = 0.025f;
+	const float ItemCrushArea = 0.5f;
+}
 
-	Model* model;
-	unique_ptr<DIJoypad> joypad;
+Player::Player() : GameObject{ XMFLOAT3{ 0, 0, 1 }, XMFLOAT3{ 0, 0, 0 } } {
+	model = g_ModelBank->Get(_T("Content\\Model\\Player.txt"));
+	session = nullptr;
+	enabled = false;
 
-	TCHAR filename_full[256] = { 0 };
-	TCHAR filename[256] = { 0 };
+	upperDirection = XMFLOAT3{ 0, 1, 0 };
+}
 
-	void SetDefaultMaterial() {
-		MaterialData mat;
-		mat.Blend = 0.0f;
-		mat.LineWidth = 1 / 128.0f;
+void Player::Init(Session* s) {
+	session = s;
+	enabled = true;
 
-		mat.Color = XMFLOAT4{ 1, 1, 1, 1 };
-		model->SetMaterial(0, mat);
+//	pos = GetRandomPointOnSurface(this->GetSurface());
+	
+}
+
+void Player::Update() {
+	if (!session) {
+		// Init()‚ªŒÄ‚Î‚ê‚Ä‚¢‚È‚¢
+		return;
 	}
 
-	void InitializeModel(D3DCore* core_){
-		core = core_;
+	auto input_ptr = GameImpl::GetInstance()->GetInput();
+	GameImpl::InputData dummyInput{};
 
-		model = Model::Load(_T("Content\\Model\\testmodel.txt"));
-		_tcscpy_s(filename_full, _T("Content\\Model\\testmodel.txt"));
-		_tcscpy_s(filename, _T("Content\\Model\\testmodel.txt"));
+	auto& input = input_ptr ? *input_ptr : dummyInput;
 
-		SceneParameter &scp = Model::GetSceneParam();
+	int chkcount = input.btnB ? 3 : 1;
+	while (chkcount-- > 0) {
 
-		auto g = Game1::GetInstance();
+		float vx, vy, vz;
+		vx = vy = vz = 0.0f;
+		float dir = (int)input.dir / (float)GameImpl::InputData::DIR_COUNT;
 
-		XMVECTOR eye = { 0, 0, 10, 1 };
-		XMVECTOR lookat = { 0, 0, 0, 1 };
-		XMVECTOR up = { 0, 1, 0, 1 };
-		scp.Projection = XMMatrixPerspectiveLH(g->GetWindowWidth() / 3200.0 ,g->GetWindowHeight() / 3200.0, 0.25, 100);
-		scp.View = XMMatrixLookAtLH(eye, lookat, up);
-		scp.LightDirection = XMFLOAT3(1, -1, -1);
-		scp.LightColor = XMFLOAT4(1, 1, 1, 1);
-		scp.AmbientColor = XMFLOAT4{ 1, 1, 1, 0.5 };
+		if (dir >= 0 || input.btnL || input.btnR) {
+			XMVECTOR axis = GetSurfaceVector(GetSurface());
 
-		SetDefaultMaterial();
-	}
+			//switch (this->GetSurface()) {
+			//	case SURF_XPLUS:
+			//		axis = XMFLOAT3(1.0f, 0.0f, 0.0f);
+			//		break;
+			//	case SURF_XMINUS:
+			//		axis = XMFLOAT3(-1.0f, 0.0f, 0.0f);
+			//		break;
+			//	case SURF_YPLUS:
+			//		axis = XMFLOAT3(0.0f, 1.0f, 0.0f);
+			//		break;
+			//	case SURF_YMINUS:
+			//		axis = XMFLOAT3(0.0f, -1.0f, 0.0f);
+			//		break;
+			//	case SURF_ZPLUS:
+			//		axis = XMFLOAT3(0.0f, 0.0f, 1.0f);
+			//		break;
+			//	case SURF_ZMINUS:
+			//		axis = XMFLOAT3(0.0f, 0.0f, -1.0f);
+			//		break;
+			//	default:
+			//		return;
+			//}
 
-	void ReloadModel(bool selectFile){
+			if (input.btnR && input.btnL) {
+				// reset rotation
+				XMFLOAT3 test[] = {
+					XMFLOAT3(1.0f, 0.0f, 0.0f),
+					XMFLOAT3(-1.0f, 0.0f, 0.0f),
+					XMFLOAT3(0.0f, 1.0f, 0.0f),
+					XMFLOAT3(0.0f, -1.0f, 0.0f),
+					XMFLOAT3(0.0f, 0.0f, 1.0f),
+					XMFLOAT3(0.0f, 0.0f, -1.0f)
+				};
 
-		if (selectFile){
-			OPENFILENAME ofn;
-			ZeroMemory(&ofn, sizeof(ofn));
-			ofn.lStructSize = sizeof(ofn);         // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
-			ofn.hwndOwner = Game1::GetInstance()->GetWindowHandle();                  // ã‚³ãƒ¢ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¦ªã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
-			ofn.lpstrFilter = _T("text(*.txt)\0*.txt\0All files(*.*)\0*.*\0\0"); // ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®é¡
-			ofn.lpstrFile = filename_full;         // é¸æŠã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«å(ãƒ•ãƒ«ãƒ‘ã‚¹)ã‚’å—ã‘å–ã‚‹å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
-			ofn.lpstrFileTitle = filename;         // é¸æŠã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«åã‚’å—ã‘å–ã‚‹å¤‰æ•°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
-			ofn.nMaxFile = sizeof(filename_full);  // lpstrFileã«æŒ‡å®šã—ãŸå¤‰æ•°ã®ã‚µã‚¤ã‚º
-			ofn.nMaxFileTitle = sizeof(filename);  // lpstrFileTitleã«æŒ‡å®šã—ãŸå¤‰æ•°ã®ã‚µã‚¤ã‚º
-			ofn.Flags = OFN_FILEMUSTEXIST;         // ãƒ•ãƒ©ã‚°æŒ‡å®š
-			ofn.lpstrTitle = _T("ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã"); // ã‚³ãƒ¢ãƒ³ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³
-			ofn.lpstrDefExt = _T("txt");           // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®é¡
-			if (!GetOpenFileName(&ofn)){
-				DBG_OUT("error : %08X", CommDlgExtendedError());
-				return;
+				int maxIndex = -1;
+
+				XMFLOAT3* resetDir = std::max_element(
+					std::begin(test), std::end(test),
+					[&](const XMFLOAT3& left, const XMFLOAT3& right) {
+					auto l = upperDirection.x * left.x
+						+ upperDirection.y * left.y
+						+ upperDirection.z * left.z;
+					auto r = upperDirection.x * right.x
+						+ upperDirection.y * right.y
+						+ upperDirection.z * right.z;
+					return std::less < decltype(l) > {}(l, r);
+				}
+				);
+				if (resetDir != std::end(test)) {
+					upperDirection = *resetDir;
+				}
+
+				//float max = -1.0f;
+				//for (int i = 0; i < 6; i++) {
+				//	auto a = upperDirection.x * test[i].x
+				//		+ upperDirection.y * test[i].y
+				//		+ upperDirection.z * test[i].z;
+				//	if (max < a) {
+				//		max = a;
+				//		maxIndex = i;
+				//	}
+				//}
+				//upperDirection = test[maxIndex];
+
+			}
+			else {
+
+				float rot = input.btnL ? 1.0f : input.btnR ? -1.0 : 0.0f;
+
+				if (rot != 0.0f) {
+					XMVECTOR tmp = XMLoadFloat3(&upperDirection);
+					tmp = XMVector3TransformCoord(tmp, XMMatrixRotationAxis(axis, rot / 64.0f));
+					/*upperDirection = XMFLOAT3{
+						XMVectorGetX(tmp),
+						XMVectorGetY(tmp),
+						XMVectorGetZ(tmp)
+					};*/
+					XMStoreFloat3(&upperDirection, tmp);
+				}
+			}
+
+			if (dir >= 0) {
+				// “ü—Í•ûŒü‚©‚ç‘¬“xƒxƒNƒgƒ‹‚ğZo
+
+				XMVECTOR up = XMLoadFloat3(&upperDirection);
+				XMVECTOR direction =
+					XMVector3TransformCoord(up, XMMatrixRotationAxis(axis, (float)(dir * XM_2PI)));
+
+				XMVECTOR spd = XMVectorReplicate(Speed);
+				if (input.btnA) spd *= 0.5f; // ƒ{ƒ^ƒ“1‚Å’á‘¬ˆÚ“®
+
+				vx = XMVectorGetX(direction * spd);
+				vy = XMVectorGetY(direction * spd);
+				vz = XMVectorGetZ(direction * spd);
+
+				this->vel = XMFLOAT3{ vx, vy, vz };
 			}
 		}
-
-		delete model;
-		model = Model::Load(filename_full);
-
-		SetDefaultMaterial();
+		else {
+			this->vel = XMFLOAT3{0, 0, 0};
+		}
 
 
-	}
+		XMVECTOR q = XMQuaternionIdentity();
+		if (MoveOnSurface(&q)) {
+			// –Ê‚ÌˆÚ“®‚ª”­¶‚µ‚½‚çAUpperDirection‚ğ•ÏX‚·‚é
+			auto upper = XMLoadFloat3(&upperDirection);
+			upper = XMVector3Rotate(upper, q);
+			XMStoreFloat3(&upperDirection, upper);
+		}
 
-	void TerminateModel(){
-		delete model;
-	}
-}
+		// ‚ ‚½‚è”»’è
+		for(auto& b : Bullet::List) {
+			if (!b.enabled) continue;
+			auto dist = XMFLOAT3
+				( b.pos.x - this->pos.x
+				, b.pos.y - this->pos.y
+				, b.pos.z - this->pos.z);
+			if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < PlayerSize * PlayerSize) {
+				this->enabled = false;
+				Particle::Generate(64, this->pos, XMFLOAT3{0, 0, 0}, 4.0f, 0);
+				Particle::Generate(4, this->pos, XMFLOAT3{0, 0, 0}, 2.0f, 0);
+				//Debug.WriteLine("Hit!!");
 
-Player::Player() : task()
-{
-}
+				//Program.GameMain.Ranking.Entry(
+				//	Program.GameMain.Score,
+				//	Program.GameMain.Ticks,
+				//	Program.GameMain.GetItemCount);
 
-Sprite::SpriteString* stringDrawer;
-
-
-int Player::draw(Game1::task_type& task, Game1::task_param, void*){
-	static float n = 0;
-
-	InstanceData &obj = model->ReserveDraw();
-	obj.World = XMMatrixRotationX(-n) * XMMatrixRotationY(-n / 2);
-	obj.MaterialIndex = 0;
-
-
-	n += 1 / 64.0;
-
-	if (n > 30){
-		n = 0;
-		auto newtask = Game1::GetInstance()->taskPool.Get(
-			[this](Game1::task_type& t, Game1::task_param a, void* b){ return this->draw_r(t, a, b); }
-			, nullptr);
-		task.InsertNext(&*newtask);
-		task.RemoveImmidiately();
-		//Game1::GetInstance()->taskPool.Deactivate(::task);
-		this->task = newtask;
-	}
-	return 0;
-}
-
-int Player::draw_r(Game1::task_type& task, Game1::task_param, void*) {
-	static float n = 0;
-
-	for (int x = -50; x <= 50; x++) {
-		for (int y = -50; y <= 50; y++) {
-			InstanceData &obj = model->ReserveDraw();
-			obj.World = XMMatrixScaling(0.125f, 0.125f, 0.125f)
-				* XMMatrixRotationX(n)
-				* XMMatrixRotationY(n / 2)
-				* XMMatrixTranslation(x * 0.0625f, 0, 0)
-				* XMMatrixTranslation(0, y * 0.0625f, 0);
-			obj.MaterialIndex = 0;
+				GameImpl::GetInstance()->EndSession();
+			}
+		}
+		for(auto& i : Item::List) {
+			if (!i.enabled) continue;
+			auto dist = XMFLOAT3(i.pos.x - this->pos.x, i.pos.y - this->pos.y, i.pos.z - this->pos.z);
+			if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < 16 * PlayerSize * PlayerSize) {
+				// ƒAƒCƒeƒ€æ“¾
+				// -> æ“¾ƒAƒCƒeƒ€ƒJƒEƒ“ƒg‘‰Á
+				// -> ’eÁ‚µ”­¶
+				int scoreAdd = ++(this->session->items);
+				//Debug.WriteLine("Item-get");
+				for(auto& b : Bullet::List) {
+					if (!b.enabled) continue;
+					auto bdist = XMFLOAT3
+						(b.pos.x - this->pos.x
+						, b.pos.y - this->pos.y
+						, b.pos.z - this->pos.z);
+					if (bdist.x * bdist.x + bdist.y * bdist.y + bdist.z * bdist.z < ItemCrushArea * ItemCrushArea) {
+						// TODO: ‚±‚±‚ÉƒXƒRƒA‚ğ•\¦‚·‚é‰½‚©‚ğ’Ç‰Á
+						//PopupTextRenderer.Add(b.pos.x, b.pos.y, b.pos.z, scoreAdd, 60, new PopupScoreBehavior(scoreAdd));
+						b.enabled = false;
+						this->session->score += scoreAdd;
+						//Debug.WriteLine(scoreAdd, "Score+");
+						scoreAdd += this->session->items;
+					}
+				}
+				i.enabled = false;
+			}
 		}
 	}
-
-
-	n += 1 / 64.0f;
-
-	if (n > 30) {
-		n = 0;
-		auto newtask = Game1::GetInstance()->taskPool.Get(
-			[this](Game1::task_type& t, Game1::task_param a, void* b){ return this->draw(t, a, b); }
-		, nullptr);
-		task.InsertNext(&*newtask);
-		task.RemoveImmidiately();
-//		Game1::GetInstance()->taskPool.Deactivate(::task);
-		this->task = newtask;
-	}
-	return 0;
 }
 
-int PrintJoypadInfo(Game1::task_type& task, Game1::task_param, void*){
-	XINPUT_STATE state;
-	joypad->Update(state);
-	const auto& pad = state.Gamepad;
+void Player::Draw() {
+	auto& inst = model->ReserveDraw();
+	inst.World = XMMatrixScaling(1.0f / 1024, 1.0f / 1024, 1.0f / 1024)
+		* XMMatrixTranslation(pos.x, pos.y, pos.z);
+	inst.Params[0].LineWidth /= 1024.0f;
+	inst.Params[1].LineWidth /= 1024.0f;
+	inst.Params[2].LineWidth /= 1024.0f;
+	inst.Params[3].LineWidth /= 1024.0f;
 
-	char infostr[1024];
-	sprintf_s(infostr, "BTN: 0x%08X \nAXISES: (%-5d, %-5d), (%-5d, %-5d),\n %3d, %3d\n",
-		pad.wButtons, pad.sThumbLX, pad.sThumbLY, pad.sThumbRX, pad.sThumbRY, pad.bLeftTrigger, pad.bRightTrigger);
-	stringDrawer->DrawString(0, 0, infostr);
-
-	return 0;
-}
-
-int drawModel(Game1::task_type& task, Game1::task_param, void*) {
 	model->Flush();
-	return 0;
 }
 
-void Player::Initialize(D3DCore * core){
-	InitializeModel(core);
-
-	task = Game1::GetInstance()->taskPool.Get(
-		[this](Game1::task_type& t, Game1::task_param a, void* b){ return this->draw(t, a, b); }
-	, nullptr);
-	Game1::GetInstance()->drawTasks.InsertHead(&*task);
-
-	modelDrawTask = Game1::GetInstance()->taskPool.Get();
-	modelDrawTask->SetAction(drawModel, (void*)nullptr);
-	Game1::GetInstance()->drawTasks.InsertTail(&*modelDrawTask);
-
-	joypadTask = Game1::GetInstance()->taskPool.Get();
-	joypadTask->SetAction(PrintJoypadInfo, (void*)nullptr);
-	Game1::GetInstance()->drawTasks.InsertTail(&*joypadTask);
-
-
-	joypad.reset(new DIJoypad(0));
-	//joypad.reset(new DIJoypad(1, false));
-
-	Sprite::Sprite::InitializeSharedResource(core);
-	stringDrawer = new Sprite::SpriteString(core, _T("Content\\Image\\font.png"));
-	stringDrawer->SetSize(16, 32);
-	stringDrawer->SetPitchRatio(0.8f, 1.0f);
-	stringDrawer->SetColor(XMFLOAT4{ 1, 1, 0, 1 }, XMFLOAT4{ 0, 0, 0, 0 });
-}
-
-void Player::Reload(bool selectFile){
-	ReloadModel(selectFile);
-}
-
-Player::~Player()
-{
-	if (stringDrawer) delete stringDrawer;
-	TerminateModel();
-}
+Player::~Player() {}

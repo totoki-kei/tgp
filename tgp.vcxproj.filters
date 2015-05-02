@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Game1.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Debug.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -109,12 +106,45 @@
     <ClCompile Include="Framework\Graphics\Translator.cpp">
       <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="GameImpl.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeField.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelBank.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassicGameScene.cpp">
+      <Filter>App\Game1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
-    <ClInclude Include="Game1.h">
-      <Filter>App\Game1</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\BlockArray.h">
       <Filter>Framework\Utility</Filter>
     </ClInclude>
@@ -278,6 +308,42 @@
     <ClInclude Include="Coroutine.h">
       <Filter>Framework\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeField.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="GameImpl.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelBank.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicGameScene.h">
+      <Filter>App\Game1</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Framework">
@@ -369,13 +435,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
-    <Image Include="Content\Image\font.png">
-      <Filter>Content</Filter>
-    </Image>
-    <Image Include="Content\Image\test.png">
-      <Filter>Content</Filter>
-    </Image>
-    <Image Include="Content\Image\font_large.png">
+    <Image Include="Content\Image\font_system.png">
       <Filter>Content</Filter>
     </Image>
   </ItemGroup>
@@ -398,25 +458,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Content\Model\testmodel.txt">
+    <Text Include="Content\Model\bullet.txt">
       <Filter>Content</Filter>
     </Text>
-    <Text Include="Content\Model\r03.txt">
+    <Text Include="Content\Model\cube.txt">
       <Filter>Content</Filter>
     </Text>
-    <Text Include="Content\Model\r01.txt">
-      <Filter>Content</Filter>
-    </Text>
-    <Text Include="Content\Model\r02.txt">
-      <Filter>Content</Filter>
-    </Text>
-    <Text Include="Content\Model\r04.txt">
-      <Filter>Content</Filter>
-    </Text>
-    <Text Include="Content\Model\r05.txt">
-      <Filter>Content</Filter>
-    </Text>
-    <Text Include="Content\Model\s01.txt">
+    <Text Include="Content\Model\Player.txt">
       <Filter>Content</Filter>
     </Text>
   </ItemGroup>
