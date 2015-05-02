@@ -91,7 +91,8 @@ VS_OUT Transform(VS_IN input, uint id : SV_InstanceID) {
 			= input.color * (1 - blend)
 			+ matColor * blend;
 	}
-	output.width = GetModelLineWidth(id, input.paramIndex);
+
+	output.width = length(mul(world, float4(GetModelLineWidth(id, input.paramIndex), 0, 0, 1)));
 
 	return output;
 }

@@ -18,8 +18,6 @@
 #include "Framework/Audio/DACore.h"
 #include "Framework/Audio/WavLoader.h"
 
-#include "GameObject.h"
-
 #include <random>
 #include <type_traits>
 
@@ -66,8 +64,6 @@ namespace {
 
 	Game1* gm;
 }
-std::list<GameObject> objs{};
-bool objReflect;
 
 Game1* Game1::GetInstance() {
 
@@ -89,7 +85,6 @@ Game1::Game1() : windowWidth(800), windowHeight(600), window(800, 600) {
 }
 
 Game1::~Game1() {
-	objs.clear();
 	//delete player;
 }
 
@@ -173,23 +168,10 @@ void Game1::Update() {
 	//if(counter == 0) bgm->Play();
 
 
-	objReflect = false;
 	updateTasks.Invoke();
 
 	dspch->Update();
 
-//	if (counter % (30 * 60) == 0) {
-	//if (counter == 0){
-	if (objs.size() < 2) {
-		auto iter = objs.emplace(objs.end(), false);
-		objs.back().thisiter = iter;
-		//if (objs.size() >= 2) {
-		//	objs.pop_front();
-		//}
-	}
-
-		
-	//}
 	counter++;
 
 	double x, y, vx, vy, ax, ay;
@@ -209,7 +191,6 @@ void Game1::Update() {
 		ay = mll->GetLastValueY();
 	}
 
-	auto& obj = objs.front();
 
 	joypad->Update(state);
 	//obj.vp = (float)state.Gamepad.sThumbLX / (32768.0f * 32.0f);
@@ -268,7 +249,7 @@ void Game1::Draw() {
 
 
 	char buff[256];
-	sprintf_s(buff, "instance : %d\nelapsed : %.3f", objs.size(), updateElapsed);
+	sprintf_s(buff, "ticks : %d\nelapsed : %.3f", ticks, updateElapsed);
 	spriteString->DrawString(0, 0, buff);
 
 	core->Update();
@@ -280,7 +261,11 @@ void Game1::Draw() {
 void Game1::InitializeD3DCore() {
 	core = new D3DCore(&window);
 
+#ifdef _DEBUG
 	core->Initialize(false, true);
+#else
+	core->Initialize(false);
+#endif
 	core->SetVSyncWait(1);
 
 	Models::Model::InitializeSharedResource(core);

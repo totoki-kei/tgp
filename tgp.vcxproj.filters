@@ -82,9 +82,6 @@
     <ClCompile Include="Framework\Scene.cpp">
       <Filter>Framework\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Graphics\GaussianEffector.cpp">
       <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
     </ClCompile>
@@ -228,9 +225,6 @@
     </ClInclude>
     <ClInclude Include="Framework\Scene.h">
       <Filter>Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>App\Game1</Filter>
     </ClInclude>
     <ClInclude Include="CSRNG.h" />
     <ClInclude Include="Framework\Graphics\GaussianEffector.h">

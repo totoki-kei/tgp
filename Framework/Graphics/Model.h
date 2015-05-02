@@ -47,7 +47,7 @@ namespace Models {
 	};
 
 	// インスタンス情報構造体
-	SHADERDATA struct InstanceData {
+	SHADERDATA struct InstanceData : HeapAligned<InstanceData> {
 		// ワールド行列
 		SHADERDATA matrix World;
 		// マテリアルセットの番号
@@ -70,7 +70,7 @@ namespace Models {
 
 
 	// マテリアル情報構造体
-	SHADERDATA struct MaterialData {
+	SHADERDATA struct MaterialData : HeapAligned<MaterialData>{
 		// 色
 		float4 Color;
 		//// 色割合(0以下の場合は未使用とみなす)
@@ -82,7 +82,7 @@ namespace Models {
 	};
 
 	// 頂点構造
-	struct Vertex {
+	struct Vertex : HeapAligned<Vertex> {
 		float4 position;
 		float4 color;
 		float3 normal;
@@ -108,7 +108,7 @@ namespace Models {
 
 
 	// シーン固有の定数
-	struct SceneParameter{
+	struct SceneParameter : HeapAligned<SceneParameter> {
 		SHADERDATA matrix View;
 		SHADERDATA matrix Projection;
 		SHADERDATA float4 AmbientColor;
@@ -129,7 +129,7 @@ namespace Models {
 	//};
 
 	// マテリアル
-	struct MaterialSetParameter {
+	struct MaterialSetParameter : HeapAligned<MaterialSetParameter>{
 		SHADERDATA MaterialData Materials[MaterialCount];
 	};
 
