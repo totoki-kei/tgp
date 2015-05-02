@@ -106,19 +106,10 @@
     <ClCompile Include="Framework\Graphics\Translator.cpp">
       <Filter>Framework\D11\Direct3D\Shaders\Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
     <ClCompile Include="GameImpl.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
     <ClCompile Include="CubeField.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
-    <ClCompile Include="Item.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
     <ClCompile Include="Misc.cpp">
@@ -130,9 +121,6 @@
     <ClCompile Include="Particle.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
     <ClCompile Include="Session.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
@@ -141,6 +129,18 @@
     </ClCompile>
     <ClCompile Include="ClassicGameScene.cpp">
       <Filter>App\Game1</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>App\Game1\GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -305,22 +305,10 @@
     <ClInclude Include="Framework\Lambs.hpp">
       <Filter>Framework\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Coroutine.h">
-      <Filter>Framework\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.h">
-      <Filter>App\Game1</Filter>
-    </ClInclude>
     <ClInclude Include="CubeField.h">
       <Filter>App\Game1</Filter>
     </ClInclude>
     <ClInclude Include="GameImpl.h">
-      <Filter>App\Game1</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>App\Game1</Filter>
-    </ClInclude>
-    <ClInclude Include="Item.h">
       <Filter>App\Game1</Filter>
     </ClInclude>
     <ClInclude Include="Misc.h">
@@ -332,9 +320,6 @@
     <ClInclude Include="Particle.h">
       <Filter>App\Game1</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>App\Game1</Filter>
-    </ClInclude>
     <ClInclude Include="Session.h">
       <Filter>App\Game1</Filter>
     </ClInclude>
@@ -343,6 +328,21 @@
     </ClInclude>
     <ClInclude Include="ClassicGameScene.h">
       <Filter>App\Game1</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Coroutine.h">
+      <Filter>Framework\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -387,6 +387,9 @@
     </Filter>
     <Filter Include="Framework\D11\Direct3D\Shaders\Model\HLSL">
       <UniqueIdentifier>{347fa6e7-75c3-4671-9161-0b257e02d170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Game1\GameObject">
+      <UniqueIdentifier>{29769226-1a4a-4802-a9e2-d02a2b3ad2de}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

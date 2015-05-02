@@ -4,11 +4,7 @@
 #include "Bullet.h"
 #include "Particle.h"
 
-namespace {
-	const float Speed = 1 / 64.0f;
-	const float PlayerSize = 0.025f;
-	const float ItemCrushArea = 0.5f;
-}
+using namespace PlayerConsts;
 
 Player::Player() : GameObject{ XMFLOAT3{ 0, 0, 1 }, XMFLOAT3{ 0, 0, 0 } } {
 	model = g_ModelBank->Get(_T("Content\\Model\\Player.txt"));
@@ -46,29 +42,6 @@ void Player::Update() {
 
 		if (dir >= 0 || input.btnL || input.btnR) {
 			XMVECTOR axis = GetSurfaceVector(GetSurface());
-
-			//switch (this->GetSurface()) {
-			//	case SURF_XPLUS:
-			//		axis = XMFLOAT3(1.0f, 0.0f, 0.0f);
-			//		break;
-			//	case SURF_XMINUS:
-			//		axis = XMFLOAT3(-1.0f, 0.0f, 0.0f);
-			//		break;
-			//	case SURF_YPLUS:
-			//		axis = XMFLOAT3(0.0f, 1.0f, 0.0f);
-			//		break;
-			//	case SURF_YMINUS:
-			//		axis = XMFLOAT3(0.0f, -1.0f, 0.0f);
-			//		break;
-			//	case SURF_ZPLUS:
-			//		axis = XMFLOAT3(0.0f, 0.0f, 1.0f);
-			//		break;
-			//	case SURF_ZMINUS:
-			//		axis = XMFLOAT3(0.0f, 0.0f, -1.0f);
-			//		break;
-			//	default:
-			//		return;
-			//}
 
 			if (input.btnR && input.btnL) {
 				// reset rotation
@@ -159,6 +132,7 @@ void Player::Update() {
 		}
 
 		// あたり判定
+#if 1
 		for(auto& b : Bullet::List) {
 			if (!b.enabled) continue;
 			auto dist = XMFLOAT3
@@ -167,8 +141,8 @@ void Player::Update() {
 				, b.pos.z - this->pos.z);
 			if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < PlayerSize * PlayerSize) {
 				this->enabled = false;
-				Particle::Generate(64, this->pos, XMFLOAT3{0, 0, 0}, 4.0f, 0);
-				Particle::Generate(4, this->pos, XMFLOAT3{0, 0, 0}, 2.0f, 0);
+				Particle::Generate(96, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 4.0f / 64, 0);
+				Particle::Generate(32, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3 { 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 2.0f / 64, 1);
 				//Debug.WriteLine("Hit!!");
 
 				//Program.GameMain.Ranking.Entry(
@@ -179,6 +153,7 @@ void Player::Update() {
 				GameImpl::GetInstance()->EndSession();
 			}
 		}
+#endif
 		for(auto& i : Item::List) {
 			if (!i.enabled) continue;
 			auto dist = XMFLOAT3(i.pos.x - this->pos.x, i.pos.y - this->pos.y, i.pos.z - this->pos.z);
@@ -195,15 +170,13 @@ void Player::Update() {
 						, b.pos.y - this->pos.y
 						, b.pos.z - this->pos.z);
 					if (bdist.x * bdist.x + bdist.y * bdist.y + bdist.z * bdist.z < ItemCrushArea * ItemCrushArea) {
-						// TODO: ここにスコアを表示する何かを追加
-						//PopupTextRenderer.Add(b.pos.x, b.pos.y, b.pos.z, scoreAdd, 60, new PopupScoreBehavior(scoreAdd));
-						b.enabled = false;
+						scoreAdd = static_cast<int>(scoreAdd * b.GetScoreRatio());
+						b.Vanish();
 						this->session->score += scoreAdd;
-						//Debug.WriteLine(scoreAdd, "Score+");
 						scoreAdd += this->session->items;
 					}
 				}
-				i.enabled = false;
+				i.Vanish();
 			}
 		}
 	}

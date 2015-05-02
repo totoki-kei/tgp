@@ -2,7 +2,7 @@
 
 #include <functional>
 #include <utility>
-#include <boost/coroutine/all.hpp>
+#include <boost/coroutine/asymmetric_coroutine.hpp>
 
 #ifdef _DEBUG
 #ifdef _DLL
@@ -120,7 +120,7 @@ public:
 
 };
 #else
-template <typename T, typename StateT>
+template <typename T, typename StateT = void>
 class Coroutine {
 	typedef typename boost::coroutines::asymmetric_coroutine<T>::push_type pusher_t;
 	typedef typename boost::coroutines::asymmetric_coroutine<T>::pull_type puller_t;
@@ -175,6 +175,79 @@ public:
 	Coroutine(Fn f, StateT&& s)
 		: coro{ std::bind(&self_t::coro_wrap<Fn>, this, std::placeholders::_1, f) }
 		, state(std::move(s)){}
+
+	Coroutine() {}
+
+	Coroutine(const self_t& c) : coro{ c.coro }, state{ c.state } {}
+
+	Coroutine(self_t&& c) : coro(std::move(c.coro)), state(std::move(c.state)) {}
+
+	operator bool() {
+		return !!coro;
+	}
+
+	bool operator ()(T&& arg) {
+		if (coro) {
+			coro(arg);
+		}
+
+		return !!coro;
+
+	}
+
+	template<typename Fn>
+	void Reset(Fn f) {
+		coro.swap(pusher_t{ std::bind(&self_t::coro_wrap<Fn>, this, std::placeholders::_1, f) });
+	}
+
+};
+
+
+template <typename T>
+class Coroutine<T, void> {
+	typedef typename boost::coroutines::asymmetric_coroutine<T>::push_type pusher_t;
+	typedef typename boost::coroutines::asymmetric_coroutine<T>::pull_type puller_t;
+	typedef Coroutine<T, void> self_t;
+
+public:
+	class Yielder {
+		friend class Coroutine;
+		puller_t &puller;
+
+	public:
+
+		Yielder() = delete;
+		Yielder(const Yielder&) = delete;
+
+		T operator ()() {
+			auto ret = puller.get();
+			puller();
+			return ret;
+		}
+
+	private:
+		Yielder(puller_t& p) : puller{ p } {}
+	};
+
+private:
+	pusher_t coro;
+
+	template <typename Fn>
+	void coro_wrap(puller_t& p, Fn f) {
+		Yielder y{ p };
+		f(y);
+	}
+
+public:
+	template<typename Fn>
+	Coroutine(Fn f)
+		: coro{ std::bind(&self_t::coro_wrap<Fn>, this, std::placeholders::_1, f) } {}
+
+	Coroutine() {}
+
+	Coroutine(const self_t& c) : coro{ c.coro } {}
+
+	Coroutine(self_t&& c) : coro(std::move(c.coro)) {}
 
 	operator bool() {
 		return !!coro;

@@ -6,6 +6,13 @@ class Player;
 #include "GameObject.h"
 #include "Session.h"
 
+namespace PlayerConsts {
+	const float Speed = 1 / 64.0f;
+	const float PlayerSize = 0.025f;
+	const float ItemCrushArea = 0.5f;
+}
+
+
 class Player : public GameObject {
 	Models::Model* model;
 	Session* session;

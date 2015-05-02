@@ -5,17 +5,32 @@ class Bullet;
 #include "GameImpl.h"
 #include "GameObject.h"
 #include "Misc.h"
+
+#include "Framework/Coroutine.h"
+
 #include <list>
+#include <functional>
 
 class Bullet : public GameObject {
+public:
+	typedef Coroutine<Bullet* const, void> PatternCoroutine;
+	typedef std::function<void(PatternCoroutine::Yielder&)> Pattern;
+private:
 	int count;
 	int materialId;
 	XMFLOAT4X4 rotMatrix;
 
 	static Models::Model* model;
 	static bool staticInitialized;
+	static int activeCount;
+
+	PatternCoroutine coro;
 
 public:
+	bool lastRotated;
+	float scoreRatio;
+
+	static void NullPattern(PatternCoroutine::Yielder& yield);
 
 	static std::list<Bullet> List, Pool;
 	static void StaticInit();
@@ -23,22 +38,24 @@ public:
 	Bullet();
 	~Bullet();
 
-	static Bullet& Shoot(Surface suf, int matid, XMFLOAT3 pos, XMFLOAT3 vel);
+	static Bullet& Shoot(Surface suf, int matid, XMFLOAT3 pos, XMFLOAT3 vel, Pattern&& pattern = Pattern{ NullPattern });
 
 	bool enabled;
 
 
 	void Update();
 	void Draw();
-	void Vanish();
+	void Vanish(bool noParticle = false);
 
 	void UpdateRotMatrix();
 
-	static int activeCount;
+	float GetScoreRatio();
+
 	static void UpdateAll();
 	static void DrawAll();
 	static void SweepToPool();
 	static int GetCount();
+	static void Clear();
 
 };
 

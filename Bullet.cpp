@@ -7,7 +7,11 @@ Models::Model* Bullet::model;
 void Bullet::StaticInit() {
 }
 
-Bullet::Bullet() {
+void Bullet::NullPattern(Bullet::PatternCoroutine::Yielder& yield) {
+	while (yield());
+}
+
+Bullet::Bullet() : coro(NullPattern) {
 	if (!model) {
 		model = g_ModelBank->Get(_T("Content\\Model\\Bullet.txt"), true, false);
 	}
@@ -18,26 +22,31 @@ Bullet::Bullet() {
 
 Bullet::~Bullet() {}
 
-Bullet& Bullet::Shoot(Surface suf, int matid, XMFLOAT3 pos, XMFLOAT3 vel) {
+Bullet& Bullet::Shoot(Surface suf, int matid, XMFLOAT3 pos, XMFLOAT3 vel, Pattern&& pattern) {
 	if (Pool.empty()) {
 		Pool.resize(32);
 	}
 	List.splice(List.end(), std::move(Pool), Pool.begin());
 	Bullet& bullet = List.back();
 
+	bullet.materialId = matid;
 	bullet.enabled = true;
 	bullet.pos = pos;
 	bullet.vel = vel;
 	bullet.suf = suf;
 	bullet.count = 0;
+	bullet.scoreRatio = 1.0f;
+
+	bullet.coro.Reset(std::move(pattern));
 
 	return bullet;
 }
 
 void Bullet::Update() {
-	// TODO: 追加のアクションを行う場合はここに記述する。
+	bool e = this->enabled;
+	this->enabled = coro && coro(this);
 	
-	if (MoveOnSurface()) UpdateRotMatrix();
+	if (lastRotated = !!MoveOnSurface()) UpdateRotMatrix();
 	count++;
 }
 
@@ -51,18 +60,26 @@ void Bullet::Draw() {
 		* rotmat
 		* XMMatrixTranslation(pos.x, pos.y, pos.z);
 
-	inst.Params[0].LineWidth /= 100.0f;
-	inst.Params[1].LineWidth /= 100.0f;
-	inst.Params[2].LineWidth /= 100.0f;
-	inst.Params[3].LineWidth /= 100.0f;
+	//inst.Params[0].LineWidth /= 100.0f;
+	//inst.Params[1].LineWidth /= 100.0f;
+	//inst.Params[2].LineWidth /= 100.0f;
+	//inst.Params[3].LineWidth /= 100.0f;
+	inst.Params[1].Index = static_cast<float>(this->materialId);
 	// TODO: ここに色やアルファ値を変更するコードを書く
 	//inst.Params[0].Index = ...
 }
 
 
-void Bullet::Vanish() {
+void Bullet::Vanish(bool noParticle) {
 	enabled = false;
-	Particle::Generate(32, this->pos, this->vel, 3.0f, materialId);
+	if (!noParticle) {
+		auto particleSpeed = XMFLOAT3{ 
+			this->vel.x * 2,
+			this->vel.y * 2, 
+			this->vel.z * 2 
+		};
+		Particle::Generate(32, this->pos, particleSpeed, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 3.0f / 256, materialId);
+	}
 }
 
 void Bullet::UpdateRotMatrix() {
@@ -94,12 +111,16 @@ void Bullet::UpdateRotMatrix() {
 	}
 }
 
+float Bullet::GetScoreRatio() {
+	return scoreRatio;
+}
+
 void Bullet::UpdateAll() {
 	activeCount = 0;
 	for (auto& bullet : List) {
 		if (!bullet.enabled) continue;
 		bullet.Update();
-		activeCount++;
+		if(bullet.enabled) activeCount++;
 	}
 }
 
@@ -123,9 +144,15 @@ void Bullet::SweepToPool() {
 	}
 }
 
+int Bullet::activeCount;
 int Bullet::GetCount() {
 	return activeCount;
 }
 
-int Bullet::activeCount;
+void Bullet::Clear() {
+	for (auto& bullet : List) {
+		bullet.Vanish(true);
+	}
+	activeCount = 0;
+}
 

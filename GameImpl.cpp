@@ -62,10 +62,7 @@ namespace {
 
 	DIJoypad* joypad;
 
-	Sprite::Sprite* sprite;
 	Sprite::SpriteString* systemText;
-
-	Sprite::MatrixTranslator *matran;
 
 	XINPUT_STATE state;
 
@@ -142,18 +139,12 @@ int GameImpl::Initialize() {
 
 	Sprite::Sprite::InitializeSharedResource(core);
 
-	sprite = new Sprite::Sprite(nullptr);
-	window.AddResource(PtrToRes(sprite));
-
 	systemText = new Sprite::SpriteString(core, _T("Content\\Image\\font_system.png"));
 	window.AddResource(PtrToRes(systemText));
 	systemText->SetColor(XMFLOAT4{ 1, 1, 1, 1 }, XMFLOAT4{ 0, 0, 0, 1 });
 	systemText->SetAutoFlush(true);
 
 	bloom = new D3DBloomEffect(core, window.GetWidth(), window.GetHeight());
-
-	matran = new Sprite::MatrixTranslator(core);
-	window.AddResource(PtrToRes(matran));
 
 	joypad = new DIJoypad(1, false);
 	window.AddResource(PtrToRes(joypad));
@@ -204,26 +195,19 @@ void GameImpl::Draw() {
 	boost::timer t;
 
 	{
-		// TODO: この辺のカメラとライトの設定を別の部分に移動させる
 		auto &sp = Models::Model::GetSceneParam();
 
-		//sp.Projection = XMMatrixPerspectiveLH(GetWindowWidth() / 64.0f, GetWindowHeight() / 64.0f, 100, 900);
 		sp.Projection = XMMatrixPerspectiveFovLH(1.0f, (float)GetWindowWidth() / (float)GetWindowHeight(), 0.25f, 100.0f);
-		//XMVECTOR eye = { 0, 300, 200, 1 };
-		//XMVECTOR lookat = { 0, 0, 0, 1 };
-		//XMVECTOR up = { 0, 1, 0, 1 };
-		//sp.View = XMMatrixLookAtLH(eye, lookat, up);
 		sp.LightDirection = XMFLOAT3(-1, -1, -1);
 		sp.LightColor = XMFLOAT4(1, 1, 1, 0);
 		sp.AmbientColor = XMFLOAT4{ 1, 1, 1, 0.75 };
 
-		matran->SetMatrix(XMMatrixRotationZ(XM_PI) * XMMatrixTranslation(100.0f, 75.0f, -100.0f) * sp.View * sp.Projection);
-
 		camera->Set(sp);
 
-		core->ClearRenderTarget(DirectX::XMFLOAT4(0, 0, 0, 1));
-		core->ClearDepth();
 	}
+
+	core->ClearRenderTarget(DirectX::XMFLOAT4(0, 0, 0, 1));
+	core->ClearDepth();
 
 	bloom->Draw([&]() {
 		// TODO: ここに描画コードを入れる
@@ -319,9 +303,9 @@ void GameImpl::UpdateInput() {
 		else if (y < -Threshold1)
 			ylevel = 3;
 		else if (y > Threshold2)
-			ylevel = 1;
+			ylevel = 0;
 		else if (y > Threshold1)
-			ylevel = 2;
+			ylevel = 1;
 		else
 			ylevel = 2;
 

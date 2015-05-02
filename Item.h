@@ -8,6 +8,8 @@ class Item;
 
 class Item : public GameObject {
 	static Models::Model* model;
+	static int activeCount;
+
 public:
 	Item();
 	~Item();
@@ -30,11 +32,12 @@ private:
 public:
 	void Update();
 	void Draw();
+	void Vanish();
 
 	static void UpdateAll();
 	static void DrawAll();
-
-	void Vanish();
+	static int GetCount();
+	static void Clear();
 
 };
 

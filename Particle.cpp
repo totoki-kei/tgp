@@ -6,11 +6,12 @@ namespace {
 	static std::mutex mtx;
 }
 
-Particle::Particle(XMVECTOR p, XMVECTOR v, int matindex) {
+Particle::Particle(XMVECTOR p, XMVECTOR v, XMVECTOR s, int matindex) {
 	auto g = GameImpl::GetInstance();
 
 	pos = p;
 	dir = v;
+	size = s;
 	rotAxis = XMVector3Normalize(
 		XMVectorSet(g->GetRand(-1, 1), g->GetRand(-1, 1), g->GetRand(-1, 1), 1.0f)
 		);
@@ -32,19 +33,19 @@ void Particle::Update() {
 void Particle::Draw() {
 	auto& inst = model->ReserveDraw();
 
-	inst.World = XMMatrixTransformation(XMVectorZero(), XMQuaternionIdentity(), XMVectorSet(4, 4, 4, 1),
+	inst.World = XMMatrixTransformation(XMVectorZero(), XMQuaternionIdentity(), size,
 										XMVectorZero(), XMQuaternionRotationAxis(rotAxis, (count / 10.0f)),
 										pos);
 	inst.Params[0].Alpha = 10.0f;
 	inst.Params[0].Blend = 1.0f;
 	inst.Params[0].Index = (float)mat;
-	inst.Params[0].LineWidth = count / 10.0f;
+	inst.Params[0].LineWidth = count / 1024.0f;
 
 }
 
-void Particle::Generate(int count, XMFLOAT3 position, XMFLOAT3 direction, float diffusion, int matindex) {
-	XMVECTOR pos = XMVectorSet(position.x, position.y, position.z, 1.0f);
-	XMVECTOR v_base = XMVectorSet(direction.x, direction.y, direction.z, 0.0f);
+void Particle::Generate(int count, XMFLOAT3 position, XMFLOAT3 direction, XMFLOAT3 size, float diffusion, int matindex) {
+	XMVECTOR pos = XMLoadFloat3(&position);
+	XMVECTOR v_base = XMLoadFloat3(&direction);
 
 	auto g = GameImpl::GetInstance();
 
@@ -76,7 +77,7 @@ void Particle::Generate(int count, XMFLOAT3 position, XMFLOAT3 direction, float 
 
 		int mat = (matindex == -1 ? (int)g->GetRand(0, 8) : matindex);
 
-		list.emplace_back(pos, XMVectorAdd(v_base, v_dif), mat);
+		list.emplace_back(pos, XMVectorAdd(v_base, v_dif), XMLoadFloat3(&size), mat);
 	}
 }
 

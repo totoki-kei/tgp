@@ -9,11 +9,12 @@ struct Particle : HeapAligned<Particle> {
 public:
 
 	Particle() = default;
-	Particle(XMVECTOR pos, XMVECTOR dir, int matindex);
+	Particle(XMVECTOR pos, XMVECTOR dir, XMVECTOR size, int matindex);
 	~Particle();
 
 	XMVECTOR pos, dir;
 	XMVECTOR rotAxis;
+	XMVECTOR size;
 	
 	int count;
 	int mat;
@@ -25,7 +26,7 @@ public:
 private:
 
 public:
-	static void Generate(int count, XMFLOAT3 position, XMFLOAT3 direction, float diffusion, int matindex);
+	static void Generate(int count, XMFLOAT3 position, XMFLOAT3 direction, XMFLOAT3 size, float diffusion, int matindex);
 	static TaskResult UpdateAll();
 	static TaskResult DrawAll();
 

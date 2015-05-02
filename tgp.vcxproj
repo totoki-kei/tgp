@@ -191,7 +191,6 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ClassicGameScene.h" />
-    <ClInclude Include="Coroutine.h" />
     <ClInclude Include="CSRNG.h" />
     <ClInclude Include="CubeField.h" />
     <ClInclude Include="Framework\Audio\DACore.h" />
@@ -199,6 +198,7 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClInclude Include="Framework\Audio\DAVoice.h" />
     <ClInclude Include="Framework\Audio\DAVoiceCallback.h" />
     <ClInclude Include="Framework\Audio\SoundData.h" />
+    <ClInclude Include="Framework\Coroutine.h" />
     <ClInclude Include="Framework\Graphics\BrightPassEffector.h" />
     <ClInclude Include="Framework\Graphics\D3DBloomEffect.h" />
     <ClInclude Include="Framework\Graphics\D3DConstantBuffer.h" />

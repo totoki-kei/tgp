@@ -1,10 +1,11 @@
 #include "Item.h"
+#include "Particle.h"
 
 std::vector<Item> Item::List;
 Models::Model* Item::model;
 
 Item::Item() : enabled{ false }, count{ 0 } {
-	if(!model) model = g_ModelBank->Get(_T("Content\\Model\\Item.txt"));
+	if(!model) model = g_ModelBank->Get(_T("Content\\Model\\s01.txt"));
 }
 
 
@@ -73,8 +74,14 @@ void Item::Draw() {
 }
 
 void Item::UpdateAll() {
+	activeCount = 0;
 	for (auto& item : List) {
-		if (item.enabled) item.Update();
+		if (item.enabled) {
+			item.Update();
+		}
+		if (item.enabled) {
+			activeCount++;
+		}
 	}
 }
 
@@ -89,9 +96,21 @@ void Item::DrawAll() {
 	if (flushFlag) model->Flush();
 }
 
+int Item::activeCount;
+int Item::GetCount() {
+	return activeCount;
+}
+
 void Item::Vanish() {
 	enabled = false;
 
 	// TODO: ここにエフェクトを生成するコードを入れる
+	Particle::Generate(96, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, PlayerConsts::ItemCrushArea / 13.69188058f, 4);
 }
 
+void Item::Clear() {
+	for (auto& item : List) {
+		item.enabled = false;
+	}
+	activeCount = 0;
+}
