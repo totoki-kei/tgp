@@ -5,7 +5,7 @@ std::vector<Item> Item::List;
 Models::Model* Item::model;
 
 Item::Item() : enabled{ false }, count{ 0 } {
-	if(!model) model = g_ModelBank->Get(_T("Content\\Model\\s01.txt"));
+	if(!model) model = g_ModelBank->Get(_T("Content\\Model\\item.txt"));
 }
 
 
