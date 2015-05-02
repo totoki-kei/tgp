@@ -258,6 +258,7 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClInclude Include="Session.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.Assult.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ClassicGameScene.cpp" />

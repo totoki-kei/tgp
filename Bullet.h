@@ -30,7 +30,9 @@ public:
 	bool lastRotated;
 	float scoreRatio;
 
+	// ÉpÉ^Å[Éì
 	static void NullPattern(PatternCoroutine::Yielder& yield);
+	static void AssultPattern(Bullet::PatternCoroutine::Yielder& yield);
 
 	static std::list<Bullet> List, Pool;
 	static void StaticInit();

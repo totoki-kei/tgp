@@ -142,6 +142,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>App\Game1\GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.Assult.cpp">
+      <Filter>App\Game1\GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource1.h" />
