@@ -116,8 +116,8 @@ void Camera::Update(bool skip) {
 void Camera::Set(Models::SceneParameter& scene) {
 	scene.View = XMMatrixLookAtLH(XMLoadFloat3(&cameraPos), XMVectorZero(), XMLoadFloat3(&cameraUp));
 
-	scene.PointLights[0].Distance = 10.0f;
-	scene.PointLights[0].LightColor = XMFLOAT4{ 1.0f, 1.0f, 1.0f, 0.75f };
+	scene.PointLights[0].Distance = 5.0f;
+	scene.PointLights[0].LightColor = XMFLOAT4{ 1.0f, 1.0f, 1.0f, 0.5f };
 	scene.PointLights[0].Position = cameraPos;
 
 }

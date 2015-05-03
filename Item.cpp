@@ -59,17 +59,44 @@ void Item::Init(const XMFLOAT3& p) {
 
 void Item::Update() {
 	count++;
+	if (!count) this->enabled = false;
 }
 void Item::Draw() {
 
 	if (model) {
 		Models::InstanceData inst;
-		XMVECTOR rotaxis = XMVectorSet(axis.x, axis.y, axis.z, 1.0f);
-		inst.World = XMMatrixScaling(0.05f, 0.05f, 0.05f)
-			* XMMatrixRotationAxis(rotaxis, XM_2PI * (count % 128) / 128.0f)
-			* XMMatrixTranslation(pos.x, pos.y, pos.z);
 
-		model->Draw(inst);
+		XMVECTOR rotaxis = XMVectorSet(axis.x, axis.y, axis.z, 1.0f);
+
+		if (count < 0) {
+			float ratio = -count / 5.0f;
+			inst.World = XMMatrixScaling(0.5f, 0.5f, 0.5f)
+				* XMMatrixRotationAxis(rotaxis, XM_2PI * (count % 128) / 128.0f)
+				* XMMatrixTranslation(pos.x, pos.y, pos.z);
+			inst.Params[0].Index = 0.0f;
+			inst.Params[0].Alpha = 0.0f;
+			inst.Params[0].Blend = 1 - ratio;
+			inst.Params[0].LineWidth = 1.0f / 128;
+			model->Draw(inst);
+
+		}
+		else {
+			inst.World = XMMatrixScaling(0.05f, 0.05f, 0.05f)
+				* XMMatrixRotationAxis(rotaxis, XM_2PI * (count % 128) / 128.0f)
+				* XMMatrixTranslation(pos.x, pos.y, pos.z);
+			inst.Params[0].Index = 0.0f;
+			inst.Params[0].Alpha = 0.0f;
+			inst.Params[0].Blend = 0.0f;
+			inst.Params[0].LineWidth = 1.0f / 128;
+			model->Draw(inst);
+
+			float ratio = (count % 30) / 30.0f;
+			inst.World = XMMatrixScaling(0.05f * (1 + ratio), 0.05f * (1 + ratio), 0.05f * (1 + ratio))
+				* XMMatrixRotationAxis(rotaxis, XM_2PI * (count % 128) / 128.0f)
+				* XMMatrixTranslation(pos.x, pos.y, pos.z);
+			inst.Params[0].Blend = ratio;
+			model->Draw(inst);
+		}
 	}
 }
 
@@ -101,11 +128,11 @@ int Item::GetCount() {
 	return activeCount;
 }
 
-void Item::Vanish() {
-	enabled = false;
+void Item::Ignite() {
+	this->enabled = false;
 
 	// TODO: ここにエフェクトを生成するコードを入れる
-	Particle::Generate(96, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, PlayerConsts::ItemCrushArea / 13.69188058f, 4);
+	Particle::Generate(48, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, PlayerConsts::ItemCrushArea / 13.69188058f, 4);
 }
 
 void Item::Clear() {

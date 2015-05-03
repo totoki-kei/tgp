@@ -32,7 +32,7 @@ private:
 public:
 	void Update();
 	void Draw();
-	void Vanish();
+	void Ignite();
 
 	static void UpdateAll();
 	static void DrawAll();

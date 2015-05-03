@@ -14,6 +14,7 @@ protected:
 public:
 	ClassicGameScene(Scene* parent);
 	ClassicGameScene(Scene&&);
+	~ClassicGameScene();
 
 
 };

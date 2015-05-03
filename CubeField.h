@@ -9,6 +9,9 @@ class CubeField {
 
 public:
 	Models::Model *model;
+	int matIndex0;
+	int matIndex1;
+	int matIndex2;
 
 	CubeField();
 	~CubeField();

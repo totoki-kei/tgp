@@ -239,6 +239,8 @@ void GameImpl::Draw() {
 	systemText->DrawString(0, 48, txt);
 	sprintf_s(txt, "bullets: %d", Bullet::GetCount());
 	systemText->DrawString(0, 64, txt);
+	sprintf_s(txt, "session: score = %d, items = %d", session.score, session.items);
+	systemText->DrawString(0, 80, txt);
 
 
 	//LOG_DBG(txt, );
@@ -365,6 +367,12 @@ Session* GameImpl::StartSession() {
 	inputData.clear();
 
 	rand_engine.seed(session.random_seed);
+
+	if (field) {
+		field->matIndex0 = (int)GetRand(1, 7);
+		field->matIndex1 = (int)GetRand(1, 7);
+		field->matIndex2 = (int)GetRand(1, 7);
+	}
 
 	return &session;
 }

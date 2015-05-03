@@ -35,6 +35,10 @@ ClassicGameScene::ClassicGameScene(Scene* parent)
 }
 
 
+ClassicGameScene::~ClassicGameScene() {
+	Bullet::Terminate();
+}
+
 
 Scene* ClassicGameScene::UpdateScene() {
 	auto player = GameImpl::GetInstance()->GetPlayer();
@@ -54,8 +58,10 @@ Scene* ClassicGameScene::UpdateScene() {
 		}
 	} // if (player->enabled)
 
-	if (player && player->enabled) {
+	//if (player && player->enabled) {
+	{
 		if (tick % 10 == 0) {
+		
 			auto s = (Surface)(player->GetSurface() ^ (0x01));
 
 			float x = GameImpl::GetInstance()->GetRand(-1, 1) / 100;
@@ -74,12 +80,11 @@ Scene* ClassicGameScene::UpdateScene() {
 					break;
 			}
 
-			//if ((tick % 50) == 0) {
-			if (true) {
+			if ((tick % 50) == 0) {
 				Bullet::Shoot(s, 1, GetRandomPointOnSurface(s), vel, Bullet::Pattern{ &Bullet::AssultPattern });
 			}
 			else {
-				Bullet::Shoot(s, 7, GetRandomPointOnSurface(s), vel);
+				Bullet::Shoot(s, 0, GetRandomPointOnSurface(s), vel);
 			}
 		}
 
@@ -103,8 +108,9 @@ Scene* ClassicGameScene::UpdateScene() {
 void ClassicGameScene::DrawScene() {
 	auto player = GameImpl::GetInstance()->GetPlayer();
 	if(player->enabled) player->Draw();
+	Particle::DrawAll();
 	Bullet::DrawAll();
 	Item::DrawAll();
-	Particle::DrawAll();
 	GameImpl::GetInstance()->GetField()->Draw();
 }
+

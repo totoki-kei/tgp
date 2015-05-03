@@ -237,6 +237,10 @@ namespace Models {
 		bool GetFlatShadingFlag() {
 			return this->flatShading;
 		}
+
+		static D3DCore* GetCore() {
+			return core;
+		}
 	};
 
 }

@@ -127,9 +127,6 @@
     <ClCompile Include="Camera.cpp">
       <Filter>App\Game1</Filter>
     </ClCompile>
-    <ClCompile Include="ClassicGameScene.cpp">
-      <Filter>App\Game1</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>App\Game1\GameObject</Filter>
     </ClCompile>
@@ -144,6 +141,9 @@
     </ClCompile>
     <ClCompile Include="Bullet.Assult.cpp">
       <Filter>App\Game1\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassicGameScene.cpp">
+      <Filter>App\Game1\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -329,9 +329,6 @@
     <ClInclude Include="Camera.h">
       <Filter>App\Game1</Filter>
     </ClInclude>
-    <ClInclude Include="ClassicGameScene.h">
-      <Filter>App\Game1</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>App\Game1\GameObject</Filter>
     </ClInclude>
@@ -346,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="Framework\Coroutine.h">
       <Filter>Framework\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicGameScene.h">
+      <Filter>App\Game1\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -393,6 +393,9 @@
     </Filter>
     <Filter Include="App\Game1\GameObject">
       <UniqueIdentifier>{29769226-1a4a-4802-a9e2-d02a2b3ad2de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Game1\Scene">
+      <UniqueIdentifier>{076e5b00-4c1f-4e14-8705-13c6ed66e37c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -471,6 +474,9 @@
       <Filter>Content</Filter>
     </Text>
     <Text Include="Content\Model\Player.txt">
+      <Filter>Content</Filter>
+    </Text>
+    <Text Include="Content\Model\item.txt">
       <Filter>Content</Filter>
     </Text>
   </ItemGroup>

@@ -131,6 +131,17 @@ void Player::Update() {
 			XMStoreFloat3(&upperDirection, upper);
 		}
 
+		// 位置の補正
+		// ・・・本当はこんな処理不要なはずなんだけど
+		switch (this->suf) {
+			case SURF_XPLUS:  pos.x = 1.0f;  break;
+			case SURF_YPLUS:  pos.y = 1.0f;  break;
+			case SURF_ZPLUS:  pos.z = 1.0f;  break;
+			case SURF_XMINUS: pos.x = -1.0f; break;
+			case SURF_YMINUS: pos.y = -1.0f; break;
+			case SURF_ZMINUS: pos.z = -1.0f; break;
+		}
+
 		// あたり判定
 #if 1
 		for(auto& b : Bullet::List) {
@@ -155,9 +166,11 @@ void Player::Update() {
 		}
 #endif
 		for(auto& i : Item::List) {
-			if (!i.enabled) continue;
+			if (!i.enabled || i.count < 0) continue;
 			auto dist = XMFLOAT3(i.pos.x - this->pos.x, i.pos.y - this->pos.y, i.pos.z - this->pos.z);
 			if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < 16 * PlayerSize * PlayerSize) {
+				i.Ignite();
+
 				// アイテム取得
 				// -> 取得アイテムカウント増加
 				// -> 弾消し発生
@@ -176,7 +189,7 @@ void Player::Update() {
 						scoreAdd += this->session->items;
 					}
 				}
-				i.Vanish();
+				Bullet::SweepToPool();
 			}
 		}
 	}
@@ -186,10 +199,10 @@ void Player::Draw() {
 	auto& inst = model->ReserveDraw();
 	inst.World = XMMatrixScaling(1.0f / 1024, 1.0f / 1024, 1.0f / 1024)
 		* XMMatrixTranslation(pos.x, pos.y, pos.z);
-	inst.Params[0].LineWidth /= 1024.0f;
-	inst.Params[1].LineWidth /= 1024.0f;
-	inst.Params[2].LineWidth /= 1024.0f;
-	inst.Params[3].LineWidth /= 1024.0f;
+	inst.Params[0].LineWidth /= 256.0f;
+	inst.Params[1].LineWidth /= 256.0f;
+	inst.Params[2].LineWidth /= 256.0f;
+	inst.Params[3].LineWidth /= 256.0f;
 
 	model->Flush();
 }

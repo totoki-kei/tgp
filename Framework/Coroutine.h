@@ -120,6 +120,8 @@ public:
 
 };
 #else
+
+#if 0
 template <typename T, typename StateT = void>
 class Coroutine {
 	typedef typename boost::coroutines::asymmetric_coroutine<T>::push_type pusher_t;
@@ -205,9 +207,13 @@ public:
 
 template <typename T>
 class Coroutine<T, void> {
+#else
+template <typename T>
+class Coroutine {
+#endif
 	typedef typename boost::coroutines::asymmetric_coroutine<T>::push_type pusher_t;
 	typedef typename boost::coroutines::asymmetric_coroutine<T>::pull_type puller_t;
-	typedef Coroutine<T, void> self_t;
+	typedef Coroutine<T> self_t;
 
 public:
 	class Yielder {
@@ -234,18 +240,26 @@ private:
 
 	template <typename Fn>
 	void coro_wrap(puller_t& p, Fn f) {
-		Yielder y{ p };
-		f(y);
+		//try {
+			Yielder y{ p };
+			f(y);
+		//}
+		//catch (boost::coroutines::detail::forced_unwind const& e) {
+		//	throw; // required for Boost Coroutine!
+		//}
 	}
 
 public:
 	template<typename Fn>
 	Coroutine(Fn f)
-		: coro{ std::bind(&self_t::coro_wrap<Fn>, this, std::placeholders::_1, f) } {}
+		: coro{ 
+			std::bind(&self_t::coro_wrap<Fn>,
+			this, std::placeholders::_1, f), boost::coroutines::attributes(boost::coroutines::stack_unwind, boost::coroutines::fpu_preserved) } {}
 
-	Coroutine() {}
+	Coroutine() : coro{} {}
 
-	Coroutine(const self_t& c) : coro{ c.coro } {}
+	//Coroutine(const self_t& c) : coro{ c.coro } {}
+	Coroutine(const self_t&) = delete;
 
 	Coroutine(self_t&& c) : coro(std::move(c.coro)) {}
 
@@ -264,7 +278,9 @@ public:
 
 	template<typename Fn>
 	void Reset(Fn f) {
-		coro.swap(pusher_t{ std::bind(&self_t::coro_wrap<Fn>, this, std::placeholders::_1, f) });
+		coro = pusher_t(
+			std::bind(&self_t::coro_wrap<Fn>, this, std::placeholders::_1, f),
+			boost::coroutines::attributes(boost::coroutines::stack_unwind, boost::coroutines::fpu_preserved));
 	}
 
 };

@@ -11,9 +11,10 @@ void Bullet::NullPattern(Bullet::PatternCoroutine::Yielder& yield) {
 	while (yield());
 }
 
-Bullet::Bullet() : coro(NullPattern) {
+Bullet::Bullet() : coro() {
 	if (!model) {
-		model = g_ModelBank->Get(_T("Content\\Model\\Bullet.txt"), true, false);
+		model = g_ModelBank->Get(_T("Content\\Model\\Bullet.txt"));
+		model->SetEdgeWidthEnableFlag(false);
 	}
 	enabled = false;
 	count = 0;
@@ -39,6 +40,8 @@ Bullet& Bullet::Shoot(Surface suf, int matid, XMFLOAT3 pos, XMFLOAT3 vel, Patter
 
 	bullet.coro.Reset(std::move(pattern));
 
+	bullet.UpdateRotMatrix();
+
 	return bullet;
 }
 
@@ -60,10 +63,10 @@ void Bullet::Draw() {
 		* rotmat
 		* XMMatrixTranslation(pos.x, pos.y, pos.z);
 
-	//inst.Params[0].LineWidth /= 100.0f;
-	//inst.Params[1].LineWidth /= 100.0f;
-	//inst.Params[2].LineWidth /= 100.0f;
-	//inst.Params[3].LineWidth /= 100.0f;
+	inst.Params[0].LineWidth /= 128.0f;
+	inst.Params[1].LineWidth /= 128.0f;
+	inst.Params[2].LineWidth /= 128.0f;
+	inst.Params[3].LineWidth /= 128.0f;
 	inst.Params[1].Index = static_cast<float>(this->materialId);
 	// TODO: ここに色やアルファ値を変更するコードを書く
 	//inst.Params[0].Index = ...
@@ -138,7 +141,7 @@ void Bullet::SweepToPool() {
 	while (it != List.end()) {
 		auto next = std::next(it);
 		if (!it->enabled) {
-			Pool.splice(Pool.end(), std::move(List), it);
+			Pool.splice(Pool.begin(), List, it);
 		}
 		it = next;
 	}
@@ -153,6 +156,12 @@ void Bullet::Clear() {
 	for (auto& bullet : List) {
 		bullet.Vanish(true);
 	}
+	SweepToPool();
 	activeCount = 0;
+}
+
+void Bullet::Terminate() {
+	List.clear();
+	Pool.clear();
 }
 

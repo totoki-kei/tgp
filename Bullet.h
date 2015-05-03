@@ -13,7 +13,7 @@ class Bullet;
 
 class Bullet : public GameObject {
 public:
-	typedef Coroutine<Bullet* const, void> PatternCoroutine;
+	typedef Coroutine<Bullet* const> PatternCoroutine;
 	typedef std::function<void(PatternCoroutine::Yielder&)> Pattern;
 private:
 	int count;
@@ -58,6 +58,7 @@ public:
 	static void SweepToPool();
 	static int GetCount();
 	static void Clear();
+	static void Terminate();
 
 };
 

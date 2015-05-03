@@ -435,6 +435,7 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
   <ItemGroup>
     <Text Include="Content\Model\bullet.txt" />
     <Text Include="Content\Model\cube.txt" />
+    <Text Include="Content\Model\item.txt" />
     <Text Include="Content\Model\Player.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
