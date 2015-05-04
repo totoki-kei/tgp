@@ -139,13 +139,12 @@ void Item::Ignite() {
 	// アイテム取得
 	// -> 取得アイテムカウント増加
 	// -> 弾消し発生
-	int itemCount = ++(session->items);
 	//Debug.WriteLine("Item-get");
 	for (auto& b : Bullet::List) {
 		if (!b.enabled) continue;
 		auto bdist = XMFLOAT3(b.pos.x - this->pos.x, b.pos.y - this->pos.y, b.pos.z - this->pos.z);
 		if (bdist.x * bdist.x + bdist.y * bdist.y + bdist.z * bdist.z < PlayerConsts::ItemCrushArea * PlayerConsts::ItemCrushArea) {
-			b.Defeat(itemCount);
+			b.Defeat();
 		}
 	}
 	Bullet::SweepToPool();

@@ -48,7 +48,7 @@ public:
 	void Update();
 	void Draw();
 	void Vanish(bool noParticle = false);
-	void Defeat(int itemCount);
+	void Defeat();
 
 	void UpdateRotMatrix();
 

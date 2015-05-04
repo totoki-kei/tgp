@@ -87,7 +87,7 @@ void Bullet::Vanish(bool noParticle) {
 	}
 }
 
-void Bullet::Defeat(int itemCount) {
+void Bullet::Defeat() {
 	GameImpl::GetInstance()->GetScene<IGameScene>()->OnDefeatEnemy(*this);
 	this->Vanish();
 }
