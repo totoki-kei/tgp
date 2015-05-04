@@ -100,10 +100,19 @@ public:
 
 	Session* StartSession();
 	void EndSession();
+	Session* GetCurrentSession();
 
 	Player* GetPlayer();
 	Camera* GetCamera();
 	CubeField* GetField();
+
+	template <typename T = Scene>
+	T* GetScene() const { return dynamic_cast<T*>(scene.get()); }
+
+	template <>
+	Scene* GetScene<Scene>() const { return scene.get(); }
+
+
 
 	//void GetPadState(XINPUT_STATE **state, XINPUT_STATE **lastState);
 	//void GetKeyboardState(bool *up, bool* dn, bool* l, bool* r, bool* a);

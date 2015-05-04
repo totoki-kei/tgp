@@ -243,6 +243,7 @@ copy /Y $(OutputPath)*.cso $(OutputPath)Content\System\.
     <ClInclude Include="Framework\Graphics\GaussianEffector.h" />
     <ClInclude Include="GameImpl.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="IGameScene.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="ModelBank.h" />

@@ -347,6 +347,9 @@
     <ClInclude Include="ClassicGameScene.h">
       <Filter>App\Game1\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="IGameScene.h">
+      <Filter>App\Game1\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Framework">

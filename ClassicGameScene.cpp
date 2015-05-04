@@ -114,3 +114,15 @@ void ClassicGameScene::DrawScene() {
 	GameImpl::GetInstance()->GetField()->Draw();
 }
 
+void ClassicGameScene::OnGotItem(Item& item) {
+	item.Ignite();
+}
+
+void ClassicGameScene::OnDefeatEnemy(Bullet& b) {
+	auto session = GameImpl::GetInstance()->GetCurrentSession();
+	if (!session) return;
+
+	session->score += static_cast<int>(session->items * b.scoreRatio);
+
+}
+

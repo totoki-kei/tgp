@@ -254,7 +254,7 @@ void GameImpl::Draw() {
 void GameImpl::InitializeD3DCore() {
 	core = new D3DCore(&window);
 
-	core->Initialize(false, false);
+	core->Initialize(true, false);
 	core->SetVSyncWait(1);
 
 	Models::Model::InitializeSharedResource(core);
@@ -383,6 +383,10 @@ void GameImpl::EndSession() {
 	・リプレイデータの保存
 	・スコアボードの更新
 	*/
+}
+
+Session* GameImpl::GetCurrentSession() {
+	return &session;
 }
 
 Player* GameImpl::GetPlayer() {

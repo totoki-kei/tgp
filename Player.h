@@ -28,5 +28,9 @@ public:
 
 	void Update();
 	void Draw();
+
+	void CheckEnemyCollide();
+	void CheckItemCollide();
+
 };
 

@@ -4,6 +4,8 @@
 #include "Bullet.h"
 #include "Particle.h"
 
+#include "IGameScene.h"
+
 using namespace PlayerConsts;
 
 Player::Player() : GameObject{ XMFLOAT3{ 0, 0, 1 }, XMFLOAT3{ 0, 0, 0 } } {
@@ -143,56 +145,44 @@ void Player::Update() {
 		}
 
 		// あたり判定
-#if 1
-		for(auto& b : Bullet::List) {
-			if (!b.enabled) continue;
-			auto dist = XMFLOAT3
-				( b.pos.x - this->pos.x
-				, b.pos.y - this->pos.y
-				, b.pos.z - this->pos.z);
-			if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < PlayerSize * PlayerSize) {
-				this->enabled = false;
-				Particle::Generate(96, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 4.0f / 64, 0);
-				Particle::Generate(32, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3 { 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 2.0f / 64, 1);
-				//Debug.WriteLine("Hit!!");
+		CheckEnemyCollide();
+		CheckItemCollide();
+	}
+}
 
-				//Program.GameMain.Ranking.Entry(
-				//	Program.GameMain.Score,
-				//	Program.GameMain.Ticks,
-				//	Program.GameMain.GetItemCount);
+void Player::CheckEnemyCollide() {
+	for (auto& b : Bullet::List) {
+		if (!b.enabled) continue;
+		auto dist = XMFLOAT3
+			(b.pos.x - this->pos.x
+			, b.pos.y - this->pos.y
+			, b.pos.z - this->pos.z);
+		if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < PlayerSize * PlayerSize) {
+			this->enabled = false;
+			Particle::Generate(32, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 6.0f / 64, 0);
+			Particle::Generate(96, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 4.0f / 64, 0);
+			Particle::Generate(32, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, 2.0f / 64, 1);
+			//Debug.WriteLine("Hit!!");
 
-				GameImpl::GetInstance()->EndSession();
-			}
-		}
-#endif
-		for(auto& i : Item::List) {
-			if (!i.enabled || i.count < 0) continue;
-			auto dist = XMFLOAT3(i.pos.x - this->pos.x, i.pos.y - this->pos.y, i.pos.z - this->pos.z);
-			if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < 16 * PlayerSize * PlayerSize) {
-				i.Ignite();
+			//Program.GameMain.Ranking.Entry(
+			//	Program.GameMain.Score,
+			//	Program.GameMain.Ticks,
+			//	Program.GameMain.GetItemCount);
 
-				// アイテム取得
-				// -> 取得アイテムカウント増加
-				// -> 弾消し発生
-				int scoreAdd = ++(this->session->items);
-				//Debug.WriteLine("Item-get");
-				for(auto& b : Bullet::List) {
-					if (!b.enabled) continue;
-					auto bdist = XMFLOAT3
-						(b.pos.x - this->pos.x
-						, b.pos.y - this->pos.y
-						, b.pos.z - this->pos.z);
-					if (bdist.x * bdist.x + bdist.y * bdist.y + bdist.z * bdist.z < ItemCrushArea * ItemCrushArea) {
-						scoreAdd = static_cast<int>(scoreAdd * b.GetScoreRatio());
-						b.Vanish();
-						this->session->score += scoreAdd;
-						scoreAdd += this->session->items;
-					}
-				}
-				Bullet::SweepToPool();
-			}
+			GameImpl::GetInstance()->EndSession();
 		}
 	}
+}
+
+void Player::CheckItemCollide() {
+	for (auto& i : Item::List) {
+		if (!i.enabled || i.count < 0) continue;
+		auto dist = XMFLOAT3(i.pos.x - this->pos.x, i.pos.y - this->pos.y, i.pos.z - this->pos.z);
+		if (dist.x * dist.x + dist.y * dist.y + dist.z * dist.z < 16 * PlayerSize * PlayerSize) {
+			GameImpl::GetInstance()->GetScene<IGameScene>()->OnGotItem(i);
+		}
+	}
+
 }
 
 void Player::Draw() {

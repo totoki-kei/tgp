@@ -1,6 +1,8 @@
 #include "Bullet.h"
 #include "Particle.h"
 
+#include "IGameScene.h"
+
 std::list<Bullet> Bullet::List, Bullet::Pool;
 Models::Model* Bullet::model;
 
@@ -85,6 +87,11 @@ void Bullet::Vanish(bool noParticle) {
 	}
 }
 
+void Bullet::Defeat(int itemCount) {
+	GameImpl::GetInstance()->GetScene<IGameScene>()->OnDefeatEnemy(*this);
+	this->Vanish();
+}
+
 void Bullet::UpdateRotMatrix() {
 	XMVECTOR dir = XMVector3Normalize(XMLoadFloat3(&vel));
 	XMVECTOR front = XMVectorSet(0, 0, 1, 0);
@@ -138,13 +145,17 @@ void Bullet::DrawAll() {
 void Bullet::SweepToPool() {
 	auto it = List.begin();
 
+	int count = 0;
+
 	while (it != List.end()) {
 		auto next = std::next(it);
 		if (!it->enabled) {
 			Pool.splice(Pool.begin(), List, it);
+			count++;
 		}
 		it = next;
 	}
+	if (count) { LOG_INFO("Bullets Pooled %d\n", count); }
 }
 
 int Bullet::activeCount;
@@ -161,6 +172,7 @@ void Bullet::Clear() {
 }
 
 void Bullet::Terminate() {
+	LOG_INFO("Bullets (active %d, pooled %d)\n", List.size(), Pool.size());
 	List.clear();
 	Pool.clear();
 }

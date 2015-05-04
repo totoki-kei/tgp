@@ -1,4 +1,5 @@
 #include "Item.h"
+#include "Bullet.h"
 #include "Particle.h"
 
 std::vector<Item> Item::List;
@@ -130,6 +131,24 @@ int Item::GetCount() {
 
 void Item::Ignite() {
 	this->enabled = false;
+
+	auto session = GameImpl::GetInstance()->GetCurrentSession();
+
+	if (!session) return;
+
+	// アイテム取得
+	// -> 取得アイテムカウント増加
+	// -> 弾消し発生
+	int itemCount = ++(session->items);
+	//Debug.WriteLine("Item-get");
+	for (auto& b : Bullet::List) {
+		if (!b.enabled) continue;
+		auto bdist = XMFLOAT3(b.pos.x - this->pos.x, b.pos.y - this->pos.y, b.pos.z - this->pos.z);
+		if (bdist.x * bdist.x + bdist.y * bdist.y + bdist.z * bdist.z < PlayerConsts::ItemCrushArea * PlayerConsts::ItemCrushArea) {
+			b.Defeat(itemCount);
+		}
+	}
+	Bullet::SweepToPool();
 
 	// TODO: ここにエフェクトを生成するコードを入れる
 	Particle::Generate(48, this->pos, XMFLOAT3{0, 0, 0}, XMFLOAT3{ 1.0f / 32, 1.0f / 32, 1.0f / 32 }, PlayerConsts::ItemCrushArea / 13.69188058f, 4);
